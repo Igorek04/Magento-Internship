@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <columns name="sales_order_columns">
+        <column name="contract_file" 
+                class="Perspective\OrderContractFile\Ui\Component\Listing\Columns\Contract">
+            <settings>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <label translate="true">Contract File</label>
+            </settings>
+        </column>
+    </columns>
+</listing>
