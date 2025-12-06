@@ -1,0 +1,159 @@
+<?php
+
+namespace StripeIntegration\Payments\Plugin\Sales\Model\Service;
+
+class OrderService
+{
+    private $helper;
+    private $config;
+    private $helperFactory;
+    private $quoteHelper;
+    private $webhookEventCollectionFactory;
+    private $paymentMethodHelper;
+    private $loggerHelper;
+    private $orderHelper;
+    private $paymentState;
+    private $checkoutCrashHelper;
+    private $radarHelper;
+
+    public function __construct(
+        \StripeIntegration\Payments\Helper\Quote $quoteHelper,
+        \StripeIntegration\Payments\Helper\Order $orderHelper,
+        \StripeIntegration\Payments\Helper\GenericFactory $helperFactory,
+        \StripeIntegration\Payments\Helper\PaymentMethod $paymentMethodHelper,
+        \StripeIntegration\Payments\Helper\Logger $loggerHelper,
+        \StripeIntegration\Payments\Helper\CheckoutCrash $checkoutCrashHelper,
+        \StripeIntegration\Payments\Helper\Radar $radarHelper,
+        \StripeIntegration\Payments\Model\Config $config,
+        \StripeIntegration\Payments\Model\Order\PaymentState $paymentState,
+        \StripeIntegration\Payments\Model\ResourceModel\WebhookEvent\CollectionFactory $webhookEventCollectionFactory
+    ) {
+        $this->quoteHelper = $quoteHelper;
+        $this->orderHelper = $orderHelper;
+        $this->helperFactory = $helperFactory;
+        $this->paymentMethodHelper = $paymentMethodHelper;
+        $this->loggerHelper = $loggerHelper;
+        $this->checkoutCrashHelper = $checkoutCrashHelper;
+        $this->config = $config;
+        $this->paymentState = $paymentState;
+        $this->webhookEventCollectionFactory = $webhookEventCollectionFactory;
+        $this->radarHelper = $radarHelper;
+    }
+
+    public function aroundPlace($subject, \Closure $proceed, $order)
+    {
+        try
+        {
+            if (!empty($order) && !empty($order->getQuoteId()))
+            {
+                $this->quoteHelper->quoteId = $order->getQuoteId();
+            }
+
+            $savedOrder = $proceed($order);
+
+            return $this->postProcess($savedOrder);
+        }
+        catch (\Exception $e)
+        {
+            $helper = $this->getHelper();
+            $msg = $e->getMessage();
+
+            if ($this->loggerHelper->isAuthenticationRequiredMessage($msg))
+            {
+                throw $e;
+            }
+            else
+            {
+                if ($this->paymentState->isPaid() && empty($savedOrder))
+                {
+                    $this->checkoutCrashHelper->log($this->paymentState, $e)
+                        ->notifyAdmin($this->paymentState, $e)
+                        ->deactivateCart();
+
+                    $helper->logError($e->getMessage(), $e->getTraceAsString());
+
+                    throw $e;
+                }
+
+                // Payment failed errors
+                return $helper->throwError($e->getMessage(), $e);
+            }
+        }
+    }
+
+    public function postProcess($order)
+    {
+        if (strstr($order->getPayment()->getMethod(), "stripe_") !== false)
+        {
+            try
+            {
+                $this->paymentMethodHelper->saveOrderPaymentMethodById($order, $order->getPayment()->getAdditionalInformation("token"));
+            }
+            catch (\Exception $e)
+            {
+                $this->loggerHelper->logError("Failed to save order payment method: " . $e->getMessage(), $e->getTraceAsString());
+            }
+
+            try
+            {
+                $this->radarHelper->setOrderRiskData($order);
+            }
+            catch (\Exception $e)
+            {
+                $this->loggerHelper->logError("Failed to save order risk data: " . $e->getMessage(), $e->getTraceAsString());
+            }
+
+            $this->orderHelper->saveOrder($order);
+        }
+
+        $helper = $this->getHelper();
+        switch ($order->getPayment()->getMethod())
+        {
+            case "stripe_payments_invoice":
+                $comment = __("A payment is pending for this order.");
+                $helper->setOrderState($order, \Magento\Sales\Model\Order::STATE_PENDING_PAYMENT, $comment);
+                $this->orderHelper->saveOrder($order);
+                break;
+            case "stripe_payments":
+            case "stripe_payments_express":
+
+                if ($transactionId = $order->getPayment()->getAdditionalInformation("server_side_transaction_id"))
+                {
+                    // Process webhook events which have arrived before the order was saved
+                    $events = $this->webhookEventCollectionFactory->create()->getEarlyEventsForPaymentIntentId($transactionId, [
+                        'charge.succeeded', // Regular orders
+                        'invoice.payment_succeeded', // Subscriptions
+                        'setup_intent.succeeded' // Trial subscriptions
+                    ]);
+
+                    foreach ($events as $eventModel)
+                    {
+                        try
+                        {
+                            $eventModel->process($this->config->getStripeClient());
+                        }
+                        catch (\Exception $e)
+                        {
+                            $eventModel->refresh()->setLastErrorFromException($e);
+                        }
+                    }
+                }
+
+                break;
+            default:
+                break;
+        }
+
+        return $order;
+    }
+
+    protected function getHelper()
+    {
+        if (!isset($this->helper))
+        {
+            $this->helper = $this->helperFactory->create();
+        }
+
+        return $this->helper;
+    }
+}
