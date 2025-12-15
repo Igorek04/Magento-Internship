@@ -1,0 +1,34 @@
+<button class="action primary" id="reservation-button">
+    <?= __('Забронювати на 24 години') ?>
+</button>
+
+<div id="reservation-modal" style="display:none;"></div>
+
+<script>
+    require([
+        'jquery',
+        'Magento_Ui/js/modal/modal'
+    ], function ($, modal) {
+
+        $('#reservation-button').on('click', function () {
+            $.ajax({
+                url: 'perspectivereservation/reservation/form',
+                type: 'GET',
+                success: function (html) {
+                    $('#reservation-modal').html(html);
+
+                    modal({
+                        type: 'popup',
+                        responsive: true,
+                        innerScroll: true,
+                        title: 'Reservation',
+                        buttons: []
+                    }, $('#reservation-modal'));
+
+                    $('#reservation-modal').modal('openModal');
+                }
+            });
+        });
+
+    });
+</script>

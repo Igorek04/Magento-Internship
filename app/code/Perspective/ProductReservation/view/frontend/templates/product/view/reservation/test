@@ -1,0 +1,84 @@
+<button class="action primary" id="reservation-button">
+    <?= __('Забронювати на 24 години') ?>
+</button>
+
+<div id="reservation-modal" style="display:none;"></div>
+
+<script>
+    require(['jquery', 'Magento_Ui/js/modal/modal'], function($, modal){
+
+
+        function getSelectedProductId() {
+            var swatchRenderer = $('[data-role=swatch-options]')
+                .data('mage-SwatchRenderer');
+            if (swatchRenderer && swatchRenderer.getProduct()) {
+                return swatchRenderer.getProduct(); // child
+            }
+            return $('input[name="product"]').val(); // configurable
+        }
+
+
+
+        $('#reservation-button').on('click', function(){
+            $.ajax({
+                url: "perspectivereservation/reservation/form",
+                type: 'GET',
+                success: function(html){
+                    $('#reservation-modal').html(html);
+
+                    var options = {
+                        type: 'popup',
+                        responsive: true,
+                        innerScroll: true,
+                        title: 'Reservation',
+                        buttons: [{
+                            text: $.mage.__('Submit'),
+                            click: function () {
+
+
+
+                                var data = $("#form-validate").serialize();
+                                data += "&qty=" + $("#qty").val();
+                                data += "&product_id=" + getSelectedProductId();
+
+                                $.ajax({
+                                    url: "perspectivereservation/reservation/order",
+                                    type: "POST",
+                                    data: data,
+                                    dataType: "json",
+                                    success: function(data){
+                                        console.log(data);
+                                    },
+                                    error: function(){
+                                        console.log("Error");
+                                    }
+                                });
+                                this.closeModal();
+                            }
+                        }]
+                    };
+                    modal(options, $('#reservation-modal'));
+                    $('#reservation-modal').modal('openModal');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+<!--form -->
+<div style="margin-top: 15px;">
+    <div id="myModel">
+        <form action="" method="post" id="form-validate" enctype="multipart/form-data" autocomplete="off" data-mage-init='{"validation":{}}' data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>">
+            <label><?= __('Ім’я') ?> *</label>
+            <input type="text" name="name" required value="<?//= $block->getCustomerName() ?>">
+            <label>Email *</label>
+            <input type="email" name="email" required value="<?//= $block->getCustomerEmail() ?>">
+            <label><?= __('Телефон') ?></label>
+            <input type="text" name="phone" value="<?//= $block->getCustomerPhone() ?>">
+        </form>
+    </div>
+</div>
