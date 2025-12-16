@@ -3,8 +3,7 @@
     <form
         id="form-validate"
         method="post"
-        autocomplete="off"
-        data-mage-init='{"validation":{}}'>
+        autocomplete="off">
         <label><?= __('Ім’я') ?> *</label>
         <input type="text" name="name" class="input-text required-entry">
 
@@ -25,6 +24,7 @@
         'jquery',
         'mage/mage'
     ], function ($) {
+        //get simple product id
         function getSelectedProductId() {
             var swatchRenderer = $('[data-role=swatch-options]')
                 .data('mage-SwatchRenderer');
@@ -34,6 +34,7 @@
             return $('input[name="product"]').val(); // configurable
         }
 
+        //form validation
         var $form = $('#form-validate');
         $form.mage('validation', {});
         $('#form-validate').on('submit', function (e) {
@@ -43,10 +44,12 @@
                 return;
             }
 
+            //form data
             var data = $form.serialize();
             data += '&qty=' + $('#qty').val();
             data += '&product_id=' + getSelectedProductId();
 
+            //send data to controller for create order
             $.ajax({
                 url: 'perspectivereservation/reservation/order',
                 type: 'POST',
@@ -61,7 +64,6 @@
                         );
                         return;
                     }
-
                     console.log(response);
                     $('#reservation-modal').modal('closeModal');
                 },

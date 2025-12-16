@@ -1,0 +1,54 @@
+<?php
+namespace Perspective\ProductReservation\Helper;
+use Magento\Framework\Exception\LocalizedException;
+class DataValidation extends \Magento\Framework\App\Helper\AbstractHelper
+{
+    protected $emailValidator;
+    public function __construct(
+        \Magento\Framework\Validator\EmailAddress $emailValidator
+    ) {
+        $this->emailValidator = $emailValidator;
+    }
+
+    public function validateName(string $name)
+    {
+        if (!preg_match('/^[\p{L}\s\-]+$/u', $name)) {
+            throw new LocalizedException(
+                __('Invalid name')
+            );
+        }
+    }
+
+    public function validateEmail(string $email)
+    {
+        if (!$this->emailValidator->isValid($email)) {
+            throw new LocalizedException(
+                __('Invalid email address')
+            );
+        }
+    }
+
+    public function validatePhone(string &$telephone)
+    {
+        if ($telephone == '') {
+            $telephone = '0';
+            return;
+        }
+        $telephone = preg_replace('/[^\d+]/', '', $telephone);
+        if (strlen($telephone) < 10 || strlen($telephone) > 15) {
+            throw new LocalizedException(
+                __('Invalid phone number')
+            );
+        }
+    }
+
+    public function validateProduct($product)
+    {
+        if ($product->getTypeId() == 'configurable')
+        {
+            throw new LocalizedException(
+                __('Please select product options')
+            );
+        }
+    }
+}

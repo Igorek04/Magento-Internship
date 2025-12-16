@@ -1,0 +1,22 @@
+<!--@subject {{trans "Reservation Expire Notification"}} @-->
+<!--@vars {
+"var $customerName":"Customer name",
+"var order_id":"Order id",
+} @-->
+
+{{template config_path="design/email/header_template"}}
+<p>Hello {{var $customerName}},</p>
+<p>
+    Your reservation expired.
+</p>
+<p>
+    <strong>Order ID:</strong>
+    #{{var order_id}}
+</p>
+<p>
+    If you have any questions, please contact us.
+</p>
+<p>
+    Thank you!
+</p>
+

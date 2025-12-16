@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="reservation_expired_customer_email"
+              label="Reservation Expired Customer Email"
+              file="reservation_expired_customer_email.html"
+              type="html"
+              module="Perspective_ProductReservation"
+              area="frontend"/>
+    <template id="reservation_add_customer_email"
+              label="Reservation Create Customer Email"
+              file="reservation_add_customer_email.html"
+              type="html"
+              module="Perspective_ProductReservation"
+              area="frontend"/>
+    <template id="reservation_add_admin_email"
+              label="Reservation Create Admin Email"
+              file="reservation_add_admin_email.html"
+              type="html"
+              module="Perspective_ProductReservation"
+              area="frontend"/>
+</config>

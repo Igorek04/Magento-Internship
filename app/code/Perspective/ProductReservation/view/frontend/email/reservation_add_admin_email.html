@@ -1,0 +1,18 @@
+<!--@subject {{trans "New reservation created"}} @-->
+<!--@vars {
+"var increment_id":"Order id",
+"var expired_at":"Expiration date"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+<p>Admin alert</p>
+<p>
+    New reservation created.
+</p>
+<p>
+    Expired at {{var expired_at}}
+</p>
+<p>
+    <strong>Order ID:</strong>
+    #{{var increment_id}}
+</p>
