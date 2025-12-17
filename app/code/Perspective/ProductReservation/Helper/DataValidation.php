@@ -3,13 +3,25 @@ namespace Perspective\ProductReservation\Helper;
 use Magento\Framework\Exception\LocalizedException;
 class DataValidation extends \Magento\Framework\App\Helper\AbstractHelper
 {
+    /**
+     * @var \Magento\Framework\Validator\EmailAddress
+     */
     protected $emailValidator;
+
+    /**
+     * @param \Magento\Framework\Validator\EmailAddress $emailValidator
+     */
     public function __construct(
         \Magento\Framework\Validator\EmailAddress $emailValidator
     ) {
         $this->emailValidator = $emailValidator;
     }
 
+    /**
+     * @param string $name
+     * @return void
+     * @throws LocalizedException
+     */
     public function validateName(string $name)
     {
         if (!preg_match('/^[\p{L}\s\-]+$/u', $name)) {
@@ -19,6 +31,11 @@ class DataValidation extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
+    /**
+     * @param string $email
+     * @return void
+     * @throws LocalizedException
+     */
     public function validateEmail(string $email)
     {
         if (!$this->emailValidator->isValid($email)) {
@@ -28,6 +45,11 @@ class DataValidation extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
+    /**
+     * @param string $telephone
+     * @return void
+     * @throws LocalizedException
+     */
     public function validatePhone(string &$telephone)
     {
         if ($telephone == '') {
@@ -42,6 +64,11 @@ class DataValidation extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
+    /**
+     * @param $product
+     * @return void
+     * @throws LocalizedException
+     */
     public function validateProduct($product)
     {
         if ($product->getTypeId() == 'configurable')

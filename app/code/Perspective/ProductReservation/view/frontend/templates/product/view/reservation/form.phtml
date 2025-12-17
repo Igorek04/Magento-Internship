@@ -1,3 +1,7 @@
+<?php
+/** @var \Perspective\ProductReservation\ViewModel\FormData $viewModel */
+$viewModel = $block->getData('viewModel');
+?>
 <div>
     <div class="reservation-messages"></div>
     <form
@@ -5,72 +9,16 @@
         method="post"
         autocomplete="off">
         <label><?= __('Ім’я') ?> *</label>
-        <input type="text" name="name" class="input-text required-entry">
+        <input type="text" name="name" class="input-text required-entry validate-no-html-tags" value="<?= $viewModel->getCustomerFirstName() ?>">
 
         <label><?= __('Email') ?> *</label>
-        <input type="text" name="email" class="input-text required-entry validate-email">
+        <input type="text" name="email" class="input-text required-entry validate-email " value="<?= $viewModel->getCustomerEmail() ?>">
 
         <label><?= __('Телефон') ?></label>
-        <input type="text" name="phone" class="validate-phoneLax">
+        <input type="text" name="phone" class="validate-phoneLax" value="<?= $viewModel->getCustomerPhone() ?>" >
 
         <button type="submit" class="action primary">
             <?= __('Submit') ?>
         </button>
     </form>
 </div>
-
-<script>
-    require([
-        'jquery',
-        'mage/mage'
-    ], function ($) {
-        //get simple product id
-        function getSelectedProductId() {
-            var swatchRenderer = $('[data-role=swatch-options]')
-                .data('mage-SwatchRenderer');
-            if (swatchRenderer && swatchRenderer.getProduct()) {
-                return swatchRenderer.getProduct(); // simple
-            }
-            return $('input[name="product"]').val(); // configurable
-        }
-
-        //form validation
-        var $form = $('#form-validate');
-        $form.mage('validation', {});
-        $('#form-validate').on('submit', function (e) {
-            e.preventDefault();
-            var $form = $(this);
-            if (!$form.validation('isValid')) {
-                return;
-            }
-
-            //form data
-            var data = $form.serialize();
-            data += '&qty=' + $('#qty').val();
-            data += '&product_id=' + getSelectedProductId();
-
-            //send data to controller for create order
-            $.ajax({
-                url: 'perspectivereservation/reservation/order',
-                type: 'POST',
-                data: data,
-                dataType: 'json',
-                success: function (response) {
-                    if (!response.success) {
-                        $('.reservation-messages').html(
-                            '<div class="message error">' +
-                            response.message +
-                            '</div>'
-                        );
-                        return;
-                    }
-                    console.log(response);
-                    $('#reservation-modal').modal('closeModal');
-                },
-                error: function () {
-                    console.log('Error');
-                }
-            });
-        });
-    });
-</script>

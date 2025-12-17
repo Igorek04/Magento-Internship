@@ -1,16 +1,26 @@
 <?php
+
 namespace Perspective\ProductReservation\Controller\Reservation;
 
+use DateTime;
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Customer\Api\Data\CustomerInterfaceFactory;
+use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\QuoteFactory;
+use Magento\Quote\Model\QuoteManagement;
+use Magento\Sales\Model\OrderRepository;
+use Magento\Shipping\Model\Config;
+use Magento\Store\Model\StoreManagerInterface;
 use Perspective\ProductReservation\Helper\DataValidation;
 use Perspective\ProductReservation\Helper\Email;
+use Throwable;
 
 
 class Order extends Action
@@ -32,22 +42,39 @@ class Order extends Action
     protected $dataValidator;
     protected $emailSender;
 
+    /**
+     * @param Context $context
+     * @param JsonFactory $resultJsonFactory
+     * @param StoreManagerInterface $storeManager
+     * @param FormKey $formkey
+     * @param QuoteFactory $quote
+     * @param QuoteManagement $quoteManagement
+     * @param CustomerInterfaceFactory $customerFactory
+     * @param CustomerRepositoryInterface $customerRepository
+     * @param ProductRepositoryInterface $productRepository
+     * @param CartRepositoryInterface $quoteRepository
+     * @param Config $shippingConfig
+     * @param OrderRepository $orderRepository
+     * @param TimezoneInterface $timezone
+     * @param DataValidation $dataValidator
+     * @param Email $emailSender
+     */
     public function __construct(
-        Context                                              $context,
-        JsonFactory                                          $resultJsonFactory,
-        \Magento\Store\Model\StoreManagerInterface           $storeManager,
-        \Magento\Framework\Data\Form\FormKey                 $formkey,
-        \Magento\Quote\Model\QuoteFactory                    $quote,
-        \Magento\Quote\Model\QuoteManagement                 $quoteManagement,
-        CustomerInterfaceFactory                             $customerFactory,
-        CustomerRepositoryInterface                          $customerRepository,
-        ProductRepositoryInterface                           $productRepository,
-        CartRepositoryInterface                              $quoteRepository,
-        \Magento\Shipping\Model\Config                       $shippingConfig,
-        \Magento\Sales\Model\OrderRepository                 $orderRepository,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
-        DataValidation                                       $dataValidator,
-        Email                                                $emailSender
+        Context                     $context,
+        JsonFactory                 $resultJsonFactory,
+        StoreManagerInterface       $storeManager,
+        FormKey                     $formkey,
+        QuoteFactory                $quote,
+        QuoteManagement             $quoteManagement,
+        CustomerInterfaceFactory    $customerFactory,
+        CustomerRepositoryInterface $customerRepository,
+        ProductRepositoryInterface  $productRepository,
+        CartRepositoryInterface     $quoteRepository,
+        Config                      $shippingConfig,
+        OrderRepository             $orderRepository,
+        TimezoneInterface           $timezone,
+        DataValidation              $dataValidator,
+        Email                       $emailSender
     )
     {
         parent::__construct($context);
@@ -67,6 +94,9 @@ class Order extends Action
         $this->emailSender = $emailSender;
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Json|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         $resultJson = $this->resultJsonFactory->create();
@@ -91,6 +121,7 @@ class Order extends Action
             $quote->setStore($store);
             $quote->setCurrency();
             $quote->assignCustomer($customer);
+                    //$quote->getExtensionAttributes()->setStockId(2);
             $quote->addProduct($product, intval($data['qty']));
             $billingAddress = $quote->getBillingAddress()->addData(array(
                 'telephone' => $telephone,
@@ -114,8 +145,26 @@ class Order extends Action
             ));
             $shippingAddress->setCollectShippingRates(true)
                 ->collectShippingRates()
-                ->setShippingMethod('flatrate_flatrate') //ПРОБЛЕМА С НАСТРОЙКОЙ МЕТОДА INSTORE
+                ->setShippingMethod('flatrate_flatrate') // instore pickup
                 ->setPaymentMethod('cashondelivery');
+
+                    //$ext = $shippingAddress->getExtensionAttributes()->s
+                    //$ext->setPickupLocationCode('source_pickup');
+                    //$shippingAddress->setExtensionAttributes($ext);
+
+            //test
+            $availableMethods = [];
+            foreach ($shippingAddress->getAllShippingRates() as $rate) {
+                $availableMethods[] = [
+                    'code'  => $rate->getCode(),
+                    'title' => $rate->getMethodTitle(),
+                ];
+            }
+            $carriers = $this->shippingConfig->getActiveCarriers();
+
+
+
+
             $quote->setPaymentMethod('cashondelivery');
             $quote->setInventoryProcessed(false);
             $this->quoteRepository->save($quote);
@@ -130,7 +179,7 @@ class Order extends Action
             $order = $this->orderRepository->get($increment_id);
                 //date for comment
             $createdAt = $order->getCreatedAt();
-            $modifiedDate = $this->timezone->date(new \DateTime($createdAt))->modify('+1 day')->format('Y-m-d H:i');
+            $modifiedDate = $this->timezone->date(new DateTime($createdAt))->modify('+1 day')->format('Y-m-d H:i');
                 //order reservation attribute, status, state, comment
             $order->setData('is_reservation', 1);
             $order->setState('reservation');
@@ -167,7 +216,7 @@ class Order extends Action
                 'received' => $data
             ]);
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return $resultJson->setData([
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -177,6 +226,13 @@ class Order extends Action
     }
 
 
+    /**
+     * @param $data
+     * @param $websiteId
+     * @param $store
+     * @return \Magento\Customer\Api\Data\CustomerInterface
+     * @throws NoSuchEntityException
+     */
     public function getCustomer($data, $websiteId, $store)
     {
         $email = $data['email'];

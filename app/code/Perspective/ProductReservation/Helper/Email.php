@@ -11,11 +11,30 @@ use Magento\Store\Model\ScopeInterface;
 
 class Email extends AbstractHelper
 {
+    /**
+     * @var TransportBuilder
+     */
     protected $transportBuilder;
+    /**
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
+    /**
+     * @var State
+     */
     protected $state;
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $scopeConfig;
 
+    /**
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param TransportBuilder $transportBuilder
+     * @param StoreManagerInterface $storeManager
+     * @param State $state
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         TransportBuilder $transportBuilder,
@@ -30,8 +49,18 @@ class Email extends AbstractHelper
         $this->scopeConfig = $scopeConfig;
     }
 
+    /**
+     * @param string $template_id
+     * @param string $toEmail
+     * @param array $vars
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\MailException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function send(string $template_id, string $toEmail, array $vars = [])
     {
+        // if mail to admin -> send to default magento mail
         if ($toEmail === 'admin_mail') {
             $toEmail = $this->scopeConfig->getValue('trans_email/ident_general/email');
         }

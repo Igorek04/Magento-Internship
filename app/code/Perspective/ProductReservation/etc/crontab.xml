@@ -6,7 +6,7 @@
         <job name="perspective_productreservation_reservation_cleaner"
              instance="Perspective\ProductReservation\Cron\ReservationCleaner"
              method="execute">
-            <schedule>* * * * *</schedule>
+            <schedule>0 * * * *</schedule>
         </job>
     </group>
 </config>

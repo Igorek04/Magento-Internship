@@ -7,12 +7,14 @@
               type="html"
               module="Perspective_ProductReservation"
               area="frontend"/>
+
     <template id="reservation_add_customer_email"
               label="Reservation Create Customer Email"
               file="reservation_add_customer_email.html"
               type="html"
               module="Perspective_ProductReservation"
               area="frontend"/>
+
     <template id="reservation_add_admin_email"
               label="Reservation Create Admin Email"
               file="reservation_add_admin_email.html"

@@ -20,6 +20,11 @@ class OrderStatus implements DataPatchInterface
         $this->moduleDataSetup = $moduleDataSetup;
     }
 
+    /**
+     * Create reservation status and state
+     *
+     * @return void
+     */
     public function apply()
     {
         $installer = $this->moduleDataSetup;

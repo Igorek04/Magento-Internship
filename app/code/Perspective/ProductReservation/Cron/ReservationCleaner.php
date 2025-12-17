@@ -9,12 +9,34 @@ use Perspective\ProductReservation\Helper\Email;
 
 class ReservationCleaner
 {
+    /**
+     * @var CollectionFactory
+     */
     protected $orderCollectionFactory;
+    /**
+     * @var OrderRepositoryInterface
+     */
     protected $orderRepository;
+    /**
+     * @var TimezoneInterface
+     */
     protected $timezone;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+    /**
+     * @var Email
+     */
     protected $emailSender;
 
+    /**
+     * @param CollectionFactory $orderCollectionFactory
+     * @param OrderRepositoryInterface $orderRepository
+     * @param TimezoneInterface $timezone
+     * @param LoggerInterface $logger
+     * @param Email $emailSender
+     */
     public function __construct(
         CollectionFactory $orderCollectionFactory,
         OrderRepositoryInterface $orderRepository,
@@ -31,7 +53,7 @@ class ReservationCleaner
 
 
     /**
-     * Cronjob Description
+     * Cronjob for cancel expired orders
      *
      * @return void
      */
@@ -60,14 +82,14 @@ class ReservationCleaner
                         'reservation_expired_customer_email',
                         $customerEmail,
                         [
-                            'name' => $customerName,
+                            'customerName' => $customerName,
                             'order_id' => $order_id,
                         ]
                     );
                     $countCanceled++;
                 }
-                $this->logger->info('Canceled expired reservations: ' . $countCanceled);
             }
+            $this->logger->info('Canceled expired reservations: ' . $countCanceled);
         } catch (\Exception $e){
             $this->logger->error($e->getMessage());
         }
