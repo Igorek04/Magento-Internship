@@ -21,15 +21,19 @@ use Magento\Store\Model\StoreManagerInterface;
 use Perspective\ProductReservation\Helper\DataValidation;
 use Perspective\ProductReservation\Helper\Email;
 use Throwable;
+use Magento\InventoryApi\Api\SourceRepositoryInterface;
 
 
 class Order extends Action
 {
+    const PICKUP_SOURCE = 'instore_source'; //custom source for instore_pickup shipping(also need custom stock)
+    const SHIPPING_METHOD = 'instore_pickup'; // instore pickup потрібно налаштувати в мадженті вручну(кастом source підключений до кастом stock), завантажені геодані
+    const PAYMENT_METHOD = 'cashondelivery'; 
+
     protected $resultJsonFactory;
     protected $context;
     protected $_storeManager;
     protected $productRepository;
-    protected $_formkey;
     protected $quote;
     protected $quoteManagement;
     protected $orderService;
@@ -41,12 +45,12 @@ class Order extends Action
     protected $timezone;
     protected $dataValidator;
     protected $emailSender;
+    protected $sourceRepository;
 
     /**
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param StoreManagerInterface $storeManager
-     * @param FormKey $formkey
      * @param QuoteFactory $quote
      * @param QuoteManagement $quoteManagement
      * @param CustomerInterfaceFactory $customerFactory
@@ -63,7 +67,6 @@ class Order extends Action
         Context                     $context,
         JsonFactory                 $resultJsonFactory,
         StoreManagerInterface       $storeManager,
-        FormKey                     $formkey,
         QuoteFactory                $quote,
         QuoteManagement             $quoteManagement,
         CustomerInterfaceFactory    $customerFactory,
@@ -74,13 +77,13 @@ class Order extends Action
         OrderRepository             $orderRepository,
         TimezoneInterface           $timezone,
         DataValidation              $dataValidator,
-        Email                       $emailSender
+        Email                       $emailSender,
+        SourceRepositoryInterface $sourceRepository
     )
     {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
         $this->_storeManager = $storeManager;
-        $this->_formkey = $formkey;
         $this->quote = $quote;
         $this->quoteManagement = $quoteManagement;
         $this->customerFactory = $customerFactory;
@@ -92,6 +95,7 @@ class Order extends Action
         $this->timezone = $timezone;
         $this->dataValidator = $dataValidator;
         $this->emailSender = $emailSender;
+        $this->sourceRepository = $sourceRepository;
     }
 
     /**
@@ -112,71 +116,57 @@ class Order extends Action
             $this->dataValidator->validatePhone($telephone);
             $this->dataValidator->validateProduct($product);
 
-
             //create quote
             $store = $this->_storeManager->getStore();
             $websiteId = $this->_storeManager->getStore()->getWebsiteId();
             $customer = $this->getCustomer($data, $websiteId, $store);
             $quote = $this->quote->create();
             $quote->setStore($store);
-            $quote->setCurrency();
+            //$quote->setCurrency();
             $quote->assignCustomer($customer);
-                    //$quote->getExtensionAttributes()->setStockId(2);
-            $quote->addProduct($product, intval($data['qty']));
-            $billingAddress = $quote->getBillingAddress()->addData(array(
+            $quote->addProduct($product, intval($data['qty'])); // продукт що має qty в кастомному source
+
+            //customer address data with placeholders
+            $source = $this->sourceRepository->get(self::PICKUP_SOURCE); 
+            $sourceAddressData = $this->getAddressDataFromSource($source);
+            $billingAddress = $quote->getBillingAddress()->addData(
+                $sourceAddressData + [
                 'telephone' => $telephone,
-                'country_id' => 'US',
                 'firstname' => $data['name'],
                 'lastname' => $customer->getLastname(),
-                'region_id' => 1,
-                'street' => 'a',
-                'city' => 'New York',
-                'postcode' => '07008',
-            ));
-            $shippingAddress = $quote->getShippingAddress()->addData(array(
-                'country_id' => 'US',
+            ]);
+            //source address
+            $shippingAddress = $quote->getShippingAddress()->addData(
+                $sourceAddressData + [
+                'telephone' => $source->getPhone(),
                 'firstname' => 'admin',
-                'lastname' => 'adminovich',
-                'region_id' => 1,
-                'street' => 'a',
-                'city' => 'New York',
-                'telephone' => '1234567890',
-                'postcode' => '07008',
-            ));
+                'lastname' => 'adminovich',   
+            ]);
+            $shippingAddress->getExtensionAttributes()->setPickupLocationCode(self::PICKUP_SOURCE); 
+
             $shippingAddress->setCollectShippingRates(true)
-                ->collectShippingRates()
-                ->setShippingMethod('flatrate_flatrate') // instore pickup
-                ->setPaymentMethod('cashondelivery');
+                            ->collectShippingRates()
+                            ->setShippingMethod(self::SHIPPING_METHOD) 
+                            ->setPaymentMethod(self::PAYMENT_METHOD);
 
-                    //$ext = $shippingAddress->getExtensionAttributes()->s
-                    //$ext->setPickupLocationCode('source_pickup');
-                    //$shippingAddress->setExtensionAttributes($ext);
-
-            //test
-            $availableMethods = [];
-            foreach ($shippingAddress->getAllShippingRates() as $rate) {
-                $availableMethods[] = [
-                    'code'  => $rate->getCode(),
-                    'title' => $rate->getMethodTitle(),
-                ];
-            }
-            $carriers = $this->shippingConfig->getActiveCarriers();
-
-
-
-
-            $quote->setPaymentMethod('cashondelivery');
+            $quote->setPaymentMethod(self::PAYMENT_METHOD);
             $quote->setInventoryProcessed(false);
             $this->quoteRepository->save($quote);
-            $quote->getPayment()->importData(array('method' => 'cashondelivery'));
+            $quote->getPayment()->importData(array('method' => self::PAYMENT_METHOD));
             $quote->collectTotals();
+
+            //потрібно для валідації тут: vendor/magento/module-inventory-in-store-pickup-quote/Model/Quote/ValidationRule/InStorePickupQuoteValidationRule.php
+            $shippingAddress->setSameAsBilling(false)
+                            ->setSaveInAddressBook(false)
+                            ->setCustomerAddressId(null);
+
+            //save quote into order
             $this->quoteRepository->save($quote);
-            $service = $this->quoteManagement->submit($quote);
-            $increment_id = $service->getRealOrderId();
-            $quote = $customer = $service = null;
+            $order = $this->quoteManagement->submit($quote);
+            $quote = $customer = null;
 
             //order modifications
-            $order = $this->orderRepository->get($increment_id);
+            $increment_id = $order->getIncrementId(); 
                 //date for comment
             $createdAt = $order->getCreatedAt();
             $modifiedDate = $this->timezone->date(new DateTime($createdAt))->modify('+1 day')->format('Y-m-d H:i');
@@ -186,7 +176,7 @@ class Order extends Action
             $order->setStatus('reservation');
             $order->addCommentToStatusHistory('Reserved until ' . $modifiedDate);
             $this->orderRepository->save($order);
-                //success msg
+                //store success msg
             $this->messageManager->addSuccessMessage(
                 __('Product reserved successfully with order id #' . $increment_id)
             );
@@ -210,13 +200,15 @@ class Order extends Action
                     'expired_at' => $modifiedDate
                 ]
             );
-
+            
+            //test
             return $resultJson->setData([
                 'success' => true,
                 'received' => $data
             ]);
 
         } catch (Throwable $e) {
+            //error msg in form
             return $resultJson->setData([
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -225,7 +217,6 @@ class Order extends Action
         }
     }
 
-
     /**
      * @param $data
      * @param $websiteId
@@ -233,7 +224,7 @@ class Order extends Action
      * @return \Magento\Customer\Api\Data\CustomerInterface
      * @throws NoSuchEntityException
      */
-    public function getCustomer($data, $websiteId, $store)
+    private function getCustomer($data, $websiteId, $store)
     {
         $email = $data['email'];
         $name = $data['name'];
@@ -249,5 +240,17 @@ class Order extends Action
             $this->customerRepository->save($customer);
         }
         return $this->customerRepository->get($email, $websiteId);
+    }
+
+    private function getAddressDataFromSource($source)
+    {
+        return [
+            'country_id' => $source->getCountryId(),
+            'region_id'  => $source->getRegionId(),
+            'region'     => $source->getRegion(),
+            'city'       => $source->getCity(),
+            'street'     => $source->getStreet(),
+            'postcode'   => $source->getPostcode()
+        ];
     }
 }
