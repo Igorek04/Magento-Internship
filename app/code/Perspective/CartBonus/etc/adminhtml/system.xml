@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="perspective_tab" translate="label" sortOrder="1">
+            <label>Perspective</label>
+        </tab>
+
+        <section id="cartbonus" sortOrder="111" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Cart Bonus Config</label>
+            <tab>perspective_tab</tab>
+            <resource>Perspective_CartBonus::config</resource> <!-- -->
+
+            <group id="general_settings" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <attribute type="expanded">1</attribute>
+                <label>General Settings</label>
+                <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Module enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+
+
+
+            <group id="category_item_discount" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <attribute type="expanded">1</attribute>
+                <label>Category Discount</label>
+                <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="select_categories" sortOrder="1" translate="label" type="multiselect" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Select categories</label>
+                    <source_model>Perspective\CartBonus\Model\Config\Source\CategoryList</source_model>
+                    <depends><field id="enabled">1</field></depends>
+                </field>
+
+                <field id="min_qty" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum qty</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <validate>validate-digits validate-not-negative-number validate-digits-range</validate>
+                </field>
+
+                <field id="discount_value" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Discount (%)</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <validate>validate-digits validate-not-negative-number validate-digits-range digits-range-0-100</validate>
+                </field>
+            </group>
+
+
+
+            <group id="shipping_discount" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <attribute type="expanded">1</attribute>
+                <label>Shipping Discount</label>
+                <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="first_threshold_min_total" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>First minimum total ($)</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <validate>validate-digits validate-not-negative-number validate-digits-range</validate>
+                </field>
+
+                <field id="first_threshold_discount_value" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>First threshold discount (%)</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <validate>validate-digits validate-not-negative-number validate-digits-range digits-range-0-100</validate>
+                </field>
+
+                <field id="second_threshold_min_total" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Second minimum total ($)</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <validate>validate-digits validate-not-negative-number validate-digits-range</validate>
+                </field>
+
+                <field id="second_threshold_discount_value" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Second threshold discount (%)</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <validate>validate-digits validate-not-negative-number validate-digits-range digits-range-0-100</validate>
+                </field>
+            </group>
+
+
+
+            <group id="gift" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <attribute type="expanded">1</attribute>
+                <label>Gift</label>
+                <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="threshold_min_total" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum total ($)</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <validate>validate-digits validate-not-negative-number validate-digits-range</validate>
+                </field>
+
+                <field id="select_product" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Select product</label>
+                    <depends><field id="enabled">1</field></depends>
+                    <source_model>Perspective\CartBonus\Model\Config\Source\ProductList</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
