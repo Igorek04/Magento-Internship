@@ -8,13 +8,13 @@ $viewModel = $block->getData('viewModel');
         id="form-validate"
         method="post"
         autocomplete="off">
-        <label><?= __('Ім’я') ?> *</label>
+        <label htmlFor="name"><?= __('Ім’я') ?> *</label>
         <input type="text" name="name" class="input-text required-entry validate-no-html-tags" value="<?= $viewModel->getCustomerFirstName() ?>">
 
-        <label><?= __('Email') ?> *</label>
+        <label htmlFor="email"><?= __('Email') ?> *</label>
         <input type="text" name="email" class="input-text required-entry validate-email " value="<?= $viewModel->getCustomerEmail() ?>">
 
-        <label><?= __('Телефон') ?></label>
+        <label htmlFor="phone"><?= __('Телефон') ?></label>
         <input type="text" name="phone" class="validate-phoneLax" value="<?= $viewModel->getCustomerPhone() ?>" >
 
         <button type="submit" class="action primary">

@@ -18,6 +18,21 @@ class DataValidation extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @param array $data
+     * @param string $telephone
+     * @param \Magento\Catalog\Api\Data\ProductInterface $product
+     * @return void
+     * @throws LocalizedException
+     */
+    public function validateData(array $data, string &$telephone, $product): void
+    {
+        $this->validateName($data['name']);
+        $this->validateEmail($data['email']);
+        $this->validatePhone($telephone);
+        $this->validateProduct($product);
+    }
+
+    /**
      * @param string $name
      * @return void
      * @throws LocalizedException

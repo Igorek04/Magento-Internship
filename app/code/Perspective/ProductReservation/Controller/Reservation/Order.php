@@ -1,101 +1,84 @@
 <?php
-
 namespace Perspective\ProductReservation\Controller\Reservation;
 
-use DateTime;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Framework\Data\Form\FormKey;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Quote\Api\CartRepositoryInterface;
-use Magento\Quote\Model\QuoteFactory;
-use Magento\Quote\Model\QuoteManagement;
-use Magento\Sales\Model\OrderRepository;
-use Magento\Shipping\Model\Config;
 use Magento\Store\Model\StoreManagerInterface;
 use Perspective\ProductReservation\Helper\DataValidation;
 use Perspective\ProductReservation\Helper\Email;
+use Perspective\ProductReservation\Model\Reservation\OrderModifier;
+use Perspective\ProductReservation\Model\Reservation\OrderCreator;
+use Perspective\ProductReservation\Model\Reservation\CustomerProvider;
 use Throwable;
-use Magento\InventoryApi\Api\SourceRepositoryInterface;
-
 
 class Order extends Action
 {
-    const PICKUP_SOURCE = 'instore_source'; //custom source for instore_pickup shipping(also need custom stock)
-    const SHIPPING_METHOD = 'instore_pickup'; // instore pickup потрібно налаштувати в мадженті вручну(кастом source підключений до кастом stock), завантажені геодані
-    const PAYMENT_METHOD = 'cashondelivery'; 
-
+    /**
+     * @var JsonFactory
+     */
     protected $resultJsonFactory;
-    protected $context;
-    protected $_storeManager;
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+    /**
+     * @var ProductRepositoryInterface
+     */
     protected $productRepository;
-    protected $quote;
-    protected $quoteManagement;
-    protected $orderService;
-    protected $customerFactory;
-    protected $customerRepository;
-    protected $quoteRepository;
-    protected $shippingConfig;
-    protected $orderRepository;
-    protected $timezone;
+    /**
+     * @var DataValidation
+     */
     protected $dataValidator;
+    /**
+     * @var Email
+     */
     protected $emailSender;
-    protected $sourceRepository;
+    /**
+     * @var CustomerProvider
+     */
+    protected $customerProvider;
+    /**
+     * @var OrderCreator
+     */
+    protected $orderCreator;
+    /**
+     * @var OrderModifier
+     */
+    protected $orderModifier;
 
     /**
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      * @param StoreManagerInterface $storeManager
-     * @param QuoteFactory $quote
-     * @param QuoteManagement $quoteManagement
-     * @param CustomerInterfaceFactory $customerFactory
-     * @param CustomerRepositoryInterface $customerRepository
      * @param ProductRepositoryInterface $productRepository
-     * @param CartRepositoryInterface $quoteRepository
-     * @param Config $shippingConfig
-     * @param OrderRepository $orderRepository
-     * @param TimezoneInterface $timezone
      * @param DataValidation $dataValidator
      * @param Email $emailSender
+     * @param CustomerProvider $customerProvider
+     * @param OrderCreator $orderCreator
+     * @param OrderModifier $orderModifier
      */
     public function __construct(
-        Context                     $context,
-        JsonFactory                 $resultJsonFactory,
-        StoreManagerInterface       $storeManager,
-        QuoteFactory                $quote,
-        QuoteManagement             $quoteManagement,
-        CustomerInterfaceFactory    $customerFactory,
-        CustomerRepositoryInterface $customerRepository,
-        ProductRepositoryInterface  $productRepository,
-        CartRepositoryInterface     $quoteRepository,
-        Config                      $shippingConfig,
-        OrderRepository             $orderRepository,
-        TimezoneInterface           $timezone,
-        DataValidation              $dataValidator,
-        Email                       $emailSender,
-        SourceRepositoryInterface $sourceRepository
-    )
-    {
+        Context $context,
+        JsonFactory $resultJsonFactory,
+        StoreManagerInterface $storeManager,
+        ProductRepositoryInterface $productRepository,
+        DataValidation $dataValidator,
+        Email $emailSender,
+        CustomerProvider $customerProvider,
+        OrderCreator $orderCreator,
+        OrderModifier $orderModifier
+    ) {
         parent::__construct($context);
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->_storeManager = $storeManager;
-        $this->quote = $quote;
-        $this->quoteManagement = $quoteManagement;
-        $this->customerFactory = $customerFactory;
-        $this->customerRepository = $customerRepository;
+        $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
-        $this->quoteRepository = $quoteRepository;
-        $this->shippingConfig = $shippingConfig;
-        $this->orderRepository = $orderRepository;
-        $this->timezone = $timezone;
         $this->dataValidator = $dataValidator;
         $this->emailSender = $emailSender;
-        $this->sourceRepository = $sourceRepository;
+        $this->customerProvider = $customerProvider;
+        $this->orderCreator = $orderCreator;
+        $this->orderModifier = $orderModifier;
     }
 
     /**
@@ -109,98 +92,29 @@ class Order extends Action
             $data = $this->getRequest()->getPostValue();
             $product = $this->productRepository->getById($data['product_id']);
             $telephone = $data['phone'];
+            $store = $this->storeManager->getStore();
 
-            //data validations
-            $this->dataValidator->validateName($data['name']);
-            $this->dataValidator->validateEmail($data['email']);
-            $this->dataValidator->validatePhone($telephone);
-            $this->dataValidator->validateProduct($product);
+            //data validation
+            $this->dataValidator->validateData($data, $telephone, $product);
 
-            //create quote
-            $store = $this->_storeManager->getStore();
-            $websiteId = $this->_storeManager->getStore()->getWebsiteId();
-            $customer = $this->getCustomer($data, $websiteId, $store);
-            $quote = $this->quote->create();
-            $quote->setStore($store);
-            //$quote->setCurrency();
-            $quote->assignCustomer($customer);
-            $quote->addProduct($product, intval($data['qty'])); // продукт що має qty в кастомному source
+            //get(create) customer
+            $customer = $this->customerProvider->getCustomer($data, $store);
 
-            //customer address data with placeholders
-            $source = $this->sourceRepository->get(self::PICKUP_SOURCE); 
-            $sourceAddressData = $this->getAddressDataFromSource($source);
-            $billingAddress = $quote->getBillingAddress()->addData(
-                $sourceAddressData + [
-                'telephone' => $telephone,
-                'firstname' => $data['name'],
-                'lastname' => $customer->getLastname(),
-            ]);
-            //source address
-            $shippingAddress = $quote->getShippingAddress()->addData(
-                $sourceAddressData + [
-                'telephone' => $source->getPhone(),
-                'firstname' => 'admin',
-                'lastname' => 'adminovich',   
-            ]);
-            $shippingAddress->getExtensionAttributes()->setPickupLocationCode(self::PICKUP_SOURCE); 
+            //create order
+            $order = $this->orderCreator->createOrder( $data, $telephone, $store, $product, $customer);
 
-            $shippingAddress->setCollectShippingRates(true)
-                            ->collectShippingRates()
-                            ->setShippingMethod(self::SHIPPING_METHOD) 
-                            ->setPaymentMethod(self::PAYMENT_METHOD);
+            //modify order(set reservation) and get order data($incrementId, $expiredAt)
+            $orderData = $this->orderModifier->applyReservation($order);
 
-            $quote->setPaymentMethod(self::PAYMENT_METHOD);
-            $quote->setInventoryProcessed(false);
-            $this->quoteRepository->save($quote);
-            $quote->getPayment()->importData(array('method' => self::PAYMENT_METHOD));
-            $quote->collectTotals();
+            //send email
+            $this->emailSender->sendCustomerReservationEmail($data['email'], $data['name'], $orderData['incrementId'], $orderData['expiredAt']);
+            $this->emailSender->sendAdminReservationEmail($orderData['incrementId'], $orderData['expiredAt']);
 
-            //потрібно для валідації тут: vendor/magento/module-inventory-in-store-pickup-quote/Model/Quote/ValidationRule/InStorePickupQuoteValidationRule.php
-            $shippingAddress->setSameAsBilling(false)
-                            ->setSaveInAddressBook(false)
-                            ->setCustomerAddressId(null);
-
-            //save quote into order
-            $this->quoteRepository->save($quote);
-            $order = $this->quoteManagement->submit($quote);
-            $quote = $customer = null;
-
-            //order modifications
-            $increment_id = $order->getIncrementId(); 
-                //date for comment
-            $createdAt = $order->getCreatedAt();
-            $modifiedDate = $this->timezone->date(new DateTime($createdAt))->modify('+1 day')->format('Y-m-d H:i');
-                //order reservation attribute, status, state, comment
-            $order->setData('is_reservation', 1);
-            $order->setState('reservation');
-            $order->setStatus('reservation');
-            $order->addCommentToStatusHistory('Reserved until ' . $modifiedDate);
-            $this->orderRepository->save($order);
-                //store success msg
+            //store success msg
             $this->messageManager->addSuccessMessage(
-                __('Product reserved successfully with order id #' . $increment_id)
+                __('Product reserved successfully with order id #' . $orderData['incrementId'])
             );
 
-            //customer email
-            $this->emailSender->send(
-                'reservation_add_customer_email',
-                $data['email'],
-                [
-                    'name' => $data['name'],
-                    'increment_id' => $increment_id,
-                    'expired_at' => $modifiedDate
-                ]
-            );
-            //admin email
-            $this->emailSender->send(
-                'reservation_add_admin_email',
-                'admin_mail',
-                [
-                    'increment_id' => $increment_id,
-                    'expired_at' => $modifiedDate
-                ]
-            );
-            
             //test
             return $resultJson->setData([
                 'success' => true,
@@ -215,42 +129,5 @@ class Order extends Action
                 'message' => $e->getMessage(),
             ]);
         }
-    }
-
-    /**
-     * @param $data
-     * @param $websiteId
-     * @param $store
-     * @return \Magento\Customer\Api\Data\CustomerInterface
-     * @throws NoSuchEntityException
-     */
-    private function getCustomer($data, $websiteId, $store)
-    {
-        $email = $data['email'];
-        $name = $data['name'];
-        try {
-            return $this->customerRepository->get($email, $websiteId);
-        } catch (NoSuchEntityException $e) {
-            $customer = $this->customerFactory->create();
-            $customer->setStoreId($store->getStoreId());
-            $customer->setWebsiteId($store->getWebsiteId());
-            $customer->setEmail($email);
-            $customer->setFirstname($name);
-            $customer->setLastname('Anonymous');
-            $this->customerRepository->save($customer);
-        }
-        return $this->customerRepository->get($email, $websiteId);
-    }
-
-    private function getAddressDataFromSource($source)
-    {
-        return [
-            'country_id' => $source->getCountryId(),
-            'region_id'  => $source->getRegionId(),
-            'region'     => $source->getRegion(),
-            'city'       => $source->getCity(),
-            'street'     => $source->getStreet(),
-            'postcode'   => $source->getPostcode()
-        ];
     }
 }

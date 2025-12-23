@@ -1,35 +1,37 @@
 define([
     "jquery",
     "mage/mage",
-
-], function ($, modal) {
+], function ($) {
     "use strict";
 
     return function () {
         //get simple product id
         function getSelectedProductId() {
-            var swatchRenderer = $('[data-role=swatch-options]')
-                .data('mage-SwatchRenderer');
-            if (swatchRenderer && swatchRenderer.getProduct()) {
-                return swatchRenderer.getProduct(); // simple
+            let swatchRenderer = $('[data-role=swatch-options]').data('mage-SwatchRenderer');
+            let selectedProductId = $('input[name="product"]').val(); // configurable
+
+            if(swatchRenderer) {
+                let simpleProductId = swatchRenderer.getProduct();
+                if (simpleProductId) {
+                    selectedProductId = simpleProductId; // simple
+                }
             }
-            return $('input[name="product"]').val(); // configurable
+            return selectedProductId;
         }
 
         //form validation
-        var $form = $('#form-validate');
+        let $form = $('#form-validate');
         $form.mage('validation', {});
-        $('#form-validate').on('submit', function (e) {
+        $form.on('submit', function (e) {
             e.preventDefault();
-            var $form = $(this);
+            let $form = $(this);
             if (!$form.validation('isValid')) {
                 return;
             }
             //form data
-            var data = $form.serialize();
+            let data = $form.serialize();
             data += '&qty=' + $('#qty').val();
             data += '&product_id=' + getSelectedProductId();
-
 
             //send data to controller for create order
             $.ajax({

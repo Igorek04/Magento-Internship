@@ -58,15 +58,12 @@ class Email extends AbstractHelper
      * @throws \Magento\Framework\Exception\MailException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function send(string $template_id, string $toEmail, array $vars = [])
+    private function send(string $template_id, string $toEmail, array $vars = [])
     {
         // if mail to admin -> send to default magento mail
         if ($toEmail === 'admin_mail') {
             $toEmail = $this->scopeConfig->getValue('trans_email/ident_general/email');
         }
-        try {
-            $this->state->setAreaCode(Area::AREA_FRONTEND);
-        } catch (\Exception $e) {}
 
         $transport = $this->transportBuilder
             ->setTemplateIdentifier($template_id)
@@ -78,7 +75,49 @@ class Email extends AbstractHelper
             ->setFromByScope('general')
             ->addTo($toEmail)
             ->getTransport();
-
         $transport->sendMessage();
+    }
+
+    /**
+     * @param string $customerEmail
+     * @param string $customerName
+     * @param string $incrementId
+     * @param string $expiredAt
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\MailException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function sendCustomerReservationEmail(string $customerEmail, string $customerName, string $incrementId, string $expiredAt): void
+    {
+        $this->send(
+            'reservation_add_customer_email',
+            $customerEmail,
+            [
+                'name' => $customerName,
+                'increment_id' => $incrementId,
+                'expired_at' => $expiredAt
+            ]
+        );
+    }
+
+    /**
+     * @param string $incrementId
+     * @param string $expiredAt
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\MailException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function sendAdminReservationEmail(string $incrementId, string $expiredAt): void
+    {
+        $this->send(
+            'reservation_add_admin_email',
+            'admin_mail',
+            [
+                'increment_id' => $incrementId,
+                'expired_at' => $expiredAt
+            ]
+        );
     }
 }
