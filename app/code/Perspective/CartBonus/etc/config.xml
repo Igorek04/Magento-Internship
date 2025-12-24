@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/config.xsd">
+    <default>
+        <cartbonus>
+            <general_settings>
+                <enabled>0</enabled>
+            </general_settings>
+
+            <category_qty>
+                <enabled>0</enabled>
+                <min_qty>0</min_qty>
+                <discount_value>0</discount_value>
+            </category_qty>
+
+            <shipping>
+                <enabled>0</enabled>
+                <first_threshold_min_total>0</first_threshold_min_total>
+                <first_threshold_discount_value>0</first_threshold_discount_value>
+                <second_threshold_min_total>0</second_threshold_min_total>
+                <second_threshold_discount_value>0</second_threshold_discount_value>
+            </shipping>
+
+            <gift>
+                <enabled>0</enabled>
+                <threshold_min_total>0</threshold_min_total>
+            </gift>
+
+        </cartbonus>
+    </default>
+</config>

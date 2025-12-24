@@ -20,8 +20,19 @@ class Validation extends \Magento\Framework\App\Helper\AbstractHelper
     public function isCartRulesApplied($quote): bool
     {
         $ids = $quote->getAppliedRuleIds();
-        $items = $quote->getItems();
+        if (empty($ids)) {
+            return false;
+        }
+        return true;
+    }
 
-        return false;
+    public function isBonusEnabled($bonus_code): bool
+    {
+        return $this->scopeConfig->isSetFlag('cartbonus/' . $bonus_code . '/enabled');
+    }
+
+    public function getBonusConfig($bonus_code)
+    {
+        return $this->scopeConfig->getValue('cartbonus/' . $bonus_code);
     }
 }

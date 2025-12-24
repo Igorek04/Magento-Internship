@@ -21,7 +21,7 @@
 
 
 
-            <group id="category_item_discount" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="category_qty" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
                 <attribute type="expanded">1</attribute>
                 <label>Category Discount</label>
                 <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -50,7 +50,7 @@
 
 
 
-            <group id="shipping_discount" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="shipping" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
                 <attribute type="expanded">1</attribute>
                 <label>Shipping Discount</label>
                 <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">

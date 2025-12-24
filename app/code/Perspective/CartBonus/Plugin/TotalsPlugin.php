@@ -4,14 +4,18 @@ namespace Perspective\CartBonus\Plugin;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\TotalsCollector;
 use Perspective\CartBonus\Helper\Validation;
+use Perspective\CartBonus\Model\Bonus\Manager;
 
 class TotalsPlugin{
     protected $validationHelper;
+    protected $bonusManager;
 
     public function __construct(
-        Validation $validationHelper
+        Validation $validationHelper,
+        Manager $bonusManager
     ) {
         $this->validationHelper = $validationHelper;
+        $this->bonusManager = $bonusManager;
     }
 
     public function afterCollect(
@@ -21,9 +25,10 @@ class TotalsPlugin{
     ){
         $a = 1;
         $isModuleEnabled = $this->validationHelper->isModuleEnabled();
-        $test = $this->validationHelper->isCartRulesApplied($quote);
+        $isCartRulesApplied = $this->validationHelper->isCartRulesApplied($quote);
+
+
+
         return $result;
-
     }
-
 }

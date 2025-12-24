@@ -5,4 +5,14 @@
         <plugin name="vendor_bonus_totals_plugin"
                 type="Perspective\CartBonus\Plugin\TotalsPlugin"/>
     </type>
+
+    <type name="Perspective\CartBonus\Model\Bonus\Manager">
+        <arguments>
+            <argument name="bonuses" xsi:type="array">
+                <item name="category_qty" xsi:type="object">Perspective\CartBonus\Model\Bonus\Types\CategoryQty</item>
+                <item name="shipping" xsi:type="object">Perspective\CartBonus\Model\Bonus\Types\Shipping</item>
+                <item name="gift" xsi:type="object">Perspective\CartBonus\Model\Bonus\Types\Gift</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
