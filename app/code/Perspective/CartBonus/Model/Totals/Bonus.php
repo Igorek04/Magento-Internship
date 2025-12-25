@@ -36,12 +36,8 @@ class Bonus extends AbstractTotal
         if (!count($items)) {
             return $this;
         }
-        $amount = 10000; // A surcharge of '10' as an example.
-
-        $total->setTotalAmount('bonus_total', $amount);
-        $total->setBaseTotalAmount('bonus_total', $amount);
-
-        $this->bonusManager->test($quote);
+        $frontendData = $this->bonusManager->test($quote, $total);
+        $total->setData('bonus_frontend_data', $frontendData);
 
         return $this;
     }
@@ -70,10 +66,20 @@ class Bonus extends AbstractTotal
      */
     public function fetch(Quote $quote, Total $total)
     {
+        $frontendData = $total->getData('bonus_frontend_data');
+        if ($frontendData == null) {
+            $frontendData = [
+                'bonus_discount' => 0,
+                'bonus_messages' => []
+            ];
+        }
+
         return [
             'code' => $this->getCode(),
             'title' => 'Bonus Total',
-            'value' => 123
+            'value' => -$frontendData['bonus_discount'],
+            //'messages' => $frontendData['bonus_messages'],
+            //'extension_attributes' => [$frontendData['bonus_messages']] //проблема с получением\отправкой данных на фронт
         ];
     }
 

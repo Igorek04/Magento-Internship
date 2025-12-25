@@ -2,6 +2,7 @@
 namespace Perspective\CartBonus\Model\Bonus;
 use Magento\Quote\Api\Data\CartInterface;
 use Perspective\CartBonus\Helper\Validation;
+use Magento\Quote\Model\Quote\Address\Total;
 class Manager
 {
     protected $validationHelper;
@@ -17,21 +18,30 @@ class Manager
         $this->bonuses = $bonuses;
     }
 
-    public function test (CartInterface $quote)
+    public function test (CartInterface $quote, Total $total)
     {
-        $data=[];
+        $result = [
+            'bonus_discount' => 0,
+            'bonus_messages' => []
+        ];
         if (!$this->validationHelper->isModuleEnabled() ||
             $this->validationHelper->isCartRulesApplied($quote)
         ) {
-            return $data; // отрицательный ответ(или пустой?)
+            return $result;
         }
 
         foreach ($this->bonuses as $bonus) {
-            $testt = $bonus->getCode();
-            $bonus->isApplicable($quote);
-            $a = 1;
+            if ($bonus->isApplicable($quote)) {
+                $bonusResult = $bonus->apply($quote, $total);
+                if (isset($bonusResult['bonus_discount'])) {
+                    $result['bonus_discount'] += $bonusResult['bonus_discount'];
+                    $result['bonus_messages'] = array_merge(
+                        $result['bonus_messages'],
+                        $bonusResult['bonus_messages']
+                    );
+                }
+            }
         }
-
-
+        return $result;
     }
 }

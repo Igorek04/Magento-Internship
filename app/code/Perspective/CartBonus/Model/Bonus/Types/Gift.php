@@ -9,7 +9,7 @@ class Gift extends \Perspective\CartBonus\Model\Bonus\AbstractBonus
         return 1;
     }
 
-    public function apply($quote): array
+    public function apply($quote, $total): array
     {
         return [1,1];
     }

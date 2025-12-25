@@ -12,7 +12,11 @@ define(
              */
             isDisplayed: function () {
                 return this.getPureValue() !== 0;
-            }
+            },
+
+            /*getMessages: function () {
+                ret
+            }*/
         });
     }
 );

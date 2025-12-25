@@ -2,10 +2,14 @@
 namespace Perspective\CartBonus\Model\Bonus;
 use Perspective\CartBonus\Helper\Validation;
 use Perspective\CartBonus\Helper\Data;
+use Magento\Quote\Api\Data\CartInterface;
+use Magento\Quote\Model\Quote\Address\Total;
 abstract class AbstractBonus
 {
 
     public const BONUS_CODE = '';
+    public const MESSAGE_TEMPLATE = '';
+    public const BONUS_TOTAL_CODE = 'bonus_total';
     protected $validationHelper;
     protected $dataHelper;
     public function __construct(
@@ -16,8 +20,8 @@ abstract class AbstractBonus
         $this->dataHelper = $dataHelper;
     }
 
-    abstract public function isApplicable($quote): bool;
-    abstract public function apply($quote): array;
+    abstract public function isApplicable(CartInterface $quote, Total $total): bool;
+    abstract public function apply(CartInterface $quote, Total $total): array;
 
     public function getCode(): string
     {

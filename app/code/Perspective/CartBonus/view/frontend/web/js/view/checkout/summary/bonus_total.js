@@ -24,6 +24,7 @@ define(
                 if (this.totals()) {
                     price = totals.getSegment('bonus_total').value;
                 }
+                console.log(totals);
                 return this.getFormattedPrice(price);
             },
             getPureValue: function() {
@@ -31,7 +32,16 @@ define(
                 if (this.totals()) {
                     price = totals.getSegment('bonus_total').value;
                 }
+                console.log(totals);
                 return price;
+            },
+
+            getMessages: function() {
+                var messages = [];
+                if (this.totals()) {
+                    messages = totals.getSegment('bonus_total').messages;
+                }
+                return messages;
             }
         });
     }

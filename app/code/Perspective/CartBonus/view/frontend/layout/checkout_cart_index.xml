@@ -2,6 +2,14 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
+
+        <referenceContainer name="checkout.cart.totals.container">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="checkout.cart.custom.block"
+                   before="checkout.cart.totals"
+                   template="Perspective_CartBonus::bonus_totals.phtml" />
+        </referenceContainer>
+
         <referenceBlock name="checkout.cart.totals">
             <arguments>
                 <argument name="jsLayout" xsi:type="array">
