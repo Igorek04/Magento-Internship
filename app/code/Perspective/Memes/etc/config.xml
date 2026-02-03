@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/config.xsd">
+    <default>
+        <perspective_giphy_memes>
+            <general_settings>
+                <enabled>0</enabled>
+                <gif_count>3</gif_count>
+                <api_url>https://api.giphy.com/v1/gifs/search</api_url>
+                <api_key>your_api_key</api_key>
+            </general_settings>
+        </perspective_giphy_memes>
+    </default>
+</config>
