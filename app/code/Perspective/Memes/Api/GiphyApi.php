@@ -18,7 +18,7 @@ class GiphyApi
         $this->curl = $curl;
     }
 
-    public function request()
+    public function request(): array
     {
         $q = 'test';
 
@@ -29,7 +29,12 @@ class GiphyApi
         $url = sprintf('%s?api_key=%s&q=%s&limit=%s', $apiUrl, $apiKey, $q, $limit);
 
         $this->curl->get($url);
-        $response = json_decode($this->curl->getBody(), true);
+        return json_decode($this->curl->getBody(), true);
+    }
+
+    public function getImagesUrl(): array
+    {
+        $response = $this->request();
 
         //select 200px height images url
         $result = [];
@@ -38,14 +43,6 @@ class GiphyApi
                 $result[] = $item['images']['fixed_height']['url'];
             }
         }
-
-
         return $result;
-
     }
-
-
-
-
-
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="img-src">
+            <values>
+                <value id="giphy-media" type="host">https://media.giphy.com</value>
+                <value id="giphy-media1" type="host">https://media1.giphy.com</value>
+                <value id="giphy-media2" type="host">https://media2.giphy.com</value>
+                <value id="giphy-media3" type="host">https://media3.giphy.com</value>
+                <value id="giphy-media4" type="host">https://media4.giphy.com</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>

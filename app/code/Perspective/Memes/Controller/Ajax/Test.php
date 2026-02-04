@@ -27,7 +27,6 @@ class Test implements HttpPostActionInterface
         $this->giphyApiService = $giphyApiService;
     }
 
-
     /**
      * Execute action based on request and return result
      *
@@ -40,7 +39,7 @@ class Test implements HttpPostActionInterface
 
         $postData = $this->request->getParams();
 
-        $test = $this->giphyApiService->request();
+        $test = $this->giphyApiService->getImagesUrl();
 
         return $result->setData([
             'success' => true,

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Add memes data to window.checkoutConfig -->
+    <type name="Magento\Checkout\Model\CompositeConfigProvider"> <!--frontend area di for checkout -->
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="perspective_memes_provider" xsi:type="object">Perspective\Memes\Model\Checkout\MemeConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

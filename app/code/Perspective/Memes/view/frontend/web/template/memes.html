@@ -15,4 +15,35 @@
             </div>
         </form>
     </div>
+    <!-- Not selected option -->
+    <div class="meme-option">
+        <label>
+            <input type="radio"
+                   name="selected_meme"
+                   value=""
+                   data-bind="
+                   checked: selectedMeme,
+                   checkedValue: null
+               "/>
+            <span>Not selected</span>
+        </label>
+    </div>
+
+    <!-- Memes list -->
+    <!-- ko foreach: memesList -->
+    <div class="meme-option">
+        <label>
+            <input type="radio"
+                   name="selected_meme"
+                   data-bind="
+                   checked: $parent.selectedMeme,
+                   checkedValue: $data
+               "/>
+
+            <img data-bind="attr: { src: $data }"
+                 alt="Meme"/>
+        </label>
+    </div>
+    <!-- /ko -->
+
 </li>

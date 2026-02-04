@@ -29,8 +29,12 @@ define(
             stepCode: 'memesStepCode',
             stepTitle: 'Memes',
 
+            memesList: ko.observableArray([]),
+            selectedMeme: ko.observable(null),
+
             initialize: function () {
                 this._super();
+                let self = this;
                 stepNavigator.registerStep(
                     this.stepCode,
                     null,
@@ -39,33 +43,84 @@ define(
                     _.bind(this.navigate, this),
                     15
                 );
-                //test post
-                this.testPostAjax();
+                this.isVisible.subscribe(function(visible) {
+                    if (visible) {
+                        self.loadMemes();
+                    }
+                });
+
+                this.selectedMeme.subscribe(function(selected) {
+                    self.saveSelectedMeme(selected);
+                });
 
                 return this;
             },
 
             navigate: function () {},
-
             navigateToNextStep: function () { stepNavigator.next(); },
 
-            testPostAjax: function () {
-                var self = this;
+            loadMemes: function () {
+                let self = this;
+                let config = window.checkoutConfig.memesData;
+
+                // if provider have memes data items(memes url)
+                if (config && config.items && config.items.length) {
+                    self.memesList(config.items);
+                    self.selectedMeme(config.selected || null);
+                } else {
+                    // else - ajax request
+                    self.loadMemesFromController();
+                }
+                console.log(self.memesList);
+                console.log(self.memesList());
+            },
+
+            //request to get list of memes url from api поменять
+            loadMemesFromController: function () {
+                let self = this;
                 $.ajax({
-                    url: '/memes/ajax/test',
-                    type: 'POST',
+                    url: '/memes/ajax/getmemedata',
+                    type: 'GET',
                     dataType: 'json',
-                    data: { test: 'Hello World!' },
+                    data: {
+                        maskedQuoteId: window.checkoutConfig.quoteData.entity_id // send masked quote id to controller
+                    },
                     showLoader: true,
                     success: function (res) {
-                        //self.isVisible(false); -
-                        console.log('POST response:', res);
-                        if (res.success) {
-                            alert(' POST success. Message: ' + res.message);
+
+                        // if memes data have items(memes url)
+                        if (res && res.items && res.items.length) {
+                            // set memes url list into observable array
+                            self.memesList(res.items);
+                            // set selected meme
+                            self.selectedMeme(res.selected || null);
                         }
                     },
                     error: function (err) {
-                        console.error('POST AJAX error', err);
+                        console.error('Ajax memes load error', err);
+                    }
+                });
+            },
+
+            saveSelectedMeme: function (memeUrl) {
+                let self = this;
+                self.selectedMeme(memeUrl);
+
+                $.ajax({
+                    url: '/memes/ajax/saveselectedmeme',
+                    type: 'POST',
+                    dataType: 'json',
+                    showLoader: true,
+                    data: {
+                        selected: memeUrl
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            console.log('Selected meme saved');
+                        }
+                    },
+                    error: function (err) {
+                        console.error('Selected meme error', err);
                     }
                 });
             }
