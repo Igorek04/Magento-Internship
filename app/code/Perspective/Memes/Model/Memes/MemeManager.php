@@ -27,4 +27,10 @@ class MemeManager
         }
         return $this->memeDataHandler->getMemes($entityId, $entityType);
     }
+
+    public function updateSelected(int $entityId, string $entityType, string $selected): void
+    {
+        $memesData = $this->memeDataHandler->getMemes($entityId, $entityType);
+        $this->memeDataHandler->saveMemes($entityId, $entityType, $memesData['items'], $selected);
+    }
 }

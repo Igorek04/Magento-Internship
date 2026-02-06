@@ -13,6 +13,7 @@
                     </button>
                 </div>
             </div>
+
         </form>
     </div>
     <!-- Not selected option -->
@@ -36,14 +37,12 @@
             <input type="radio"
                    name="selected_meme"
                    data-bind="
-                   checked: $parent.selectedMeme,
-                   checkedValue: $data
-               "/>
+               checked: $parent.selectedMeme,
+               checkedValue: $data
+           "/>
 
-            <img data-bind="attr: { src: $data }"
-                 alt="Meme"/>
+            <img data-bind="attr: { src: $data }" alt="Meme"/>
         </label>
     </div>
     <!-- /ko -->
-
 </li>

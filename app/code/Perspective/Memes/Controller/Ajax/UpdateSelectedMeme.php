@@ -2,7 +2,7 @@
 
 namespace Perspective\Memes\Controller\Ajax;
 
-use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NotFoundException;
@@ -12,7 +12,7 @@ use Perspective\Memes\Model\Memes\MemeManager;
 use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-class GetMemeData implements HttpGetActionInterface
+class UpdateSelectedMeme implements HttpPostActionInterface
 {
     protected $resultJsonFactory;
     protected $request;
@@ -35,17 +35,20 @@ class GetMemeData implements HttpGetActionInterface
     public function execute()
     {
         $maskedQuoteId = $this->request->getParam('maskedQuoteId');
+        $entityType = $this->request->getParam('entityType');
+        $selected = $this->request->getParam('selected');
+
         $result = $this->resultJsonFactory->create();
 
         try {
             $quoteId = $this->maskedQuoteIdInterface->execute($maskedQuoteId);
-            $data = $this->memeManager->getData($quoteId, 'quote');
+
+            $this->memeManager->updateSelected($quoteId, $entityType, $selected);
 
             return $result->setData([
                 'success' => true,
-                'data' => $data
+                'selected' => $selected,
             ]);
-
         } catch (NoSuchEntityException $e) {
             return $result->setData([
                 'success' => false,

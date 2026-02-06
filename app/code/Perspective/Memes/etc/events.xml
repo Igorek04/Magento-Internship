@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="sales_order_place_before">
+        <observer name="perspective_copy_quote_memes_to_order"
+                  instance="Perspective\Memes\Observer\CopyMemeDataToOrder"/>
+    </event>
+</config>
