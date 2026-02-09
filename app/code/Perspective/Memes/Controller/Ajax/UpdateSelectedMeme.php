@@ -41,7 +41,11 @@ class UpdateSelectedMeme implements HttpPostActionInterface
         $result = $this->resultJsonFactory->create();
 
         try {
-            $quoteId = $this->maskedQuoteIdInterface->execute($maskedQuoteId);
+            if (ctype_digit($maskedQuoteId)) {
+                $quoteId = $maskedQuoteId; // if loggedIn customer (quote id without mask)
+            } else {
+                $quoteId = $this->maskedQuoteIdInterface->execute($maskedQuoteId); // if guest (masked quote id)
+            }
 
             $this->memeManager->updateSelected($quoteId, $entityType, $selected);
 
