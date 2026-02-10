@@ -3,14 +3,12 @@
 namespace Perspective\Memes\Controller\Ajax;
 
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\App\RequestInterface;
 use Perspective\Memes\Model\Memes\MemeManager;
 use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Psr\Log\LoggerInterface;
 
 class UpdateSelectedMeme implements HttpPostActionInterface
 {
@@ -18,19 +16,21 @@ class UpdateSelectedMeme implements HttpPostActionInterface
     protected $request;
     protected $memeManager;
     protected $maskedQuoteIdInterface;
+    protected $logger;
 
     public function __construct(
         JsonFactory $resultJsonFactory,
         RequestInterface $request,
         MemeManager $memeManager,
-        MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdInterface
+        MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdInterface,
+        LoggerInterface $logger
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->request = $request;
         $this->memeManager = $memeManager;
         $this->maskedQuoteIdInterface = $maskedQuoteIdInterface;
+        $this->logger = $logger;
     }
-
 
     public function execute()
     {
@@ -54,6 +54,7 @@ class UpdateSelectedMeme implements HttpPostActionInterface
                 'selected' => $selected,
             ]);
         } catch (NoSuchEntityException $e) {
+            $this->logger->error(__('Selected meme update failed. %1', $e->getMessage()));
             return $result->setData([
                 'success' => false,
                 'message' => $e->getMessage()

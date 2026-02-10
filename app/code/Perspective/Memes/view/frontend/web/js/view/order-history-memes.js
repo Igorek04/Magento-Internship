@@ -15,7 +15,7 @@ define([
         }
 
         // if order memes data has selected url
-        const [isOpen, setIsOpen] = React.useState(false);
+        const [isOpen, setIsOpen] = React.useState(false); // default modal state (disabled)
         return React.createElement(React.Fragment, null,
             // mini-image in cell
             React.createElement('img', {

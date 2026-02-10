@@ -5,7 +5,8 @@ define(
         'underscore',
         'Magento_Checkout/js/model/step-navigator',
         'Magento_Customer/js/model/customer',
-        'jquery'
+        'jquery',
+        'Perspective_Memes/js/view/meme-picker'
     ],
     function (
         ko,
@@ -13,15 +14,14 @@ define(
         _,
         stepNavigator,
         customer,
-        $
+        $,
+        memePickerInit
     ) {
         'use strict';
-        /**
-         * check-login - is the name of the component's .html template
-         */
+
         return Component.extend({
             defaults: {
-                template: 'Perspective_Memes/memes'
+                template: 'Perspective_Memes/checkout-memes-select'
             },
 
             isVisible: ko.observable(false),
@@ -52,42 +52,23 @@ define(
                         _.bind(this.navigate, this),
                         15
                     );
+
+                    // react component meme picker
+                    self.isVisible.subscribe(function(isVisible) {
+                        if (isVisible) {
+                            const element = document.getElementById('react-meme-picker');
+                            if (element) {
+                                memePickerInit({
+                                    memes: config,
+                                    quoteId: window.checkoutConfig.quoteData.entity_id
+                                }, element);
+                            }
+                        }
+                    });
                 }
-
-                this.selectedMeme.subscribe(function(selected) {
-                    self.updateSelectedMeme(selected);
-                });
-
                 return this;
             },
-
             navigate: function () {},
             navigateToNextStep: function () { stepNavigator.next(); },
-
-            updateSelectedMeme: function (memeUrl) {
-                let self = this;
-                self.selectedMeme(memeUrl);
-
-                $.ajax({
-                    url: '/memes/ajax/updateselectedmeme',
-                    type: 'POST',
-                    dataType: 'json',
-                    showLoader: true,
-                    data: {
-                        maskedQuoteId: window.checkoutConfig.quoteData.entity_id,
-                        selected: memeUrl,
-                        entityType: 'quote'
-                    },
-                    success: function (res) {
-                        if (res.success) {
-                            window.checkoutConfig.memesData.selected = res.selected;
-                            console.log('Selected meme saved');
-                        }
-                    },
-                    error: function (err) {
-                        console.error('Selected meme error', err);
-                    }
-                });
-            }
         });
     });

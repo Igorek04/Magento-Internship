@@ -4,25 +4,33 @@ namespace Perspective\Memes\Model\Memes;
 
 use Perspective\Memes\Api\GiphyApi;
 use Perspective\Memes\Model\Memes\MemeDataHandler;
+use Perspective\Memes\Service\ConfigData;
 
 
 class MemeManager
 {
     protected $giphyApi;
     protected $memeDataHandler;
+    protected $configDataService;
 
     public function __construct(
         GiphyApi $giphyApi,
-        MemeDataHandler $memeDataHandler
+        MemeDataHandler $memeDataHandler,
+        ConfigData $configDataService
     ) {
         $this->giphyApi = $giphyApi;
         $this->memeDataHandler = $memeDataHandler;
+        $this->configDataService = $configDataService;
     }
 
-    public function getData($entityId, $entityType)
+    public function getData($entityId, $entityType): array
     {
+        if (!$this->configDataService->isModuleEnabled()) {
+            return [];
+        }
+
         if (!$this->memeDataHandler->hasMemes($entityId, $entityType)) {
-            $memesUrlArray = $this->giphyApi->getImagesUrl();
+            $memesUrlArray = $this->giphyApi->getImagesUrl($entityId);
             $this->memeDataHandler->saveMemes($entityId, $entityType, $memesUrlArray);
         }
         return $this->memeDataHandler->getMemes($entityId, $entityType);

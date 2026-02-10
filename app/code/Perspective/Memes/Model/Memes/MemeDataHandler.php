@@ -2,27 +2,32 @@
 
 namespace Perspective\Memes\Model\Memes;
 
+use Exception;
 use Magento\Quote\Api\CartRepositoryInterface as QuoteRepository;
 use Magento\Sales\Api\OrderRepositoryInterface as OrderRepository;
+use Psr\Log\LoggerInterface;
 
 class MemeDataHandler
 {
     protected $quoteRepository;
     protected $orderRepository;
+    protected $logger;
 
     public function __construct(
         QuoteRepository $quoteRepository,
-        OrderRepository $orderRepository
+        OrderRepository $orderRepository,
+        LoggerInterface $logger
     ) {
         $this->quoteRepository = $quoteRepository;
         $this->orderRepository = $orderRepository;
+        $this->logger = $logger;
     }
 
-    public function getMemes(int $entityId, string $entityType): array //exc
+    public function getMemes(int $entityId, string $entityType): array
     {
         $object = $this->getEntity($entityType, $entityId);
         if (!$object) {
-            return []; // нужно ли и мб поменять на эксепшены?
+            return [];
         }
 
         $json = $object->getData('order_memes');
@@ -52,24 +57,39 @@ class MemeDataHandler
         $this->saveEntity($entityType, $object);
     }
 
-
-
-
-    private function getEntity(string $entityType, int $entityId)
+    public function getEntity(string $entityType, int $entityId)
     {
-        return match ($entityType) {
-            'quote' => $this->quoteRepository->get($entityId),
-            'order' => $this->orderRepository->get($entityId),
-            default => null,
-        };
+        try {
+            return match ($entityType) {
+                'quote' => $this->quoteRepository->get($entityId),
+                'order' => $this->orderRepository->get($entityId),
+                default => null,
+            };
+        } catch (Exception $e) {
+            $this->logger->error(__('MemeDataHandler: failed to get %1 with ID %2. %3',
+                $entityType,
+                $entityId,
+                $e->getMessage()
+            ));
+            return null;
+        }
     }
 
-    private function saveEntity(string $entityType, $object): void
+    public function saveEntity(string $entityType, $object): void
     {
-        match ($entityType) {
-            'quote' => $this->quoteRepository->save($object),
-            'order' => $this->orderRepository->save($object),
-            default => null,
-        };
+        try {
+            match ($entityType) {
+                'quote' => $this->quoteRepository->save($object),
+                'order' => $this->orderRepository->save($object),
+                default => null,
+            };
+        } catch (Exception $e) {
+            $id = $object->getId();
+            $this->logger->error(__('MemeDataHandler: failed to save %1 with ID %2. %3',
+                $entityType,
+                $id,
+                $e->getMessage()
+            ));
+        }
     }
 }

@@ -19,9 +19,3 @@ app/design/frontend/Pearl
 
 # Hide Hyva files
 app/design/frontend/Perspective/HyvaTestChild/web/*
-
-# Hide React core files
-app/code/Perspective/Memes/view/frontend/web/js/react/*
-
-
-

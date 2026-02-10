@@ -12,4 +12,10 @@
             <argument name="adminQuoteSession" xsi:type="object">Magento\Backend\Model\Session\Quote\Proxy</argument>
         </arguments>
     </type>
+
+    <type name="Perspective\Memes\ViewModel\Adminhtml\OrderEditMemes">
+        <arguments>
+            <argument name="adminQuoteSession" xsi:type="object">Magento\Backend\Model\Session\Quote\Proxy</argument>
+        </arguments>
+    </type>
 </config>

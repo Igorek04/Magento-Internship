@@ -4,11 +4,29 @@
         <policy id="img-src">
             <values>
                 <value id="giphy-media" type="host">https://media.giphy.com</value>
+                <value id="giphy-media0" type="host">https://media0.giphy.com</value>
                 <value id="giphy-media1" type="host">https://media1.giphy.com</value>
                 <value id="giphy-media2" type="host">https://media2.giphy.com</value>
                 <value id="giphy-media3" type="host">https://media3.giphy.com</value>
                 <value id="giphy-media4" type="host">https://media4.giphy.com</value>
+
+                <value id="unpkg-img" type="host">https://unpkg.com</value>
             </values>
         </policy>
+
+        <policy id="script-src">
+            <values>
+                <value id="unpkg-react" type="host">https://unpkg.com</value>
+                <value id="unpkg-react" type="host">https://unpkg.com</value>
+            </values>
+        </policy>
+
+        <policy id="style-src">
+            <values>
+                <value id="unpkg-css" type="host">https://unpkg.com</value>
+            </values>
+        </policy>
+
+
     </policies>
 </csp_whitelist>

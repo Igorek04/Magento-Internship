@@ -1,13 +1,18 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="https://unpkg.com/react-image-picker/dist/index.css" src_type="url"/>
+    </head>
     <body>
         <referenceBlock name="items">
             <block class="Magento\Framework\View\Element\Template"
                    name="perspective.order.edit.memes"
-                   template="Perspective_Memes::test.phtml"
+                   template="Perspective_Memes::admin-memes-select.phtml"
                    after="-">
-
+                <arguments>
+                    <argument name="viewModel" xsi:type="object">Perspective\Memes\ViewModel\Adminhtml\OrderEditMemes</argument>
+                </arguments>
             </block>
         </referenceBlock>
     </body>
