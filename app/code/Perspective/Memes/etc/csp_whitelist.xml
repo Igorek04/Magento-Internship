@@ -26,7 +26,5 @@
                 <value id="unpkg-css" type="host">https://unpkg.com</value>
             </values>
         </policy>
-
-
     </policies>
 </csp_whitelist>

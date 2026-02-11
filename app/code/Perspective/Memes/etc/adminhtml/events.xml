@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- if admin edit order -> new quote created -> copy memes data from edited order to new quote -->
     <event name="sales_quote_save_before">
         <observer name="perspective_copy_order_memes_to_new_quote"
                   instance="Perspective\Memes\Observer\CopyMemesToAdminQuote"/>
