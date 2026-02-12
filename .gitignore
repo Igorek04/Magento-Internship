@@ -19,3 +19,6 @@ app/design/frontend/Pearl
 
 # Hide Hyva files
 app/design/frontend/Perspective/HyvaTestChild/web/*
+
+# Force added
+!dev/tests/js/jasmine/tests/app/code/Perspective/**

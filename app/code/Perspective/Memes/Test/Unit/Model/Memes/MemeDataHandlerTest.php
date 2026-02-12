@@ -78,22 +78,70 @@ class MemeDataHandlerTest extends TestCase
 
         // --- empty items case ---
         $emptyQuoteRepo = $this->createMock(CartRepositoryInterface::class);
-        $emptyEntity = $this->getMockBuilder(stdClass::class)->addMethods(['getData'])->getMock();
-        $emptyEntity->method('getData')->with('order_memes')->willReturn(json_encode(['items' => []]));
-        $emptyQuoteRepo->method('get')->willReturn($emptyEntity);
+        $emptyEntity = $this->getMockBuilder(stdClass::class)
+            ->addMethods(['getData'])
+            ->getMock();
+        $emptyEntity->method('getData')
+            ->with('order_memes')
+            ->willReturn(json_encode(['items' => []]));
+        $emptyQuoteRepo->method('get')
+            ->willReturn($emptyEntity);
 
         $handler = new MemeDataHandler($emptyQuoteRepo, $this->createMock(OrderRepositoryInterface::class), $logger);
         $this->assertFalse($handler->hasMemes(1, 'quote'));
 
         // --- non-empty items case ---
         $nonEmptyQuoteRepo = $this->createMock(CartRepositoryInterface::class);
-        $nonEmptyEntity = $this->getMockBuilder(stdClass::class)->addMethods(['getData'])->getMock();
-        $nonEmptyEntity->method('getData')->with('order_memes')->willReturn(json_encode(['items' => ['url1']]));
-        $nonEmptyQuoteRepo->method('get')->willReturn($nonEmptyEntity);
+        $nonEmptyEntity = $this->getMockBuilder(stdClass::class)
+            ->addMethods(['getData'])
+            ->getMock();
+        $nonEmptyEntity->method('getData')
+            ->with('order_memes')
+            ->willReturn(json_encode(['items' => ['url1']]));
+        $nonEmptyQuoteRepo->method('get')
+            ->willReturn($nonEmptyEntity);
 
         $handler = new MemeDataHandler($nonEmptyQuoteRepo, $this->createMock(OrderRepositoryInterface::class), $logger);
         $this->assertTrue($handler->hasMemes(2, 'quote'));
     }
+
+    /**
+     * Test MemeDataHandler::saveMemes()
+     *
+     * Checks that:
+     *  - order_memes field is set with correct JSON data
+     *  - quote repository save() is called with the updated entity
+     */
+
+    public function testSaveMemes(): void
+    {
+        $quoteRepo = $this->createMock(CartRepositoryInterface::class);
+        $orderRepo = $this->createMock(OrderRepositoryInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $entity = $this->getMockBuilder(CartInterface::class)
+            ->addMethods(['setData'])
+            ->getMockForAbstractClass();
+
+        $expectedJson = json_encode([
+            'selected' => 'url1',
+            'items' => ['url1']
+        ]);
+
+        $entity->expects($this->once())
+            ->method('setData')
+            ->with('order_memes', $expectedJson);
+
+        $quoteRepo->method('get')->willReturn($entity);
+        $quoteRepo->expects($this->once())
+            ->method('save')
+            ->with($entity);
+
+        $handler = new MemeDataHandler($quoteRepo, $orderRepo, $logger);
+
+        $handler->saveMemes(1, 'quote', ['url1'], 'url1');
+    }
+
 
     /**
      * Data provider for testGetMemes()

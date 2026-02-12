@@ -6,8 +6,7 @@
     </head>
     <body>
         <referenceBlock name="items">
-            <block class="Magento\Framework\View\Element\Template"
-                   name="perspective.order.edit.memes"
+            <block name="perspective.order.edit.memes"
                    template="Perspective_Memes::admin-memes-select.phtml"
                    after="-">
                 <arguments>

@@ -4,15 +4,13 @@
     <body>
         <!-- Header -->
         <referenceContainer name="sales.order.history.extra.column.header">
-            <block class="Magento\Framework\View\Element\Template"
-                   name="perspective.order.history.memes.header"
+            <block name="perspective.order.history.memes.header"
                    template="Perspective_Memes::order/history/memes_header.phtml"/>
         </referenceContainer>
 
         <!-- Cell -->
         <referenceBlock name="sales.order.history.extra.container">
-            <block class="Magento\Framework\View\Element\Template"
-                   name="perspective.order.history.memes.cell"
+            <block name="perspective.order.history.memes.cell"
                    template="Perspective_Memes::order/history/memes_cell.phtml"/>
         </referenceBlock>
     </body>

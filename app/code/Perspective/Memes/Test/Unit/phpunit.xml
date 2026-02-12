@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         bootstrap="../../../../../../dev/tests/unit/framework/bootstrap.php"
+         colors="true"
+         verbose="true">
+
+    <coverage>
+        <include>
+            <directory suffix=".php">../../</directory>
+        </include>
+        <exclude>
+            <directory>./</directory>
+        </exclude>
+    </coverage>
+
+    <testsuites>
+        <testsuite name="Perspective_Memes_Unit_Tests">
+            <directory suffix="Test.php">./</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <ini name="xdebug.mode" value="coverage"/>
+        <ini name="memory_limit" value="-1"/>
+        <ini name="date.timezone" value="UTC"/>
+    </php>
+</phpunit>
