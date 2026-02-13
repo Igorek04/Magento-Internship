@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/config.xsd">
+    <default>
+        <perspective_voting>
+            <general_settings>
+                <enabled>0</enabled>
+                <allow_admin_edit_votes>0</allow_admin_edit_votes>
+                <product_discount_label>0</product_discount_label>
+                <product_discount_percent>0</product_discount_percent>
+            </general_settings>
+        </perspective_voting>
+    </default>
+</config>

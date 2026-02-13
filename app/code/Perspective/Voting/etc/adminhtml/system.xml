@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="perspective_tab" translate="label" sortOrder="1">
+            <label>Perspective</label>
+        </tab>
+
+        <section id="perspective_voting" sortOrder="111" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Giphy Memes Config</label>
+            <tab>perspective_tab</tab>
+            <resource>Perspective_WeatherInsurance::config</resource> <!-- -->
+
+            <group id="general_settings" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <attribute type="expanded">1</attribute>
+                <label>General Settings</label>
+
+                <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Module enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="allow_admin_edit_votes" sortOrder="2" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Allow Admin Edit Vote Counts</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="product_discount_label" sortOrder="3" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Discount + Label Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable/disable applying discount and showing label on products for votes</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="product_discount_percent" sortOrder="4" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Discount Percent</label>
+                    <validate>validate-digits validate-number-range-0-100</validate>
+                    <comment>Set the discount percentage to apply to products (0-100)</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="product_discount_label">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
