@@ -12,12 +12,12 @@
 
     <!-- test -->
     <add
-        id="Perspective_Voting::polls_grid"
+        id="Perspective_Voting::voting_grid"
         title="Voting Grid"
         module="Perspective_Voting"
         sortOrder="10"
-        resource="Perspective_Voting::polls_grid"
+        resource="Perspective_Voting::voting_grid"
         parent="Perspective_Voting::marketing_voting"
-        action="adminhtml/voting/index"/>
+        action="voting/index/index"/>
 </menu>
 </config>

@@ -1,0 +1,57 @@
+{
+    "voting": {
+        "column": {
+            "voting_id": true,
+            "title": true,
+            "description": true,
+            "management_type": true,
+            "status": true,
+            "end_date": true,
+            "allow_guests": true,
+            "created_at": true,
+            "is_finished": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "voting_option": {
+        "column": {
+            "option_id": true,
+            "voting_id": true,
+            "title": true,
+            "description": true,
+            "product_id": true,
+            "total_votes": true,
+            "discount_percent": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "VOTING_OPTION_VOTING_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "VOTING_OPTION_VOTING_ID_VOTING_VOTING_ID": true
+        }
+    },
+    "voting_vote": {
+        "column": {
+            "vote_id": true,
+            "voting_id": true,
+            "option_id": true,
+            "customer_id": true,
+            "guest_hash": true,
+            "created_at": true
+        },
+        "index": {
+            "VOTING_VOTE_CUSTOMER_ID": true,
+            "VOTING_VOTE_GUEST_HASH": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "VOTING_VOTE_VOTING_ID_VOTING_VOTING_ID": true,
+            "VOTING_VOTE_OPTION_ID_VOTING_OPTION_OPTION_ID": true
+        }
+    }
+}

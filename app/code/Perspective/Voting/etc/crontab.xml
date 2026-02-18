@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="perspective_voting_options_refresh_votes"
+             instance="Perspective\PopularProductList\Cron\RefreshOptionsVotes" method="execute">
+            <config_path>perspective_voting/general_settings/votes_refresh_frequency</config_path>
+        </job>
+    </group>
+</config>

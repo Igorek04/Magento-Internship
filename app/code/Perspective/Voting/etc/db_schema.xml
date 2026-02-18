@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- Voting -->
+    <table name="voting" resource="default" engine="innodb" comment="Voting Table">
+        <column xsi:type="int" name="voting_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Voting ID"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Voting Title"/>
+        <column xsi:type="text" name="description" nullable="true" comment="Voting Description"/>
+        <column xsi:type="smallint" name="management_type" nullable="false" default="0" comment="0=Manual, 1=By Date"/>
+        <column xsi:type="smallint" name="status" nullable="false" default="0" comment="Status: 0=Inactive,1=Active"/>
+        <column xsi:type="timestamp" name="end_date" nullable="true" comment="Voting End Date"/>
+        <column xsi:type="smallint" name="allow_guests" nullable="false" default="0" comment="Allow Guests"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created At"/>
+        <column xsi:type="smallint" name="is_finished" nullable="false" default="0" comment="Is Voting Finished"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="voting_id"/>
+        </constraint>
+    </table>
+
+    <!-- Voting Options -->
+    <table name="voting_option" resource="default" engine="innodb" comment="Voting Options Table">
+        <column xsi:type="int" name="option_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Option ID"/>
+        <column xsi:type="int" name="voting_id" padding="10" unsigned="true" nullable="false" comment="Voting ID"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Option Title"/>
+        <column xsi:type="text" name="description" nullable="true" comment="Option Description"/>
+        <column xsi:type="int" name="additional_admin_votes" padding="10" unsigned="true" nullable="false" default="0" comment="Additional Admin votes"/>
+        <column xsi:type="int" name="product_id" padding="10" unsigned="true" nullable="true" comment="Linked Product ID"/>
+        <column xsi:type="int" name="total_votes" nullable="false" default="0" comment="Total Votes"/>
+        <column xsi:type="int" name="discount_percent" nullable="false" default="0" comment="Discount Percent"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="option_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="VOTING_OPTION_VOTING_ID" table="voting_option" column="voting_id" referenceTable="voting" referenceColumn="voting_id" onDelete="CASCADE"/>
+        <index referenceId="IDX_VOTING_OPTION_VOTING_ID">
+            <column name="voting_id"/>
+        </index>
+    </table>
+
+    <!-- Votes -->
+    <table name="voting_vote" resource="default" engine="innodb" comment="Voting Votes Table">
+        <column xsi:type="int" name="vote_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Vote ID"/>
+        <column xsi:type="int" name="voting_id" padding="10" unsigned="true" nullable="false" comment="Voting ID"/>
+        <column xsi:type="int" name="option_id" padding="10" unsigned="true" nullable="false" comment="Option ID"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="true" comment="Customer ID"/>
+        <column xsi:type="varchar" name="guest_hash" nullable="true" length="64" comment="Guest Cookie Hash"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="vote_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="VOTING_VOTE_VOTING_ID" table="voting_vote" column="voting_id" referenceTable="voting" referenceColumn="voting_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="VOTING_VOTE_OPTION_ID" table="voting_vote" column="option_id" referenceTable="voting_option" referenceColumn="option_id" onDelete="CASCADE"/>
+        <index referenceId="IDX_VOTING_VOTE_CUSTOMER">
+            <column name="customer_id"/>
+        </index>
+        <index referenceId="IDX_VOTING_VOTE_GUEST">
+            <column name="guest_hash"/>
+        </index>
+    </table>
+</schema>

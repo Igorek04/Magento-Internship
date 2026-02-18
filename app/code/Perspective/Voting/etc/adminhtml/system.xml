@@ -6,7 +6,7 @@
         </tab>
 
         <section id="perspective_voting" sortOrder="111" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Giphy Memes Config</label>
+            <label>Voting Config</label>
             <tab>perspective_tab</tab>
             <resource>Perspective_WeatherInsurance::config</resource> <!-- -->
 
@@ -36,14 +36,11 @@
                     </depends>
                 </field>
 
-                <field id="product_discount_percent" sortOrder="4" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Product Discount Percent</label>
-                    <validate>validate-digits validate-number-range-0-100</validate>
-                    <comment>Set the discount percentage to apply to products (0-100)</comment>
-                    <depends>
-                        <field id="enabled">1</field>
-                        <field id="product_discount_label">1</field>
-                    </depends>
+                <field id="votes_refresh_frequency" sortOrder="2" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Votes Update Frequency (cron time)</label>
+                    <validate>required-entry validate-cron</validate>
+                    <comment><![CDATA[Format: <code>minute hour day month day_of_week</code>. Example: <code>0 */6 * * *</code> (every 6 hours).]]></comment>
+                    <depends><field id="enabled">1</field></depends>
                 </field>
             </group>
         </section>
