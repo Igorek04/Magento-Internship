@@ -13,14 +13,10 @@
         </item>
         <item name="spinner" xsi:type="string">general_information</item>
         <item name="buttons" xsi:type="array">
-            <item name="back" xsi:type="string">
-                Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Back</item>
-            <item name="delete" xsi:type="string">
-                Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Delete</item>
-            <item name="reset" xsi:type="string">
-                Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Reset</item>
-            <item name="save" xsi:type="string">
-                Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Save</item>
+            <item name="back" xsi:type="string">Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Back</item>
+            <item name="finish" xsi:type="string">Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Finish</item>
+            <item name="delete" xsi:type="string">Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Delete</item>
+            <item name="save" xsi:type="string">Perspective\Voting\Block\Adminhtml\Index\Edit\Button\Save</item>
         </item>
         <item name="template" xsi:type="string">templates/form/collapsible</item>
     </argument>
@@ -230,7 +226,7 @@
             <field name="option_product_id" formElement="select" component="Magento_Ui/js/form/element/select">
                 <settings>
                     <dataType>int</dataType>
-                    <label translate="true">Linked Product (SKU)</label>
+                    <label translate="true">Linked Product</label>
                     <dataScope>product_id</dataScope>
                     <exports>
                         <link name="!value">${ $.parentName }.option_product_discount:disabled</link>
@@ -247,7 +243,7 @@
 
             <field name="option_product_discount" formElement="input">
                 <settings>
-                    <label translate="true">Linked Product Discount</label>
+                    <label translate="true">Linked Product Discount (%)</label>
                     <dataScope>discount_percent</dataScope>
                     <disabled>true</disabled>
                     <imports>

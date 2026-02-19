@@ -1,34 +1,19 @@
 <?php
-/**
- * @package Perspective_Voting
- */
-declare(strict_types=1);
-
 namespace Perspective\Voting\Model\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Source model for Voting management types
- */
 class ManagementType implements OptionSourceInterface
 {
-    /**
-     * Get options for Management Type
-     *
-     * @return array
-     */
-    public function toOptionArray(): array
+    public const TYPE_MANUAL = 0;
+    public const TYPE_BY_DATE = 1;
+
+
+    public function toOptionArray()
     {
         return [
-            [
-                'value' => 0,
-                'label' => __('Manual Toggle')
-            ],
-            [
-                'value' => 1,
-                'label' => __('By End Date')
-            ]
+            ['value' => self::TYPE_MANUAL, 'label' => __('Manual')],
+            ['value' => self::TYPE_BY_DATE, 'label' => __('By Date')]
         ];
     }
 }

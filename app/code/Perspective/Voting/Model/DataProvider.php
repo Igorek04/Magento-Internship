@@ -50,12 +50,10 @@ class DataProvider extends AbstractDataProvider
             $data = $item->getData();
             $votingId = $item->getVotingId();
 
-            // 1. Отримуємо опції для цього конкретного голосування
             $optionCollection = $this->optionCollectionFactory->create();
             $optionCollection->addFieldToFilter('voting_id', $votingId);
 
-            // 2. Додаємо дані опцій у масив під потрібним ключем
-            // Метод getItems() + перебір, щоб отримати чистий масив даних
+
             $optionsData = [];
             foreach ($optionCollection as $option) {
                 $optionsData[] = $option->getData();

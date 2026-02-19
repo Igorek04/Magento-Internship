@@ -1,17 +1,22 @@
 <?php
 namespace Perspective\Voting\Controller\Adminhtml\Index;
 
+use Exception;
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Perspective\Voting\Model\Source\ManagementType;
 use Perspective\Voting\Model\Voting as VotingModel;
 use Perspective\Voting\Model\ResourceModel\Voting as VotingResourceModel;
 use Perspective\Voting\Model\VotingOptionFactory as OptionFactory;
 use Perspective\Voting\Model\ResourceModel\VotingOption as OptionResourceModel;
 use Perspective\Voting\Model\ResourceModel\VotingOption\CollectionFactory as OptionCollectionFactory;
+use Perspective\Voting\Service\VotingValidation;
+use Perspective\Voting\Model\VotingManager;
+use Perspective\Voting\Model\VotingOptionManager;
 
 class Save extends Action
 {
@@ -21,6 +26,9 @@ class Save extends Action
     protected $optionFactory;
     protected $optionResourceModel;
     protected $optionCollectionFactory;
+    protected $votingValidationService;
+    protected $votingManager;
+    protected $votingOptionManager;
 
 
 
@@ -31,7 +39,10 @@ class Save extends Action
         Session $adminSession,
         OptionCollectionFactory $optionCollectionFactory,
         OptionResourceModel $optionResourceModel,
-        OptionFactory $optionFactory
+        OptionFactory $optionFactory,
+        VotingValidation $votingValidationService,
+        VotingManager $votingManager,
+        VotingOptionManager $votingOptionManager
     ) {
         parent::__construct($context);
         $this->votingModel = $votingModel;
@@ -40,6 +51,9 @@ class Save extends Action
         $this->optionCollectionFactory = $optionCollectionFactory;
         $this->optionResourceModel = $optionResourceModel;
         $this->optionFactory = $optionFactory;
+        $this->votingValidationService = $votingValidationService;
+        $this->votingManager = $votingManager;
+        $this->votingOptionManager = $votingOptionManager;
     }
 
     /**
@@ -51,75 +65,14 @@ class Save extends Action
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if ($data) {
-            $votingId = $this->getRequest()->getParam('voting_id');
-
-            $model = $this->votingModel;
-
-            if ($votingId) {
-                $this->votingResourceModel->load($model, $votingId);
-            }
-
-            $model->setData($data);
-
             try {
-                $this->votingResourceModel->save($model);
+                $votingId = $this->getRequest()->getParam('voting_id');
+
+                $model = $this->votingManager->saveVotingData($data, $votingId);
                 $votingId = $model->getId();
 
                 $optionsData = $data['data']['options_container']['options_container'];
-                if (is_array($optionsData)) {
-                    // Получаем ID всех опций, которые пришли из формы, чтобы знать, что НЕ удалять
-                    $processedOptionIds = [];
-
-                    foreach ($optionsData as $option) {
-                        // Создаем экземпляр модели опции через Factory (не забудь добавить в конструктор)
-                        $optionModel = $this->optionFactory->create();
-
-                        if (!empty($option['option_id'])) {
-                            // Если ID есть, загружаем существующую
-                            $this->optionResourceModel->load($optionModel, $option['option_id']);
-                            $processedOptionIds[] = $option['option_id'];
-                        }
-
-                        // Устанавливаем данные и привязываем к голосованию
-                        $optionModel->setData($option);
-                        $optionModel->setVotingId($votingId);
-
-                        $this->optionResourceModel->save($optionModel);
-
-                        // Если это была новая опция, запоминаем её новый ID
-                        if (empty($option['option_id'])) {
-                            $processedOptionIds[] = $optionModel->getId();
-                        }
-                    }
-
-                    // 3. УДАЛЕНИЕ: Удаляем из базы те опции, которые не пришли в запросе
-                    // (юзер нажал на корзинку в Dynamic Rows)
-                    $optionCollection = $this->optionCollectionFactory->create();
-                    $optionCollection->addFieldToFilter('voting_id', $votingId);
-
-                    if (!empty($processedOptionIds)) {
-                        $optionCollection->addFieldToFilter('option_id', ['nin' => $processedOptionIds]);
-                    }
-
-                    foreach ($optionCollection as $optionToDelete) {
-                        $this->optionResourceModel->delete($optionToDelete);
-                    }
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                $this->votingOptionManager->saveVotingOptions($votingId, $optionsData);
 
 
                 $this->messageManager->addSuccessMessage(__('The data has been saved.'));
@@ -135,7 +88,7 @@ class Save extends Action
                 return $resultRedirect->setPath('*/*/');
             } catch (LocalizedException $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->messageManager->addExceptionMessage($e, __('Something went wrong while saving the data.'));
             }
 
