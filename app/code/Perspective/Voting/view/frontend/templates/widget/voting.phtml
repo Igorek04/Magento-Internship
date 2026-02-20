@@ -1,0 +1,22 @@
+<?php
+$votingId = $block->getData('voting_id');
+$scopeName = 'voting_component';
+?>
+
+<div id="custom-component" data-bind="scope:'voting'">
+    <!-- ko template: getTemplate() --><!-- /ko -->
+    <script type="text/x-magento-init">
+        {
+            "#custom-component": {
+                "Magento_Ui/js/core/app": {
+                    "components": {
+                        "voting": {
+                            "component": "Perspective_Voting/js/view/voting",
+                            "votingId": "<?= $votingId ?>"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</div>

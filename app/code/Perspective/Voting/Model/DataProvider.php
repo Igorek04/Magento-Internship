@@ -5,6 +5,7 @@ use Magento\Ui\DataProvider\AbstractDataProvider;
 use Perspective\Voting\Model\ResourceModel\Voting\CollectionFactory;
 use Perspective\Voting\Model\ResourceModel\VotingOption\CollectionFactory as OptionCollectionFactory;
 use Perspective\Voting\Service\ConfigData;
+use Magento\Backend\Model\Session as BackendSession;
 
 
 class DataProvider extends AbstractDataProvider
@@ -16,6 +17,7 @@ class DataProvider extends AbstractDataProvider
 
     protected $optionCollectionFactory;
     protected $configDataService;
+    protected $backendSession;
 
 
     public function __construct(
@@ -25,12 +27,14 @@ class DataProvider extends AbstractDataProvider
         CollectionFactory $collectionFactory,
         OptionCollectionFactory $optionCollectionFactory,
         ConfigData $configDataService,
+        BackendSession $backendSession,
         array $meta = [],
         array $data = []
     ) {
         $this->collection = $collectionFactory->create();
         $this->optionCollectionFactory = $optionCollectionFactory;
         $this->configDataService = $configDataService;
+        $this->backendSession = $backendSession;
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
 
@@ -46,6 +50,7 @@ class DataProvider extends AbstractDataProvider
         }
         $items = $this->collection->getItems();
 
+        // for load data to edit voting
         foreach ($items as $item) {
             $data = $item->getData();
             $votingId = $item->getVotingId();
@@ -75,11 +80,9 @@ class DataProvider extends AbstractDataProvider
         }
 
         // is finished label for add(new) voting
+        // подгрузка неудачного сейва
         if (empty($this->loadedData)) {
-            $this->loadedData[null] = [
-                'is_finished_label' => 'No',
-                'options_container' => []
-            ];
+            $this->loadedData[null] = $this->backendSession->getNewVotingFormData();
         }
 
         return $this->loadedData;

@@ -64,19 +64,20 @@ class VotingOptionManager
         }
     }
 
-    public function getById(int $id): VotingOption
+    /*public function getById(int $id): VotingOption
     {
         $optionModel = $this->optionFactory->create();
         $this->optionResourceModel->load($optionModel, $id);
         return $optionModel;
-    }
+    }*/
 
     public function updateVotes(array $results): void
     {
-        foreach ($results as $optionId => $totalVotes) {
-            $option = $this->getById($optionId);
-
-            $option->setTotalVotes($totalVotes);
+        $collection = $this->optionCollectionFactory->create();
+        $collection->addFieldToFilter('option_id', ['in' => array_keys($results)]);
+        foreach ($collection as $option) {
+            $optionId = $option->getId();
+            $option->setTotalVotes($results[$optionId]);
             $this->optionResourceModel->save($option);
         }
     }

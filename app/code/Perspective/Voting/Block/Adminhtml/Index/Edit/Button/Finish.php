@@ -51,7 +51,8 @@ class Finish extends Generic implements ButtonProviderInterface
                 'sort_order' => 41,
                 'disabled' => true
             ],
-            VotingState::STATE_ACTIVE => [
+            VotingState::STATE_MANUAL_ACTIVE,
+            VotingState::STATE_MANUAL_INACTIVE => [
                 'label' => __('Finish Voting'),
                 'class' => 'save primary',
                 'on_click' => 'confirmSetLocation(\'' .

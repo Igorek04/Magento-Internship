@@ -7,6 +7,7 @@ use Perspective\Voting\Model\ResourceModel\Voting as VotingResourceModel;
 use Perspective\Voting\Service\VotingValidation;
 use Perspective\Voting\Model\VotingOptionManager;
 use Perspective\Voting\Service\VoteCalculator;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 
 class VotingManager
 {
@@ -15,19 +16,22 @@ class VotingManager
     protected $votingValidationService;
     protected $votingOptionManager;
     protected $voteCalculatorService;
+    protected $dateTime;
 
     public function __construct(
         VotingResourceModel $votingResourceModel,
         VotingFactory       $votingFactory,
         VotingValidation    $votingValidationService,
         VotingOptionManager $votingOptionManager,
-        VoteCalculator       $voteCalculatorService
+        VoteCalculator       $voteCalculatorService,
+        DateTime           $dateTime,
     ) {
         $this->votingResourceModel = $votingResourceModel;
         $this->votingFactory = $votingFactory;
         $this->votingValidationService = $votingValidationService;
         $this->votingOptionManager = $votingOptionManager;
         $this->voteCalculatorService = $voteCalculatorService;
+        $this->dateTime = $dateTime;
     }
 
     public function saveVotingData(array $data, $votingId = null): Voting
@@ -62,9 +66,13 @@ class VotingManager
 
         if (!empty($finalVotes)) {
             $this->votingOptionManager->updateVotes($finalVotes);
+
+            $winnerOptionId = key($finalVotes);
+            $voting->setWinnerOptionId($winnerOptionId);
         }
 
         $voting->setIsFinished(1);
+        $voting->setFinishedAt($this->dateTime->gmtDate());
         $this->votingResourceModel->save($voting);
     }
 }

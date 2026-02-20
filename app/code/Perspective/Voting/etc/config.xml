@@ -8,7 +8,9 @@
                 <allow_admin_edit_votes>0</allow_admin_edit_votes>
                 <product_discount_label>0</product_discount_label>
                 <product_discount_percent>0</product_discount_percent>
-                <votes_refresh_frequency>* * * * *</votes_refresh_frequency>
+                <votes_refresh_frequency>*/2 * * * *</votes_refresh_frequency>
+                <voting_auto_finish_frequency>*/5 * * * *</voting_auto_finish_frequency>
+                <product_discount_duration>1</product_discount_duration>
             </general_settings>
         </perspective_voting>
     </default>

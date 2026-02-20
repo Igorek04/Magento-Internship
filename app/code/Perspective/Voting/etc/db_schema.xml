@@ -12,9 +12,12 @@
         <column xsi:type="smallint" name="allow_guests" nullable="false" default="0" comment="Allow Guests"/>
         <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created At"/>
         <column xsi:type="smallint" name="is_finished" nullable="false" default="0" comment="Is Voting Finished"/>
+        <column xsi:type="int" name="winner_option_id" padding="10" unsigned="true" nullable="true" comment="Winner Option ID"/>
+        <column xsi:type="timestamp" name="finished_at" nullable="true" comment="Finished At"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="voting_id"/>
         </constraint>
+
     </table>
 
     <!-- Voting Options -->
@@ -32,7 +35,13 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="option_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="VOTING_OPTION_VOTING_ID" table="voting_option" column="voting_id" referenceTable="voting" referenceColumn="voting_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign"
+                    referenceId="VOTING_OPTION_VOTING_ID"
+                    table="voting_option"
+                    column="voting_id"
+                    referenceTable="voting"
+                    referenceColumn="voting_id"
+                    onDelete="CASCADE"/>
         <index referenceId="IDX_VOTING_OPTION_VOTING_ID">
             <column name="voting_id"/>
         </index>
@@ -49,8 +58,20 @@
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="vote_id"/>
         </constraint>
-        <constraint xsi:type="foreign" referenceId="VOTING_VOTE_VOTING_ID" table="voting_vote" column="voting_id" referenceTable="voting" referenceColumn="voting_id" onDelete="CASCADE"/>
-        <constraint xsi:type="foreign" referenceId="VOTING_VOTE_OPTION_ID" table="voting_vote" column="option_id" referenceTable="voting_option" referenceColumn="option_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign"
+                    referenceId="VOTING_VOTE_VOTING_ID"
+                    table="voting_vote"
+                    column="voting_id"
+                    referenceTable="voting"
+                    referenceColumn="voting_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="foreign"
+                    referenceId="VOTING_VOTE_OPTION_ID"
+                    table="voting_vote"
+                    column="option_id"
+                    referenceTable="voting_option"
+                    referenceColumn="option_id"
+                    onDelete="CASCADE"/>
         <index referenceId="IDX_VOTING_VOTE_CUSTOMER">
             <column name="customer_id"/>
         </index>

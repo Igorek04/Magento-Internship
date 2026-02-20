@@ -151,10 +151,22 @@
             </formElements>
         </field>
 
-        <field name="end_date" formElement="date">
+        <field name="end_date" sortOrder="60" formElement="date">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string">End Date</item>
+                    <item name="options" xsi:type="array">
+                        <item name="dateFormat" xsi:type="string">yyyy-MM-dd</item>
+                        <item name="timeFormat" xsi:type="string">hh:mm</item>
+                        <item name="showsTime" xsi:type="boolean">true</item>
+                        <item name="minDate" xsi:type="string">new Date()</item>
+                    </item>
+                </item>
+            </argument>
             <settings>
-                <label translate="true">End Date</label>
+                <dataType>timestamp</dataType>
                 <dataScope>end_date</dataScope>
+                <label translate="true">From</label>
             </settings>
         </field>
 

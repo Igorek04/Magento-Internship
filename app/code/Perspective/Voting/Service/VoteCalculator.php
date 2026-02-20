@@ -61,7 +61,7 @@ class VoteCalculator
             $finalVotes[$optionId] = $total;
         }
 
+        arsort($finalVotes);
         return $finalVotes;
     }
-
 }

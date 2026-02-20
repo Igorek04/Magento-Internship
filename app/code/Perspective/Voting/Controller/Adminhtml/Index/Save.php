@@ -63,11 +63,9 @@ class Save extends Action
     {
         $data = $this->getRequest()->getPostValue();
         $resultRedirect = $this->resultRedirectFactory->create();
-
+        $votingId = $this->getRequest()->getParam('voting_id');
         if ($data) {
             try {
-                $votingId = $this->getRequest()->getParam('voting_id');
-
                 $model = $this->votingManager->saveVotingData($data, $votingId);
                 $votingId = $model->getId();
 
@@ -77,6 +75,7 @@ class Save extends Action
 
                 $this->messageManager->addSuccessMessage(__('The data has been saved.'));
                 $this->adminSession->setFormData(false);
+                $this->_getSession()->unsetData('new_voting_form_data');
                 if ($this->getRequest()->getParam('back')) {
                     if ($this->getRequest()->getParam('back') == 'add') {
                         return $resultRedirect->setPath('*/*/add');
@@ -88,6 +87,10 @@ class Save extends Action
                 return $resultRedirect->setPath('*/*/');
             } catch (LocalizedException $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
+                if (!$votingId) {
+                    $this->_getSession()->setData('new_voting_form_data', $data);
+                }
+
             } catch (Exception $e) {
                 $this->messageManager->addExceptionMessage($e, __('Something went wrong while saving the data.'));
             }

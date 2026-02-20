@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="perspective_voting_view" class="Perspective\Voting\Block\Widget\Voting">
+        <label translate="true">Voting Widget</label>
+        <description translate="true">Allows users to vote in selected poll</description>
+        <parameters>
+            <parameter name="voting_id" xsi:type="select" visible="true" source_model="Perspective\Voting\Model\Source\VotingList">
+                <label translate="true">Select Voting</label>
+            </parameter>
+            <parameter name="template" xsi:type="select" visible="true">
+                <label translate="true">Template</label>
+                <options>
+                    <option name="default" value="Perspective_Voting::widget/voting.phtml" selected="true">
+                        <label translate="true">Default Template</label>
+                    </option>
+                </options>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>

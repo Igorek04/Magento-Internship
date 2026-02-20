@@ -200,19 +200,6 @@
             </argument>
         </column>
 
-        <column name="status" component="Magento_Ui/js/grid/columns/select">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Magento\Config\Model\Config\Source\Yesno</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Is Active</item>
-                    <item name="sortOrder" xsi:type="number">20</item>
-                </item>
-            </argument>
-        </column>
-
         <column name="allow_guests" component="Magento_Ui/js/grid/columns/select">
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">Magento\Config\Model\Config\Source\Yesno</item>
@@ -225,26 +212,22 @@
             </argument>
         </column>
 
-        <column name="end_date" component="Magento_Ui/js/grid/columns/date" class="Magento\Ui\Component\Listing\Columns\Date">
+        <column name="current_status" class="Perspective\Voting\Ui\Component\Listing\Column\CurrentStatus">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">dateRange</item>
-                    <item name="dataType" xsi:type="string">date</item>
-                    <item name="label" xsi:type="string" translate="true">End Date</item>
+                    <item name="label" xsi:type="string" translate="true">Current Status</item>
                     <item name="sortOrder" xsi:type="number">40</item>
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
                 </item>
             </argument>
         </column>
 
-
-        <column name="is_finished" component="Magento_Ui/js/grid/columns/select">
+        <column name="options_list" class="Perspective\Voting\Ui\Component\Listing\Column\Options">
             <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Magento\Config\Model\Config\Source\Yesno</item>
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Is Finished</item>
-                    <item name="sortOrder" xsi:type="number">50</item>
+                    <item name="label" xsi:type="string" translate="true">Voting Options</item>
+                    <item name="sortOrder" xsi:type="number">35</item>
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
                 </item>
             </argument>
         </column>
