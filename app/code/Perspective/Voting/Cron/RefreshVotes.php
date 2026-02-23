@@ -6,6 +6,7 @@ use Perspective\Voting\Service\VoteCalculator;
 use Perspective\Voting\Model\VotingOptionManager;
 use Perspective\Voting\Service\ConfigData;
 use Perspective\Voting\Model\Source\ManagementType;
+use Perspective\Voting\Service\CacheManager;
 
 class RefreshVotes
 {
@@ -13,17 +14,20 @@ class RefreshVotes
     protected $voteCalculator;
     protected $optionManager;
     protected $configDataService;
+    protected $cacheManager;
 
     public function __construct(
         CollectionFactory $collectionFactory,
         VoteCalculator $voteCalculator,
         VotingOptionManager $optionManager,
-        ConfigData $configDataService
+        ConfigData $configDataService,
+        CacheManager $cacheManager
     ) {
         $this->collectionFactory = $collectionFactory;
         $this->voteCalculator = $voteCalculator;
         $this->optionManager = $optionManager;
         $this->configDataService = $configDataService;
+        $this->cacheManager = $cacheManager;
     }
     public function execute(): void
     {
@@ -52,6 +56,7 @@ class RefreshVotes
                 $votingId = (int)$voting->getId();
                 $finalVotes = $this->voteCalculator->getFinalVotesByVotingId($votingId);
                 $this->optionManager->updateVotes($finalVotes);
+                $this->cacheManager->deleteVotingCache($votingId);
             }
         }
     }

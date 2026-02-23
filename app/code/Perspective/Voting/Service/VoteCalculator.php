@@ -43,8 +43,7 @@ class VoteCalculator
 
         $isAdminVotesEnabled = $this->configDataService->isAdminAllowedEditVotes();
 
-        $options = $this->optionCollectionFactory->create();
-        $options->addFieldToFilter('voting_id', $votingId);
+        $options = $this->votingOptionManager->getOptionsByVotingId($votingId);
 
         $finalVotes = [];
         foreach ($options as $option) {

@@ -1,7 +1,12 @@
 <?php
+use Perspective\Voting\Block\Widget\Voting;
+/** @var Voting $block */
+
 $votingId = $block->getData('voting_id');
 $scopeName = 'voting_component';
+$votingData = $block->prepareVotingData();
 ?>
+<link rel="stylesheet" type="text/css" href="<?= $block->getViewFileUrl('Perspective_Voting::css/voting.css') ?>">
 
 <div id="custom-component" data-bind="scope:'voting'">
     <!-- ko template: getTemplate() --><!-- /ko -->
@@ -12,7 +17,7 @@ $scopeName = 'voting_component';
                     "components": {
                         "voting": {
                             "component": "Perspective_Voting/js/view/voting",
-                            "votingId": "<?= $votingId ?>"
+                            "votingData": <?= json_encode($votingData) ?>
                         }
                     }
                 }

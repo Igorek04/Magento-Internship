@@ -1,3 +1,55 @@
 <div class="component-wrapper">
-    <div data-bind="text: 'Knockout Works'"></div>
+    <div class="voting-expiry"
+         style="font-size: 12px; color: #666; margin-bottom: 10px; text-align: center;"
+         data-bind="text: expiryText">
+    </div>
+
+    <h2 data-bind="text: title"></h2>
+    <p data-bind="text: description"></p>
+
+    <!-- ko foreach: options -->
+    <div class="bar" data-bind="css: { selected: $parent.isSelected($data) }, click: function() { $parent.selectOption($data) }">
+        <div class="progress"
+             data-bind="style: { width: percent + '%' }">
+        </div>
+        <div class="percent"
+             data-bind="text: percent + '%'">
+        </div>
+        <div class="text">
+            <div class="option-layout">
+                <!-- ko if: product -->
+                <div class="option-image">
+                    <img data-bind="attr: { src: product.image, alt: product.name }" />
+                </div>
+                <!-- /ko -->
+
+                <div class="option-content">
+                    <div class="option-title">
+                        <span data-bind="text: title"></span>
+                        <span class="votes"
+                              data-bind="text: ' (' + votes + ' votes)'"></span>
+                    </div>
+
+                    <!-- ko if: product -->
+                    <a class="product-name"
+                         data-bind="text: product.name, attr: { href: product.url }, click: function(data, event) { event.stopPropagation(); return true;}">
+                    </a>
+                    <!-- /ko -->
+
+                    <!-- ko if: description -->
+                    <div class="option-description"
+                         data-bind="text: description">
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+
+    <div class="actions-toolbar">
+        <button class="action primary" type="button" data-bind="click: sendVote, enable: selectedOptionId() !== null">
+            <span>Vote</span>
+        </button>
+    </div>
 </div>

@@ -64,12 +64,20 @@ class VotingOptionManager
         }
     }
 
-    /*public function getById(int $id): VotingOption
+    public function getById(int $id): VotingOption
     {
         $optionModel = $this->optionFactory->create();
         $this->optionResourceModel->load($optionModel, $id);
         return $optionModel;
-    }*/
+    }
+
+    public function getOptionsByVotingId(int $votingId)
+    {
+        $options = $this->optionCollectionFactory->create();
+        $options->addFieldToFilter('voting_id', $votingId);
+        return $options;
+
+    }
 
     public function updateVotes(array $results): void
     {
