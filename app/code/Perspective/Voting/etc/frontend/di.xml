@@ -7,4 +7,13 @@
                 sortOrder="1"
                 disabled="false"/>
     </type>
+
+
+    <type name="Magento\Customer\CustomerData\SectionPoolInterface">
+        <arguments>
+            <argument name="sectionSourceMap" xsi:type="array">
+                <item name="voting_data" xsi:type="string">Perspective\Voting\CustomerData\VotingData</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

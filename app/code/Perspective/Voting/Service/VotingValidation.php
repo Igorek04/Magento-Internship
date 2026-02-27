@@ -5,6 +5,7 @@ namespace Perspective\Voting\Service;
 use Perspective\Voting\Model\Voting;
 use Perspective\Voting\Model\Source\ManagementType;
 use Magento\Framework\Exception\LocalizedException;
+use Perspective\Voting\Exception\VotingException;
 
 
 class VotingValidation
@@ -15,21 +16,42 @@ class VotingValidation
     public function validateSave(Voting $voting, $data): void
     {
         if ($this->isVotingFinished($voting)) {
-            throw new LocalizedException(__('Voting already finished.'));
+            throw new VotingException(__('Voting already finished.'));
         }
 
         if (!$this->isManagementTypeManual($data)) {
             if (!$this->isEndDateFilled($data)) {
-                throw new LocalizedException(__('Please set "End Date" for this management type.'));
+                throw new VotingException(__('Please set "End Date" for this management type.'));
             }
 
             if (!$this->isEndDateInFuture($data)) {
-                throw new LocalizedException(__('The end date cannot be in the past.'));
+                throw new VotingException(__('The end date cannot be in the past.'));
             }
         }
 
         if (!$this->hasMinimumOptions($data)) {
-            throw new LocalizedException(__('A voting must have at least 2 options.'));
+            throw new VotingException(__('A voting must have at least 2 options.'));
+        }
+    }
+
+    public function canVote(Voting $voting, array $identity): void
+    {
+        if (empty($identity['customer_id']) && empty($identity['guest_hash'])) {
+            throw new VotingException(__('Identification failed.'));
+        }
+
+        if ($this->isVotingFinished($voting)) {
+            throw new VotingException(__('Voting already finished.'));
+        }
+
+        if ($this->isManagementTypeManual($voting)) {
+            if (!$this->isManualStatusActive($voting)) {
+                throw new VotingException(__('Voting is temporarily disabled.'));
+            }
+        } else {
+            if (!$this->isEndDateInFuture($voting)) {
+                throw new VotingException(__('The voting period has expired.'));
+            }
         }
     }
 
@@ -39,20 +61,37 @@ class VotingValidation
 
     }
 
-    public function isEndDateFilled($data): bool
+    public function isEndDateFilled($source): bool
     {
-        return !empty($data['end_date']);
+        if ($source instanceof Voting) {
+            $endDate = $source->getEndDate();
+        } else {
+            // if post data for save
+            $endDate = $source['end_date'];
+        }
+        return !empty($endDate);
     }
 
-    public function isManagementTypeManual($data): bool
+    public function isManagementTypeManual($source): bool
     {
-        return $data['management_type'] == ManagementType::TYPE_MANUAL;
+        if ($source instanceof Voting) {
+            $manageType = $source->getManagementType();
+        } else {
+            $manageType = $source['management_type'];
+        }
+        return $manageType == ManagementType::TYPE_MANUAL;
     }
 
-    public function isEndDateInFuture($data): bool
+    public function isEndDateInFuture($source): bool
     {
+        if ($source instanceof Voting) {
+            $endDate = $source->getEndDate();
+        } else {
+            $endDate = $source['end_date'];
+        }
+
         $currentTime = strtotime('now');
-        $selectedTime = strtotime($data['end_date']);
+        $selectedTime = strtotime($endDate);
         return $currentTime < $selectedTime;
     }
 
@@ -60,5 +99,10 @@ class VotingValidation
     {
         return !empty($data['data']['options_container']['options_container']) &&
                 count($data['data']['options_container']['options_container']) >= 2;
+    }
+
+    public function isManualStatusActive(Voting $voting): bool
+    {
+        return $voting->getStatus();
     }
 }

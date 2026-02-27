@@ -7,8 +7,21 @@
     <h2 data-bind="text: title"></h2>
     <p data-bind="text: description"></p>
 
+    <!-- ko if: systemMessage -->
+    <div class="voting-system-message"
+         data-bind="text: systemMessage, css: { 'status-ok': messageStatus(), 'status-err': !messageStatus() }"
+         style="padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center;">
+    </div>
+    <!-- /ko -->
+
     <!-- ko foreach: options -->
-    <div class="bar" data-bind="css: { selected: $parent.isSelected($data) }, click: function() { $parent.selectOption($data) }">
+    <div class="bar" data-bind="
+            css: {
+                selected: $parent.isSelected($data),
+                disabled: $parent.isReadOnly()
+                },
+             click: function() { if (!$parent.isReadOnly()) $parent.selectOption($data); }
+            ">
         <div class="progress"
              data-bind="style: { width: percent + '%' }">
         </div>
@@ -48,8 +61,14 @@
     <!-- /ko -->
 
     <div class="actions-toolbar">
-        <button class="action primary" type="button" data-bind="click: sendVote, enable: selectedOptionId() !== null">
-            <span>Vote</span>
+
+        <button class="action primary"
+                type="button"
+                data-bind="
+            click: sendVote,
+            attr: { title: buttonText },
+            disable: isButtonDisabled">
+            <span data-bind="text: buttonText"></span>
         </button>
     </div>
 </div>

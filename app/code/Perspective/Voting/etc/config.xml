@@ -11,6 +11,7 @@
                 <votes_refresh_frequency>*/2 * * * *</votes_refresh_frequency>
                 <voting_auto_finish_frequency>*/5 * * * *</voting_auto_finish_frequency>
                 <product_discount_duration>1</product_discount_duration>
+                <guest_cookie_ttl>30</guest_cookie_ttl>
             </general_settings>
         </perspective_voting>
     </default>

@@ -9,6 +9,7 @@ class ConfigData
     private const XML_PATH_ADMIN_EDIT_VOTES = 'perspective_voting/general_settings/allow_admin_edit_votes';
     private const XML_PATH_SHOW_DISCOUNT_LABEL = 'perspective_voting/general_settings/product_discount_label';
     private const XML_PATH_SHOW_DISCOUNT_DURATION = 'perspective_voting/general_settings/product_discount_duration';
+    private const XML_PATH_GUEST_COOKIE_LIFETIME = 'perspective_voting/general_settings/guest_cookie_ttl';
 
 
     protected $scopeConfig;
@@ -48,5 +49,10 @@ class ConfigData
     public function getDiscountDuration(): int
     {
         return (int)$this->scopeConfig->getValue($this::XML_PATH_SHOW_DISCOUNT_DURATION);
+    }
+
+    public function getGuestCookieLifetime(): int
+    {
+        return (int)$this->scopeConfig->getValue($this::XML_PATH_GUEST_COOKIE_LIFETIME) * 86400;
     }
 }

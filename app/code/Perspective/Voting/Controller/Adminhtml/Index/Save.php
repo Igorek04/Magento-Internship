@@ -17,6 +17,7 @@ use Perspective\Voting\Model\ResourceModel\VotingOption\CollectionFactory as Opt
 use Perspective\Voting\Service\VotingValidation;
 use Perspective\Voting\Model\VotingManager;
 use Perspective\Voting\Model\VotingOptionManager;
+use Perspective\Voting\Exception\VotingException;
 
 class Save extends Action
 {
@@ -85,7 +86,7 @@ class Save extends Action
                 }
 
                 return $resultRedirect->setPath('*/*/');
-            } catch (LocalizedException $e) {
+            } catch (VotingException | LocalizedException $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
                 if (!$votingId) {
                     $this->_getSession()->setData('new_voting_form_data', $data);
