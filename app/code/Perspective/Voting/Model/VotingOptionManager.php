@@ -5,21 +5,26 @@ namespace Perspective\Voting\Model;
 use Perspective\Voting\Model\VotingOptionFactory as OptionFactory;
 use Perspective\Voting\Model\ResourceModel\VotingOption as OptionResourceModel;
 use Perspective\Voting\Model\ResourceModel\VotingOption\CollectionFactory as OptionCollectionFactory;
+use Perspective\Voting\Service\CacheManager;
+
 
 class VotingOptionManager
 {
     protected $optionFactory;
     protected $optionResourceModel;
     protected $optionCollectionFactory;
+    protected $cacheManager;
 
     public function __construct(
         OptionFactory $optionFactory,
         OptionResourceModel $optionResourceModel,
-        OptionCollectionFactory $optionCollectionFactory
+        OptionCollectionFactory $optionCollectionFactory,
+        CacheManager $cacheManager
     ) {
         $this->optionFactory = $optionFactory;
         $this->optionResourceModel = $optionResourceModel;
         $this->optionCollectionFactory = $optionCollectionFactory;
+        $this->cacheManager = $cacheManager;
     }
 
 

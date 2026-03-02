@@ -90,7 +90,7 @@ class VotingValidation
             $endDate = $source['end_date'];
         }
 
-        $currentTime = strtotime('now');
+        $currentTime = strtotime(gmdate('Y-m-d H:i:s'));
         $selectedTime = strtotime($endDate);
         return $currentTime < $selectedTime;
     }

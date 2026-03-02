@@ -8,6 +8,7 @@ class CacheManager
 {
     public const VOTING_CACHE_KEY_PREFIX = 'VOTING_DATA_CACHE_%s';
     public const CACHE_TAG = 'PERSPECTIVE_VOTING';
+    public const VOTING_WINNERS_CACHE = 'VOTING_WINNERS_CACHE';
 
     protected $cache;
     protected $configDataService;
@@ -40,6 +41,31 @@ class CacheManager
     {
         $cacheId = sprintf(self::VOTING_CACHE_KEY_PREFIX, $votingId);
         $this->cache->remove($cacheId);
+        //clean by tag?
     }
+
+    public function getWinnersCache(): ?array
+    {
+        $data = $this->cache->load(self::VOTING_WINNERS_CACHE);
+        if ($data) {
+            return $this->serializer->unserialize($data);
+        } else {
+            return null;
+        }
+    }
+
+    public function saveWinnersCache(array $data): void
+    {
+        $this->cache->save($this->serializer->serialize($data), self::VOTING_WINNERS_CACHE, [self::CACHE_TAG], 300);
+    }
+
+    public function deleteWinnersCache(): void
+    {
+        $this->cache->remove(self::VOTING_WINNERS_CACHE);
+    }
+
+
+
+
 
 }

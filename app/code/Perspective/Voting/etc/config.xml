@@ -12,6 +12,7 @@
                 <voting_auto_finish_frequency>*/5 * * * *</voting_auto_finish_frequency>
                 <product_discount_duration>1</product_discount_duration>
                 <guest_cookie_ttl>30</guest_cookie_ttl>
+                <product_discount_label_template>Voting Winner Discount ({{percent}})</product_discount_label_template>
             </general_settings>
         </perspective_voting>
     </default>

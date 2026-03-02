@@ -3,19 +3,20 @@ namespace Perspective\Voting\Plugin;
 
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Block\Product\AbstractProduct;
+use Perspective\Voting\Service\ActiveWinners;
 
 class AddVotingWinnerLabel
 {
+    protected $activeWinnersService;
+    public function __construct(
+        ActiveWinners $activeWinnersService
+    ) {
+        $this->activeWinnersService = $activeWinnersService;
+    }
+
     public function afterGetProductDetailsHtml(AbstractProduct $subject, $result, Product $product)
     {
-        $test = 1;
-        if ($test = 1) {
-            $customHtml = '<div style="background:#fff3cd; text-align:center; font-weight:bold;">
-                            Voting Winner Discount
-                            </div>';
-            return $result . $customHtml;
-        } else {
-            return $result;
-        }
+        $customHtml = $this->activeWinnersService->getWinnerLabelHtml($product->getId());
+        return $result . $customHtml;
     }
 }

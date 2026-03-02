@@ -8,6 +8,8 @@ use Perspective\Voting\Service\VotingValidation;
 use Perspective\Voting\Model\VotingOptionManager;
 use Perspective\Voting\Service\VoteCalculator;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Perspective\Voting\Service\CacheManager;
+
 
 class VotingManager
 {
@@ -17,6 +19,7 @@ class VotingManager
     protected $votingOptionManager;
     protected $voteCalculatorService;
     protected $dateTime;
+    protected $cacheManager;
 
     public function __construct(
         VotingResourceModel $votingResourceModel,
@@ -25,6 +28,7 @@ class VotingManager
         VotingOptionManager $votingOptionManager,
         VoteCalculator       $voteCalculatorService,
         DateTime           $dateTime,
+        CacheManager        $cacheManager
     ) {
         $this->votingResourceModel = $votingResourceModel;
         $this->votingFactory = $votingFactory;
@@ -32,6 +36,7 @@ class VotingManager
         $this->votingOptionManager = $votingOptionManager;
         $this->voteCalculatorService = $voteCalculatorService;
         $this->dateTime = $dateTime;
+        $this->cacheManager = $cacheManager;
     }
 
     public function saveVotingData(array $data, $votingId = null): Voting
@@ -73,6 +78,10 @@ class VotingManager
 
         $voting->setIsFinished(1);
         $voting->setFinishedAt($this->dateTime->gmtDate());
+
         $this->votingResourceModel->save($voting);
+
+        $this->cacheManager->deleteVotingCache($votingId);
+        $this->cacheManager->deleteWinnersCache();
     }
 }

@@ -9,6 +9,7 @@ use Perspective\Voting\Model\VotingManager;
 use Perspective\Voting\Model\VotingOptionManager;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 
 class Voting extends Template implements BlockInterface
@@ -20,6 +21,7 @@ class Voting extends Template implements BlockInterface
     protected $cacheManager;
     protected $productRepository;
     protected $imageHelper;
+    protected $timezone;
     public function __construct(
         Template\Context $context,
         VotingManager $votingManager,
@@ -27,6 +29,7 @@ class Voting extends Template implements BlockInterface
         CacheManager $cacheManager,
         ProductRepositoryInterface $productRepository,
         Image $imageHelper,
+        TimezoneInterface $timezone,
         array $data = []
     ) {
         $this->votingManager = $votingManager;
@@ -34,6 +37,7 @@ class Voting extends Template implements BlockInterface
         $this->cacheManager = $cacheManager;
         $this->productRepository = $productRepository;
         $this->imageHelper = $imageHelper;
+        $this->timezone = $timezone;
         parent::__construct($context, $data);
     }
 
@@ -44,14 +48,16 @@ class Voting extends Template implements BlockInterface
         if (!$data) {
             $voting = $this->votingManager->getById($votingId);
 
+            $autoEndDate = $this->timezone->formatDate($voting->getEndDate(), \IntlDateFormatter::LONG, true);
+
             $data = [
                 'id'             => $voting->getId(),
                 'title'          => $voting->getTitle(),
                 'description'    => $voting->getDescription(),
                 'management_type' => $voting->getManagementType(),
                 'allow_guest'   => (bool)$voting->getAllowGuests(),
-                'manual_status'         => $voting->getStatus(),          // manual activity status
-                'auto_end_date'       => $voting->getEndDate(),         // auto finish date
+                'manual_status'         => $voting->getStatus(),   // manual activity status
+                'auto_end_date'       => $autoEndDate, // auto finish date
                 'is_finished'    => (bool)$voting->getIsFinished(),
                 'winner_option_id'      => $voting->getWinnerOptionId(),
                 'finished_at'    => $voting->getFinishedAt(),

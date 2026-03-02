@@ -1,0 +1,9 @@
+<?php
+use Magento\Framework\View\Element\Template;
+use Perspective\Voting\ViewModel\WinnerLabel;
+/** @var Template $block */
+/** @var WinnerLabel $viewModel */
+$viewModel = $block->getData('viewModel');
+?>
+
+<?= /* @noEscape */ $viewModel->getWinnerHtml() ?>

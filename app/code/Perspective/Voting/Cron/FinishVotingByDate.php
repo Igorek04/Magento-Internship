@@ -7,7 +7,6 @@ use Perspective\Voting\Model\ResourceModel\Voting\CollectionFactory;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Perspective\Voting\Model\Source\ManagementType;
 use Psr\Log\LoggerInterface;
-use Perspective\Voting\Service\CacheManager;
 
 
 class FinishVotingByDate
@@ -17,21 +16,18 @@ class FinishVotingByDate
     protected $votingCollectionFactory;
     protected $dateTime;
     protected $logger;
-    protected $cacheManager;
     public function __construct(
         VotingManager $votingManager,
         ConfigData $configDataService,
         CollectionFactory $votingCollectionFactory,
         DateTime $dateTime,
         LoggerInterface $logger,
-        CacheManager $cacheManager
     ) {
         $this->votingManager = $votingManager;
         $this->configDataService = $configDataService;
         $this->votingCollectionFactory = $votingCollectionFactory;
         $this->dateTime = $dateTime;
         $this->logger = $logger;
-        $this->cacheManager = $cacheManager;
     }
 
     public function execute(): void
@@ -45,10 +41,12 @@ class FinishVotingByDate
             ->addFieldToFilter('management_type', ManagementType::TYPE_BY_DATE)
             ->addFieldToFilter('end_date', ['lteq' => $now]);
 
+        $finished = 0;
         foreach ($collection as $voting) {
             $votingId = $voting->getId();
             $this->votingManager->finishVoting($votingId);
-            $this->cacheManager->deleteVotingCache($votingId);
+            $finished++;
         }
+        $this->logger->info('Finished ' . $finished . ' votings');
     }
 }
