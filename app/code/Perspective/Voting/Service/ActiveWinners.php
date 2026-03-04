@@ -88,4 +88,30 @@ class ActiveWinners
         }
         return htmlspecialchars_decode($html);
     }
+
+    // for quote\order
+    public function getOrderWinnersDiscount($entity)
+    {
+        $winners = $this->getActiveWinnerIds();
+
+        $items = $entity->getAllVisibleItems();
+
+        $totalDiscount = 0;
+        foreach ($items as $item) {
+            $productId = $item->getProductId();
+
+            if (isset($winners[$productId])) {
+                $itemPrice = $item->getBasePrice();
+                $qty = $item->getQty();
+                if (!$qty) {
+                    $qty = $item->getQtyOrdered();
+                }
+
+                $discountPercent = $winners[$productId];
+                $itemDiscount = ($itemPrice * $qty) * ($discountPercent / 100);
+                $totalDiscount += $itemDiscount;
+            }
+        }
+        return -$totalDiscount;
+    }
 }

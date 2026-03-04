@@ -79,4 +79,13 @@
             <column name="guest_hash"/>
         </index>
     </table>
+
+
+
+
+    <table name="sales_order">
+        <column xsi:type="decimal" name="winners_discount_amount" precision="12" scale="4" comment="Winners Discount"/>
+    </table>
+
+
 </schema>
