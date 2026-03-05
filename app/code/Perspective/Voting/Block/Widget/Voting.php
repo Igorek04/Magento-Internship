@@ -3,7 +3,6 @@ namespace Perspective\Voting\Block\Widget;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Widget\Block\BlockInterface;
-
 use Perspective\Voting\Service\CacheManager;
 use Perspective\Voting\Model\VotingManager;
 use Perspective\Voting\Model\VotingOptionManager;
@@ -11,17 +10,48 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
-
 class Voting extends Template implements BlockInterface
 {
+    /**
+     * @var string
+     */
     protected $_template = 'Perspective_Voting::widget/voting.phtml';
 
+    /**
+     * @var VotingManager
+     */
     protected $votingManager;
+    /**
+     * @var VotingOptionManager
+     */
     protected $votingOptionManager;
+    /**
+     * @var CacheManager
+     */
     protected $cacheManager;
+    /**
+     * @var ProductRepositoryInterface
+     */
     protected $productRepository;
+    /**
+     * @var Image
+     */
     protected $imageHelper;
+    /**
+     * @var TimezoneInterface
+     */
     protected $timezone;
+
+    /**
+     * @param Template\Context $context
+     * @param VotingManager $votingManager
+     * @param VotingOptionManager $votingOptionManager
+     * @param CacheManager $cacheManager
+     * @param ProductRepositoryInterface $productRepository
+     * @param Image $imageHelper
+     * @param TimezoneInterface $timezone
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         VotingManager $votingManager,
@@ -41,6 +71,9 @@ class Voting extends Template implements BlockInterface
         parent::__construct($context, $data);
     }
 
+    /**
+     * @return array
+     */
     public function prepareVotingData(): array
     {
         $votingId = $this->_data['voting_id'];
@@ -69,6 +102,11 @@ class Voting extends Template implements BlockInterface
     }
 
 
+    /**
+     * @param int $votingId
+     * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     protected function prepareOptionsData(int $votingId): array
     {
         $options = $this->votingOptionManager->getOptionsByVotingId($votingId);

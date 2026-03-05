@@ -16,4 +16,12 @@
             </argument>
         </arguments>
     </type>
+
+
+
+    <type name="Magento\Customer\Controller\Account\CreatePost">
+        <plugin name="perspective_voting_redirect_register_success"
+                type="Perspective\Voting\Plugin\GuestVoteRedirectAfterRegister"
+                sortOrder="1" disabled="false"/>
+    </type>
 </config>

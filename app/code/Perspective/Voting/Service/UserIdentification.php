@@ -52,7 +52,7 @@ class UserIdentification
         ];
     }
 
-    // get or create(hash cookie    ) data if not exist
+    // get or create(hash cookie ) data if not exist
     public function initIdentityData()
     {
         $data = $this->getIdentityData();

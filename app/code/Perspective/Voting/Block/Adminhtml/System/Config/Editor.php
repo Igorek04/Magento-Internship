@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\Block\Adminhtml\System\Config;
 
 use Magento\Backend\Block\Template\Context;
@@ -29,6 +28,10 @@ class Editor extends Field
         parent::__construct($context, $data);
     }
 
+    /**
+     * @param AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(AbstractElement $element)
     {
         $element->setWysiwyg(true);

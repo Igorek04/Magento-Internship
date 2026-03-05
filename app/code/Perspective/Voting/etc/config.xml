@@ -13,6 +13,7 @@
                 <product_discount_duration>1</product_discount_duration>
                 <guest_cookie_ttl>30</guest_cookie_ttl>
                 <product_discount_label_template>Voting Winner Discount ({{percent}})</product_discount_label_template>
+                <display_votings_link_in_top_menu>0</display_votings_link_in_top_menu>
             </general_settings>
         </perspective_voting>
     </default>

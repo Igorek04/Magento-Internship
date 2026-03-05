@@ -12,7 +12,7 @@ use Perspective\Voting\Service\ActiveWinners;
 
 class WinnersDiscount extends AbstractTotal
 {
-    public const TOTAL_TITLE = 'Winners Discount Total';
+    public const TOTAL_TITLE = 'Winners Discount';
     public const TOTAL_CODE = 'perspective_voting_winners_discount_total';
 
     protected $totalDiscount = null;
@@ -30,17 +30,16 @@ class WinnersDiscount extends AbstractTotal
         ShippingAssignmentInterface $shippingAssignment,
         Total $total
     ) {
-        //parent::collect($quote, $shippingAssignment, $total); ?? мб дублирование фиксил
         $address = $shippingAssignment->getShipping()->getAddress();
         $items = $this->_getAddressItems($address);
         if (!count($items)) {
             return $this;
         }
 
-        $insurancePrice = $this->getTotalDiscount($quote);
+        $winnersDiscount = $this->getTotalDiscount($quote);
 
-        $total->addTotalAmount(self::TOTAL_CODE, $insurancePrice);
-        $total->addBaseTotalAmount(self::TOTAL_CODE, $insurancePrice);
+        $total->addTotalAmount(self::TOTAL_CODE, $winnersDiscount);
+        $total->addBaseTotalAmount(self::TOTAL_CODE, $winnersDiscount);
 
         return $this;
     }

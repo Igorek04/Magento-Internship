@@ -36,4 +36,9 @@ class CookieManager
 
         $this->cookieManager->setPublicCookie(self::GUEST_COOKIE_NAME, $cookieData, $metadata);
     }
+
+    public function deleteGuestCookie()
+    {
+        $this->cookieManager->deleteCookie(self::GUEST_COOKIE_NAME);
+    }
 }

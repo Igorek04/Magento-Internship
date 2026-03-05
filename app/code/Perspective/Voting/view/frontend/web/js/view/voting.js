@@ -127,6 +127,12 @@ define([
                         option_id: this.selectedOptionId(),
                     },
                     success: function (response) {
+
+                        if (response.redirect && response.url) {
+                            window.location.href = response.url;
+                            return;
+                        }
+
                         if (response.message) {
                             self.systemMessage(response.message);
                             self.messageStatus(response.success);

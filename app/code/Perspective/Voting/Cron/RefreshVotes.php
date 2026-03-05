@@ -8,6 +8,7 @@ use Perspective\Voting\Service\ConfigData;
 use Perspective\Voting\Model\Source\ManagementType;
 use Perspective\Voting\Service\CacheManager;
 use Psr\Log\LoggerInterface;
+use Perspective\Voting\Model\VotingManager;
 
 class RefreshVotes
 {
@@ -17,6 +18,7 @@ class RefreshVotes
     protected $configDataService;
     protected $cacheManager;
     protected $logger;
+    protected $votingManager;
 
     public function __construct(
         CollectionFactory $collectionFactory,
@@ -24,7 +26,8 @@ class RefreshVotes
         VotingOptionManager $optionManager,
         ConfigData $configDataService,
         CacheManager $cacheManager,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        VotingManager $votingManager
     ) {
         $this->collectionFactory = $collectionFactory;
         $this->voteCalculator = $voteCalculator;
@@ -32,6 +35,7 @@ class RefreshVotes
         $this->configDataService = $configDataService;
         $this->cacheManager = $cacheManager;
         $this->logger = $logger;
+        $this->votingManager = $votingManager;
     }
     public function execute(): void
     {
@@ -39,18 +43,7 @@ class RefreshVotes
             return;
         }
 
-        $byDateIds = $this->collectionFactory->create()
-            ->addFieldToFilter('is_finished', 0)
-            ->addFieldToFilter('management_type', ManagementType::TYPE_BY_DATE)
-            ->getAllIds();
-
-        $manualActiveIds = $this->collectionFactory->create()
-            ->addFieldToFilter('is_finished', 0)
-            ->addFieldToFilter('management_type', ManagementType::TYPE_MANUAL)
-            ->addFieldToFilter('status', 1)
-            ->getAllIds();
-
-        $allIds = array_unique(array_merge($byDateIds, $manualActiveIds));
+        $allIds = $this->votingManager->getActiveVotingIds();
 
         if (!empty($allIds)) {
             $collection = $this->collectionFactory->create()
@@ -63,6 +56,6 @@ class RefreshVotes
                 $this->cacheManager->deleteVotingCache($votingId);
             }
         }
-        $this->logger->info('Votes refreshed for ' . count($allIds) . ' votings');
+        $this->logger->info(__('Votes refreshed for %1 votings', count($allIds)));
     }
 }

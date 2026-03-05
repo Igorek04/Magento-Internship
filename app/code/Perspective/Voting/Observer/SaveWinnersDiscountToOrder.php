@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
@@ -21,6 +20,5 @@ class SaveWinnersDiscountToOrder implements ObserverInterface
 
         $discount = $this->activeWinnersService->getOrderWinnersDiscount($quote);
         $order->setData('winners_discount_amount', $discount);
-        $test = 1;
     }
 }

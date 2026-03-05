@@ -8,7 +8,6 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Perspective\Voting\Model\Source\ManagementType;
 use Psr\Log\LoggerInterface;
 
-
 class FinishVotingByDate
 {
     protected $votingManager;
@@ -47,6 +46,6 @@ class FinishVotingByDate
             $this->votingManager->finishVoting($votingId);
             $finished++;
         }
-        $this->logger->info('Finished ' . $finished . ' votings');
+        $this->logger->info(__('Finished %1 votings', $finished));
     }
 }

@@ -44,6 +44,14 @@ class VoteManager
         return $collection->getFirstItem();
     }
 
+    public function getVotingIdsByUserId($customerId)
+    {
+        $collection = $this->voteCollectionFactory->create();
+        $collection->addFieldToFilter('customer_id', $customerId);
+        return array_unique($collection->getColumnValues('voting_id'));
+    }
+
+
     public function processVote(int $votingId, int $optionId, array $identity): string
     {
         // voting validation
@@ -75,5 +83,23 @@ class VoteManager
             $message = __('Your vote has been successfully updated. Statistics will be updated soon.');
         }
         return $message;
+    }
+
+    public function convertGuestVotesToCustomer($guestHash, $customerId)
+    {
+        $guestVoteCollection = $this->voteCollectionFactory->create();
+        $guestVoteCollection->addFieldToFilter('guest_hash', $guestHash);
+
+        foreach ($guestVoteCollection as $vote) {
+            $votingId = $vote->getVotingId();
+
+            if ($this->getUserVoteByVoting($votingId, $customerId)->getId()) {
+                $this->voteResourceModel->delete($vote);
+            } else {
+                $vote->setCustomerId($customerId);
+                $vote->setGuestHash(null);
+                $this->voteResourceModel->save($vote);
+            }
+        }
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Perspective\Voting\Block\VotingList" name="voting.list.all.active" template="Perspective_Voting::voting/list.phtml">
+                <arguments>
+                    <argument name="active_only" xsi:type="boolean">true</argument>
+                    <argument name="customer_votes" xsi:type="boolean">false</argument>
+                </arguments>
+                <block class="Perspective\Voting\Block\Widget\Voting" name="voting.widget.renderer" template="Perspective_Voting::widget/voting.phtml"/>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

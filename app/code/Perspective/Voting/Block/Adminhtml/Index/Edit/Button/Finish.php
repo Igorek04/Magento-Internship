@@ -2,18 +2,20 @@
 namespace Perspective\Voting\Block\Adminhtml\Index\Edit\Button;
 
 use Magento\Framework\View\Element\UiComponent\Control\ButtonProviderInterface;
-use Perspective\Voting\Model\Source\ManagementType;
-use Perspective\Voting\Model\ResourceModel\Voting;
-use Perspective\Voting\Model\VotingFactory;
 use Magento\Backend\Block\Widget\Context;
 use Perspective\Voting\Service\VotingState;
 
 class Finish extends Generic implements ButtonProviderInterface
 {
+    /**
+     * @var VotingState
+     */
     protected $votingStateService;
 
-
-
+    /**
+     * @param Context $context
+     * @param VotingState $votingStateService
+     */
     public function __construct(
         Context $context,
         VotingState $votingStateService,

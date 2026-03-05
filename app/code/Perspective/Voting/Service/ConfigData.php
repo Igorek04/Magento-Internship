@@ -11,6 +11,7 @@ class ConfigData
     private const XML_PATH_SHOW_DISCOUNT_DURATION = 'perspective_voting/general_settings/product_discount_duration';
     private const XML_PATH_DISCOUNT_LABEL_TEMPLATE = 'perspective_voting/general_settings/product_discount_label_template';
     private const XML_PATH_GUEST_COOKIE_LIFETIME = 'perspective_voting/general_settings/guest_cookie_ttl';
+    private const XML_PATH_SHOW_VOTINGS_LINK_IN_MENU = 'perspective_voting/general_settings/display_votings_link_in_top_menu';
 
 
     protected $scopeConfig;
@@ -60,5 +61,10 @@ class ConfigData
     public function getDiscountLabelTemplate(): string
     {
         return $this->scopeConfig->getValue($this::XML_PATH_DISCOUNT_LABEL_TEMPLATE);
+    }
+
+    public function isShowVotingsLinkInMenu(): bool
+    {
+        return $this->scopeConfig->isSetFlag($this::XML_PATH_SHOW_VOTINGS_LINK_IN_MENU);
     }
 }

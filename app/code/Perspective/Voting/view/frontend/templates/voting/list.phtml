@@ -1,0 +1,22 @@
+<?php
+/* @var \Perspective\Voting\Block\VotingList $block */
+$votingIds = $block->getVotingIds();
+
+?>
+
+<div class="votings-grid">
+    <?php if (!empty($votingIds)): ?>
+        <?php foreach ($votingIds as $id): ?>
+            <div class="voting-item-card">
+                <?= $block->getChildBlock('voting.widget.renderer')
+                    ->setData('voting_id', $id)
+                    ->toHtml();
+                ?>
+            </div> <br>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <div class="message info">
+            <span><?= $block->escapeHtml(__('No votings available.')) ?></span>
+        </div>
+    <?php endif; ?>
+</div>

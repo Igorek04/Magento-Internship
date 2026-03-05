@@ -1,12 +1,10 @@
 <?php
-
 namespace Perspective\Voting\Block\Sales\Order;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\DataObject;
 use Magento\Sales\Model\Order;
-use Magento\Tax\Block\Sales\Order\Tax;
-use Perspective\Voting\Model\Totals\WinnersDiscount as TotalModel;
+use Magento\Store\Model\Store;
 use Perspective\Voting\Service\ActiveWinners;
 
 class WinnersDiscount extends Template
@@ -21,9 +19,17 @@ class WinnersDiscount extends Template
      */
     protected $_source;
 
+    /**
+     * @var ActiveWinners
+     */
     protected $activeWinnersService;
 
 
+    /**
+     * @param Template\Context $context
+     * @param ActiveWinners $activeWinnersService
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         ActiveWinners $activeWinnersService,
@@ -33,6 +39,9 @@ class WinnersDiscount extends Template
         parent::__construct($context, $data);
     }
 
+    /**
+     * @return true
+     */
     public function displayFullSummary()
     {
         return true;
@@ -44,6 +53,10 @@ class WinnersDiscount extends Template
     {
         return $this->_source;
     }
+
+    /**
+     * @return Store
+     */
     public function getStore()
     {
         return $this->_order->getStore();
@@ -70,24 +83,27 @@ class WinnersDiscount extends Template
         return $this->getParentBlock()->getValueProperties();
     }
 
+    /**
+     * @return $this
+     */
     public function initTotals()
     {
         $parent = $this->getParentBlock();
         $this->_order = $parent->getOrder();
 
         $value = $this->_order->getData('winners_discount_amount');
-
-        $this->_source = $parent->getSource();
-        $store = $this->getStore();
-        $total = new DataObject(
-            [
-                'code'=>'perspective_voting_winners_discount_total',
-                'strong'=>false,
-                'value'=>$value,
-                'label'=>__('perspective_voting_winners_discount_total'),
-            ]
-        );
-        $parent->addTotal($total, 'perspective_voting_winners_discount_total');
+        if ($value != 0) {
+            $this->_source = $parent->getSource();
+            $total = new DataObject(
+                [
+                    'code'=>'perspective_voting_winners_discount_total',
+                    'strong'=>false,
+                    'value'=>$value,
+                    'label'=>__('Winners Discount'),
+                ]
+            );
+            $parent->addTotal($total, 'perspective_voting_winners_discount_total');
+        }
         return $this;
     }
 }
