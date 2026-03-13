@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\Ui\Component\Listing\Column;
 
 use Magento\Framework\UrlInterface;

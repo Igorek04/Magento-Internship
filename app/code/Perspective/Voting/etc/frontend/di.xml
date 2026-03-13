@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Add Product Winner Label -->
     <type name="Magento\Catalog\Block\Product\AbstractProduct">
         <plugin name="perspective_add_catalog_voting_winner_label"
                 type="Perspective\Voting\Plugin\AddVotingWinnerLabel"
@@ -8,7 +9,7 @@
                 disabled="false"/>
     </type>
 
-
+    <!-- Add Section for Customer Votes-->
     <type name="Magento\Customer\CustomerData\SectionPoolInterface">
         <arguments>
             <argument name="sectionSourceMap" xsi:type="array">
@@ -18,7 +19,7 @@
     </type>
 
 
-
+    <!-- Redirect new customer back to voting source and migrate guest votes to their account -->
     <type name="Magento\Customer\Controller\Account\CreatePost">
         <plugin name="perspective_voting_redirect_register_success"
                 type="Perspective\Voting\Plugin\GuestVoteRedirectAfterRegister"

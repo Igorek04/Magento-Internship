@@ -7,9 +7,19 @@ use Perspective\Voting\Model\ResourceModel\VotingVote\CollectionFactory;
 
 class VotingData implements SectionSourceInterface
 {
+    /**
+     * @var UserIdentification
+     */
     protected $userIdentification;
+    /**
+     * @var CollectionFactory
+     */
     protected $voteCollectionFactory;
 
+    /**
+     * @param UserIdentification $userIdentification
+     * @param CollectionFactory $voteCollectionFactory
+     */
     public function __construct(
         UserIdentification $userIdentification,
         CollectionFactory $voteCollectionFactory
@@ -19,9 +29,11 @@ class VotingData implements SectionSourceInterface
     }
 
     /**
+     * Get customer or guest voting history(private section data) for UI pre-selection
+     *
      * @return array
      */
-    public function getSectionData()
+    public function getSectionData(): array
     {
         $identity = $this->userIdentification->initIdentityData();
         $customerId = $identity['customer_id'];

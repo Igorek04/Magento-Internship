@@ -54,8 +54,6 @@
             </settings>
         </field>
 
-
-
         <field name="title" formElement="input">
             <settings>
                 <dataType>text</dataType>

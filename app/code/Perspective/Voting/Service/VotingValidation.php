@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\Service;
 
 use Perspective\Voting\Model\Voting;
@@ -7,10 +6,11 @@ use Perspective\Voting\Model\Source\ManagementType;
 use Magento\Framework\Exception\LocalizedException;
 use Perspective\Voting\Exception\VotingException;
 
-
 class VotingValidation
 {
     /**
+     * Validate voting data before saving
+     *
      * @throws LocalizedException
      */
     public function validateSave(Voting $voting, $data): void
@@ -34,6 +34,14 @@ class VotingValidation
         }
     }
 
+    /**
+     * Check if a user is allowed to cast a vote right now
+     *
+     * @param Voting $voting
+     * @param array $identity
+     * @return void
+     * @throws VotingException
+     */
     public function canVote(Voting $voting, array $identity): void
     {
         if (empty($identity['customer_id']) && empty($identity['guest_hash'])) {
@@ -55,12 +63,20 @@ class VotingValidation
         }
     }
 
+    /**
+     * @param Voting $voting
+     * @return bool
+     */
     public function isVotingFinished(Voting $voting): bool
     {
         return (bool)$voting->getIsFinished();
 
     }
 
+    /**
+     * @param $source
+     * @return bool
+     */
     public function isEndDateFilled($source): bool
     {
         if ($source instanceof Voting) {
@@ -72,6 +88,10 @@ class VotingValidation
         return !empty($endDate);
     }
 
+    /**
+     * @param $source
+     * @return bool
+     */
     public function isManagementTypeManual($source): bool
     {
         if ($source instanceof Voting) {
@@ -82,6 +102,10 @@ class VotingValidation
         return $manageType == ManagementType::TYPE_MANUAL;
     }
 
+    /**
+     * @param $source
+     * @return bool
+     */
     public function isEndDateInFuture($source): bool
     {
         if ($source instanceof Voting) {
@@ -95,12 +119,20 @@ class VotingValidation
         return $currentTime < $selectedTime;
     }
 
+    /**
+     * @param $data
+     * @return bool
+     */
     public function hasMinimumOptions($data): bool
     {
         return !empty($data['data']['options_container']['options_container']) &&
                 count($data['data']['options_container']['options_container']) >= 2;
     }
 
+    /**
+     * @param Voting $voting
+     * @return bool
+     */
     public function isManualStatusActive(Voting $voting): bool
     {
         return $voting->getStatus();

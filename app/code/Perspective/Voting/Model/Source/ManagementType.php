@@ -8,8 +8,10 @@ class ManagementType implements OptionSourceInterface
     public const TYPE_MANUAL = 0;
     public const TYPE_BY_DATE = 1;
 
-
-    public function toOptionArray()
+    /**
+     * @return array[]
+     */
+    public function toOptionArray(): array
     {
         return [
             ['value' => self::TYPE_MANUAL, 'label' => __('Manual')],

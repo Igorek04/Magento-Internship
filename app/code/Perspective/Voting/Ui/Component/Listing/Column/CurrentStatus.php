@@ -8,8 +8,18 @@ use Perspective\Voting\Service\VotingState;
 
 class CurrentStatus extends Column
 {
+    /**
+     * @var VotingState
+     */
     protected $votingState;
 
+    /**
+     * @param ContextInterface $context
+     * @param UiComponentFactory $uiComponentFactory
+     * @param VotingState $votingState
+     * @param array $components
+     * @param array $data
+     */
     public function __construct(
         ContextInterface $context,
         UiComponentFactory $uiComponentFactory,
@@ -21,6 +31,10 @@ class CurrentStatus extends Column
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
+    /**
+     * @param array $dataSource
+     * @return array
+     */
     public function prepareDataSource(array $dataSource)
     {
         if (isset($dataSource['data']['items'])) {
@@ -30,11 +44,26 @@ class CurrentStatus extends Column
                 $endDate = $item['end_date'];
 
                 $item[$this->getData('name')] = match ($state) {
-                    VotingState::STATE_FINISHED => '<strong>' . __('Finished') . '</strong>',
-                    VotingState::STATE_MANUAL_ACTIVE => '<span style="color: green;">' . __('Active (Manual)') . '</span>',
-                    VotingState::STATE_MANUAL_INACTIVE => '<span style="color: grey;">' . __('Inactive (Manual)') . '</span>',
-                    VotingState::STATE_AUTO => '<span style="color: green;">' . __('Active (Auto - %1)', $endDate) . '</span>',
-                    default => '<span style="color: red;">' . __('Unknown') . '</span>'
+                    VotingState::STATE_FINISHED => sprintf(
+                        '<strong>%s</strong>',
+                        __('Finished')
+                    ),
+                    VotingState::STATE_MANUAL_ACTIVE => sprintf(
+                        '<span style="color: green;">%s</span>',
+                        __('Active (Manual)')
+                    ),
+                    VotingState::STATE_MANUAL_INACTIVE => sprintf(
+                        '<span style="color: grey;">%s</span>',
+                        __('Inactive (Manual)')
+                    ),
+                    VotingState::STATE_AUTO => sprintf(
+                        '<span style="color: green;">%s</span>',
+                        __('Active (Auto - %1)', $endDate)
+                    ),
+                    default => sprintf(
+                        '<span style="color: red;">%s</span>',
+                        __('Unknown')
+                    )
                 };
             }
         }

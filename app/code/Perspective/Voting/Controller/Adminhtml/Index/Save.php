@@ -8,56 +8,46 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Perspective\Voting\Model\Source\ManagementType;
-use Perspective\Voting\Model\Voting as VotingModel;
-use Perspective\Voting\Model\ResourceModel\Voting as VotingResourceModel;
-use Perspective\Voting\Model\VotingOptionFactory as OptionFactory;
-use Perspective\Voting\Model\ResourceModel\VotingOption as OptionResourceModel;
-use Perspective\Voting\Model\ResourceModel\VotingOption\CollectionFactory as OptionCollectionFactory;
-use Perspective\Voting\Service\VotingValidation;
 use Perspective\Voting\Model\VotingManager;
 use Perspective\Voting\Model\VotingOptionManager;
 use Perspective\Voting\Exception\VotingException;
 
 class Save extends Action
 {
-    protected $votingModel;
-    protected $votingResourceModel;
+    /**
+     * @var Session
+     */
     protected $adminSession;
-    protected $optionFactory;
-    protected $optionResourceModel;
-    protected $optionCollectionFactory;
-    protected $votingValidationService;
+    /**
+     * @var VotingManager
+     */
     protected $votingManager;
+    /**
+     * @var VotingOptionManager
+     */
     protected $votingOptionManager;
 
-
-
+    /**
+     * @param Action\Context $context
+     * @param Session $adminSession
+     * @param VotingManager $votingManager
+     * @param VotingOptionManager $votingOptionManager
+     */
     public function __construct(
         Action\Context $context,
-        VotingModel $votingModel,
-        VotingResourceModel $votingResourceModel,
         Session $adminSession,
-        OptionCollectionFactory $optionCollectionFactory,
-        OptionResourceModel $optionResourceModel,
-        OptionFactory $optionFactory,
-        VotingValidation $votingValidationService,
         VotingManager $votingManager,
         VotingOptionManager $votingOptionManager
     ) {
         parent::__construct($context);
-        $this->votingModel = $votingModel;
-        $this->votingResourceModel = $votingResourceModel;
         $this->adminSession = $adminSession;
-        $this->optionCollectionFactory = $optionCollectionFactory;
-        $this->optionResourceModel = $optionResourceModel;
-        $this->optionFactory = $optionFactory;
-        $this->votingValidationService = $votingValidationService;
         $this->votingManager = $votingManager;
         $this->votingOptionManager = $votingOptionManager;
     }
 
     /**
+     * Trigger voting save process and redirect based on user action
+     *
      * @return ResultInterface|ResponseInterface|Redirect
      */
     public function execute()
@@ -76,7 +66,9 @@ class Save extends Action
 
                 $this->messageManager->addSuccessMessage(__('The data has been saved.'));
                 $this->adminSession->setFormData(false);
+
                 $this->_getSession()->unsetData('new_voting_form_data');
+
                 if ($this->getRequest()->getParam('back')) {
                     if ($this->getRequest()->getParam('back') == 'add') {
                         return $resultRedirect->setPath('*/*/add');
@@ -88,6 +80,7 @@ class Save extends Action
                 return $resultRedirect->setPath('*/*/');
             } catch (VotingException | LocalizedException $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
+                //save form data to session to prevent data loss on error
                 if (!$votingId) {
                     $this->_getSession()->setData('new_voting_form_data', $data);
                 }

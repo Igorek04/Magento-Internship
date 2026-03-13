@@ -13,8 +13,14 @@ class ConfigData
     private const XML_PATH_GUEST_COOKIE_LIFETIME = 'perspective_voting/general_settings/guest_cookie_ttl';
     private const XML_PATH_SHOW_VOTINGS_LINK_IN_MENU = 'perspective_voting/general_settings/display_votings_link_in_top_menu';
 
-
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $scopeConfig;
+
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig
     ) {
@@ -53,16 +59,25 @@ class ConfigData
         return (int)$this->scopeConfig->getValue($this::XML_PATH_SHOW_DISCOUNT_DURATION);
     }
 
+    /**
+     * @return int
+     */
     public function getGuestCookieLifetime(): int
     {
         return (int)$this->scopeConfig->getValue($this::XML_PATH_GUEST_COOKIE_LIFETIME) * 86400;
     }
 
+    /**
+     * @return string
+     */
     public function getDiscountLabelTemplate(): string
     {
         return $this->scopeConfig->getValue($this::XML_PATH_DISCOUNT_LABEL_TEMPLATE);
     }
 
+    /**
+     * @return bool
+     */
     public function isShowVotingsLinkInMenu(): bool
     {
         return $this->scopeConfig->isSetFlag($this::XML_PATH_SHOW_VOTINGS_LINK_IN_MENU);

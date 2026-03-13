@@ -13,7 +13,6 @@ class Edit extends Action
     public function execute()
     {
         /** @var Page $resultPage */
-
         $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
         $resultPage->getConfig()->getTitle()->prepend((__('Edit Record')));
 

@@ -43,9 +43,11 @@ class VotingList extends Template
     }
 
     /**
+     * Get voting IDs based on block configuration parameters
+     *
      * @return array
      */
-    public function getVotingIds()
+    public function getVotingIds(): array
     {
         $ids = [];
         if ($this->getData('active_only')) {

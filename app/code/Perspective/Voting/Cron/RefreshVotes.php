@@ -5,21 +5,50 @@ use Perspective\Voting\Model\ResourceModel\Voting\CollectionFactory;
 use Perspective\Voting\Service\VoteCalculator;
 use Perspective\Voting\Model\VotingOptionManager;
 use Perspective\Voting\Service\ConfigData;
-use Perspective\Voting\Model\Source\ManagementType;
 use Perspective\Voting\Service\CacheManager;
 use Psr\Log\LoggerInterface;
 use Perspective\Voting\Model\VotingManager;
 
 class RefreshVotes
 {
+    /**
+     * @var CollectionFactory
+     */
     protected $collectionFactory;
+    /**
+     * @var VoteCalculator
+     */
     protected $voteCalculator;
+    /**
+     * @var VotingOptionManager
+     */
     protected $optionManager;
+    /**
+     * @var ConfigData
+     */
     protected $configDataService;
+    /**
+     * @var CacheManager
+     */
     protected $cacheManager;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+    /**
+     * @var VotingManager
+     */
     protected $votingManager;
 
+    /**
+     * @param CollectionFactory $collectionFactory
+     * @param VoteCalculator $voteCalculator
+     * @param VotingOptionManager $optionManager
+     * @param ConfigData $configDataService
+     * @param CacheManager $cacheManager
+     * @param LoggerInterface $logger
+     * @param VotingManager $votingManager
+     */
     public function __construct(
         CollectionFactory $collectionFactory,
         VoteCalculator $voteCalculator,
@@ -37,6 +66,12 @@ class RefreshVotes
         $this->logger = $logger;
         $this->votingManager = $votingManager;
     }
+
+    /**
+     * Recalculate vote statistics and refresh cache for all active votings
+     *
+     * @return void
+     */
     public function execute(): void
     {
         if (!$this->configDataService->isModuleEnabled()) {

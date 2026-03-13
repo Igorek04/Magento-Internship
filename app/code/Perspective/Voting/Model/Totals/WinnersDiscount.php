@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\Model\Totals;
 
 use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
@@ -9,7 +8,6 @@ use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Framework\Phrase;
 use Perspective\Voting\Service\ActiveWinners;
 
-
 class WinnersDiscount extends AbstractTotal
 {
     public const TOTAL_TITLE = 'Winners Discount';
@@ -17,14 +15,26 @@ class WinnersDiscount extends AbstractTotal
 
     protected $totalDiscount = null;
 
+    /**
+     * @var ActiveWinners
+     */
     protected $activeWinnersService;
 
+    /**
+     * @param ActiveWinners $activeWinnersService
+     */
     public function __construct(
         ActiveWinners $activeWinnersService,
     ) {
         $this->activeWinnersService = $activeWinnersService;
     }
 
+    /**
+     * @param Quote $quote
+     * @param ShippingAssignmentInterface $shippingAssignment
+     * @param Total $total
+     * @return $this|WinnersDiscount
+     */
     public function collect(
         Quote $quote,
         ShippingAssignmentInterface $shippingAssignment,
@@ -66,6 +76,10 @@ class WinnersDiscount extends AbstractTotal
         return __(self::TOTAL_TITLE);
     }
 
+    /**
+     * @param Quote $quote
+     * @return string
+     */
     private function getTotalDiscount(Quote $quote): string
     {
         if ($this->totalDiscount === null) {

@@ -70,7 +70,7 @@
                     <depends><field id="enabled">1</field></depends>
                 </field>
 
-                <field id="guest_cookie_ttl" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="guest_cookie_ttl" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Guest Identification Lifetime (Days)</label>
                     <comment>Number of days to store the guest cookie. Determines how long a guest is recognized by the system before their voting history is reset.</comment>
                     <validate>validate-digits validate-greater-than-zero</validate>
@@ -79,7 +79,7 @@
                     </depends>
                 </field>
 
-                <field id="display_votings_link_in_top_menu" sortOrder="20" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="display_votings_link_in_top_menu" sortOrder="70" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Display Votings Link In Top Menu</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Enable to add "Votings" link to the main navigation bar</comment>

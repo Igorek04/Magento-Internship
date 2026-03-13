@@ -13,17 +13,14 @@ class WinnersDiscount extends Template
      * @var Order
      */
     protected $_order;
-
     /**
      * @var DataObject
      */
     protected $_source;
-
     /**
      * @var ActiveWinners
      */
     protected $activeWinnersService;
-
 
     /**
      * @param Template\Context $context
@@ -40,6 +37,33 @@ class WinnersDiscount extends Template
     }
 
     /**
+     * Add winners discount to order totals summary
+     * (Used at admin/customer order view)
+     *
+     * @return $this
+     */
+    public function initTotals()
+    {
+        $parent = $this->getParentBlock();
+        $this->_order = $parent->getOrder();
+
+        $value = $this->_order->getData('winners_discount_amount');
+        if ($value != 0) {
+            $this->_source = $parent->getSource();
+            $total = new DataObject(
+                [
+                    'code'=>'perspective_voting_winners_discount_total',
+                    'strong'=>false,
+                    'value'=>$value,
+                    'label'=>__('Winners Discount'),
+                ]
+            );
+            $parent->addTotal($total, 'perspective_voting_winners_discount_total');
+        }
+        return $this;
+    }
+
+    /**
      * @return true
      */
     public function displayFullSummary()
@@ -53,7 +77,6 @@ class WinnersDiscount extends Template
     {
         return $this->_source;
     }
-
     /**
      * @return Store
      */
@@ -81,29 +104,5 @@ class WinnersDiscount extends Template
     public function getValueProperties()
     {
         return $this->getParentBlock()->getValueProperties();
-    }
-
-    /**
-     * @return $this
-     */
-    public function initTotals()
-    {
-        $parent = $this->getParentBlock();
-        $this->_order = $parent->getOrder();
-
-        $value = $this->_order->getData('winners_discount_amount');
-        if ($value != 0) {
-            $this->_source = $parent->getSource();
-            $total = new DataObject(
-                [
-                    'code'=>'perspective_voting_winners_discount_total',
-                    'strong'=>false,
-                    'value'=>$value,
-                    'label'=>__('Winners Discount'),
-                ]
-            );
-            $parent->addTotal($total, 'perspective_voting_winners_discount_total');
-        }
-        return $this;
     }
 }

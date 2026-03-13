@@ -10,11 +10,34 @@ use Psr\Log\LoggerInterface;
 
 class FinishVotingByDate
 {
+    /**
+     * @var VotingManager
+     */
     protected $votingManager;
+    /**
+     * @var ConfigData
+     */
     protected $configDataService;
+    /**
+     * @var CollectionFactory
+     */
     protected $votingCollectionFactory;
+    /**
+     * @var DateTime
+     */
     protected $dateTime;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+
+    /**
+     * @param VotingManager $votingManager
+     * @param ConfigData $configDataService
+     * @param CollectionFactory $votingCollectionFactory
+     * @param DateTime $dateTime
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         VotingManager $votingManager,
         ConfigData $configDataService,
@@ -29,6 +52,11 @@ class FinishVotingByDate
         $this->logger = $logger;
     }
 
+    /**
+     * Automatically finish votings that have reached their expiration date
+     *
+     * @return void
+     */
     public function execute(): void
     {
         if (!$this->configDataService->isModuleEnabled()) {

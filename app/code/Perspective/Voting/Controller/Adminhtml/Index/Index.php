@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\Controller\Adminhtml\Index;
 
 use Magento\Backend\App\Action;

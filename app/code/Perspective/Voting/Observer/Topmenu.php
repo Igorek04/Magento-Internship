@@ -8,12 +8,26 @@ use Perspective\Voting\Service\ConfigData;
 
 class Topmenu implements ObserverInterface
 {
+    /**
+     * @var ConfigData
+     */
     protected $configDataService;
+
+    /**
+     * @param ConfigData $configDataService
+     */
     public function __construct(
         ConfigData $configDataService
     ) {
         $this->configDataService = $configDataService;
     }
+
+    /**
+     * Add the Votings link to the top navigation menu if enabled in config
+     *
+     * @param EventObserver $observer
+     * @return $this|void
+     */
     public function execute(EventObserver $observer)
     {
         if ($this->configDataService->isShowVotingsLinkInMenu()) {

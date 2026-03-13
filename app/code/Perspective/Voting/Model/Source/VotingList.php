@@ -6,13 +6,22 @@ use Perspective\Voting\Model\ResourceModel\Voting\CollectionFactory;
 
 class VotingList implements OptionSourceInterface
 {
+    /**
+     * @var CollectionFactory
+     */
     protected $collectionFactory;
 
+    /**
+     * @param CollectionFactory $collectionFactory
+     */
     public function __construct(CollectionFactory $collectionFactory) {
         $this->collectionFactory = $collectionFactory;
     }
 
-    public function toOptionArray()
+    /**
+     * @return array
+     */
+    public function toOptionArray(): array
     {
         $collection = $this->collectionFactory->create();
         $options = [];

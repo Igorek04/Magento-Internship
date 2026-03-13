@@ -10,9 +10,23 @@ class CacheManager
     public const CACHE_TAG = 'PERSPECTIVE_VOTING';
     public const VOTING_WINNERS_CACHE = 'VOTING_WINNERS_CACHE';
 
+    /**
+     * @var CacheInterface
+     */
     protected $cache;
+    /**
+     * @var
+     */
     protected $configDataService;
+    /**
+     * @var SerializerInterface
+     */
     protected $serializer;
+
+    /**
+     * @param CacheInterface $cache
+     * @param SerializerInterface $serializer
+     */
     public function __construct(
         CacheInterface $cache,
         SerializerInterface $serializer
@@ -21,6 +35,10 @@ class CacheManager
        $this->serializer = $serializer;
     }
 
+    /**
+     * @param int $votingId
+     * @return array
+     */
     public function getVotingCache(int $votingId): array
     {
         $cacheId = sprintf(self::VOTING_CACHE_KEY_PREFIX, $votingId);
@@ -31,12 +49,21 @@ class CacheManager
         return [];
     }
 
+    /**
+     * @param int $votingId
+     * @param array $data
+     * @return void
+     */
     public function saveVotingCache(int $votingId, array $data): void
     {
         $cacheId = sprintf(self::VOTING_CACHE_KEY_PREFIX, $votingId);
         $this->cache->save($this->serializer->serialize($data), $cacheId, [self::CACHE_TAG], 3600);
     }
 
+    /**
+     * @param int $votingId
+     * @return void
+     */
     public function deleteVotingCache(int $votingId): void
     {
         $cacheId = sprintf(self::VOTING_CACHE_KEY_PREFIX, $votingId);
@@ -44,6 +71,9 @@ class CacheManager
         //clean by tag?
     }
 
+    /**
+     * @return array|null
+     */
     public function getWinnersCache(): ?array
     {
         $data = $this->cache->load(self::VOTING_WINNERS_CACHE);
@@ -54,18 +84,20 @@ class CacheManager
         }
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function saveWinnersCache(array $data): void
     {
         $this->cache->save($this->serializer->serialize($data), self::VOTING_WINNERS_CACHE, [self::CACHE_TAG], 300);
     }
 
+    /**
+     * @return void
+     */
     public function deleteWinnersCache(): void
     {
         $this->cache->remove(self::VOTING_WINNERS_CACHE);
     }
-
-
-
-
-
 }

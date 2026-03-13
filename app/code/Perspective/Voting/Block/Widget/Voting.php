@@ -1,6 +1,8 @@
 <?php
 namespace Perspective\Voting\Block\Widget;
 
+use IntlDateFormatter;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magento\Widget\Block\BlockInterface;
 use Perspective\Voting\Service\CacheManager;
@@ -12,11 +14,7 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class Voting extends Template implements BlockInterface
 {
-    /**
-     * @var string
-     */
     protected $_template = 'Perspective_Voting::widget/voting.phtml';
-
     /**
      * @var VotingManager
      */
@@ -71,8 +69,12 @@ class Voting extends Template implements BlockInterface
         parent::__construct($context, $data);
     }
 
+
     /**
+     * Prepare voting data with caching support
+     *
      * @return array
+     * @throws NoSuchEntityException
      */
     public function prepareVotingData(): array
     {
@@ -81,7 +83,7 @@ class Voting extends Template implements BlockInterface
         if (!$data) {
             $voting = $this->votingManager->getById($votingId);
 
-            $autoEndDate = $this->timezone->formatDate($voting->getEndDate(), \IntlDateFormatter::LONG, true);
+            $autoEndDate = $this->timezone->formatDate($voting->getEndDate(), IntlDateFormatter::LONG, true);
 
             $data = [
                 'id'             => $voting->getId(),
@@ -101,11 +103,10 @@ class Voting extends Template implements BlockInterface
         return $data;
     }
 
-
     /**
      * @param int $votingId
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     protected function prepareOptionsData(int $votingId): array
     {

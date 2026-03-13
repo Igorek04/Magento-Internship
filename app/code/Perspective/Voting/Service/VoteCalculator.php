@@ -1,32 +1,45 @@
 <?php
-
 namespace Perspective\Voting\Service;
 
 use Perspective\Voting\Model\ResourceModel\VotingVote\CollectionFactory as VoteCollectionFactory;
 use Perspective\Voting\Model\VotingOptionManager;
 use Perspective\Voting\Service\ConfigData;
-use Perspective\Voting\Model\ResourceModel\VotingOption\CollectionFactory as OptionCollectionFactory;
-
-
 class VoteCalculator
 {
+    /**
+     * @var VoteCollectionFactory
+     */
     protected $voteCollectionFactory;
+    /**
+     * @var VotingOptionManager
+     */
     protected $votingOptionManager;
+    /**
+     * @var ConfigData
+     */
     protected $configDataService;
-    protected $optionCollectionFactory;
 
+    /**
+     * @param VoteCollectionFactory $voteCollectionFactory
+     * @param VotingOptionManager $votingOptionManager
+     * @param ConfigData $configDataService
+     */
     public function __construct(
         VoteCollectionFactory $voteCollectionFactory,
         VotingOptionManager $votingOptionManager,
         ConfigData $configDataService,
-        OptionCollectionFactory $optionCollectionFactory
     ) {
         $this->voteCollectionFactory = $voteCollectionFactory;
         $this->votingOptionManager = $votingOptionManager;
         $this->configDataService = $configDataService;
-        $this->optionCollectionFactory = $optionCollectionFactory;
     }
 
+    /**
+     * Get the real count of user votes for each option in a specific voting
+     *
+     * @param int $votingId
+     * @return array
+     */
     public function getRawVotes(int $votingId): array
     {
         $collection = $this->voteCollectionFactory->create();
@@ -36,6 +49,12 @@ class VoteCalculator
         return array_count_values($allOptionIds);
     }
 
+    /**
+     * Calculate total votes including user votes and additional admin votes
+     *
+     * @param int $votingId
+     * @return array
+     */
     public function getFinalVotesByVotingId(int $votingId): array
     {
         // get user votes by voting

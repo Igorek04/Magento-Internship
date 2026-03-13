@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\Ui\Component\Listing\Column;
 
 use Magento\Ui\Component\Listing\Columns\Column;
@@ -9,8 +8,18 @@ use Perspective\Voting\Model\ResourceModel\VotingOption\CollectionFactory as Opt
 
 class Options extends Column
 {
+    /**
+     * @var OptionCollectionFactory
+     */
     protected $optionCollectionFactory;
 
+    /**
+     * @param ContextInterface $context
+     * @param UiComponentFactory $uiComponentFactory
+     * @param OptionCollectionFactory $optionCollectionFactory
+     * @param array $components
+     * @param array $data
+     */
     public function __construct(
         ContextInterface $context,
         UiComponentFactory $uiComponentFactory,
@@ -22,13 +31,14 @@ class Options extends Column
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
+    /**
+     * @param array $dataSource
+     * @return array
+     */
     public function prepareDataSource(array $dataSource)
     {
         if (isset($dataSource['data']['items'])) {
-            $votingIds = [];
-            foreach ($dataSource['data']['items'] as $item) {
-                $votingIds[] = $item['voting_id'];
-            }
+            $votingIds = array_column($dataSource['data']['items'], 'voting_id');
 
             $optionCollection = $this->optionCollectionFactory->create();
             $optionCollection->addFieldToFilter('voting_id', ['in' => $votingIds]);
@@ -45,9 +55,7 @@ class Options extends Column
                 if (isset($optionsByVoting[$votingId])) {
                     $formattedOptions = [];
                     foreach ($optionsByVoting[$votingId] as $option) {
-                        $label = $option->getTitle();
-                        $label .= ' (' . (int)$option->getTotalVotes() . ')';
-
+                        $label = sprintf('%s (%d)', $option->getTitle(), $option->getTotalVotes());
                         $formattedOptions[] = $label;
                     }
 
@@ -55,7 +63,6 @@ class Options extends Column
                 }
             }
         }
-
         return $dataSource;
     }
 }

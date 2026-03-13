@@ -14,12 +14,30 @@ class DataProvider extends AbstractDataProvider
      * @var array
      */
     protected $loadedData;
-
+    /**
+     * @var OptionCollectionFactory
+     */
     protected $optionCollectionFactory;
+    /**
+     * @var ConfigData
+     */
     protected $configDataService;
+    /**
+     * @var BackendSession
+     */
     protected $backendSession;
 
-
+    /**
+     * @param string $name
+     * @param string $primaryFieldName
+     * @param string $requestFieldName
+     * @param CollectionFactory $collectionFactory
+     * @param OptionCollectionFactory $optionCollectionFactory
+     * @param ConfigData $configDataService
+     * @param BackendSession $backendSession
+     * @param array $meta
+     * @param array $data
+     */
     public function __construct(
         string $name,
         string $primaryFieldName,
@@ -50,15 +68,14 @@ class DataProvider extends AbstractDataProvider
         }
         $items = $this->collection->getItems();
 
-        // for load data to edit voting
+        // load voting data to edit voting
         foreach ($items as $item) {
             $data = $item->getData();
             $votingId = $item->getVotingId();
 
+            // load voting options data
             $optionCollection = $this->optionCollectionFactory->create();
             $optionCollection->addFieldToFilter('voting_id', $votingId);
-
-
             $optionsData = [];
             foreach ($optionCollection as $option) {
                 $optionsData[] = $option->getData();
@@ -73,14 +90,12 @@ class DataProvider extends AbstractDataProvider
                 default => 'Unknown State'
             };
 
-
             $data['config']['admin_allow_modify_votes'] = $this->configDataService->isAdminAllowedEditVotes();
 
             $this->loadedData[$votingId] = $data;
         }
 
-        // is finished label for add(new) voting
-        // подгрузка неудачного сейва
+        //load voting form data from session if previous save attempt failed
         if (empty($this->loadedData)) {
             $this->loadedData[null] = $this->backendSession->getNewVotingFormData();
         }

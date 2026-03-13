@@ -1,23 +1,24 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
-<menu>
-    <add
-        id="Perspective_Voting::marketing_voting"
-        title="Voting"
-        module="Perspective_Voting"
-        sortOrder="80"
-        resource="Perspective_Voting::marketing_voting"
-        parent="Magento_Backend::marketing"/> <!-- Marketing -->
+    <menu>
+        <!-- Marketing -> Voting -->
+        <add
+            id="Perspective_Voting::marketing_voting"
+            title="Voting"
+            module="Perspective_Voting"
+            sortOrder="80"
+            resource="Perspective_Voting::marketing_voting"
+            parent="Magento_Backend::marketing"/> <!-- Marketing -->
 
-    <!-- test -->
-    <add
-        id="Perspective_Voting::voting_grid"
-        title="Voting Grid"
-        module="Perspective_Voting"
-        sortOrder="10"
-        resource="Perspective_Voting::voting_grid"
-        parent="Perspective_Voting::marketing_voting"
-        action="voting/index/index"/>
-</menu>
+        <!-- Voting Grid -->
+        <add
+            id="Perspective_Voting::voting_grid"
+            title="Voting Grid"
+            module="Perspective_Voting"
+            sortOrder="10"
+            resource="Perspective_Voting::voting_grid"
+            parent="Perspective_Voting::marketing_voting"
+            action="voting/index/index"/>
+    </menu>
 </config>

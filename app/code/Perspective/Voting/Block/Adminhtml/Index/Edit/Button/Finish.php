@@ -19,14 +19,13 @@ class Finish extends Generic implements ButtonProviderInterface
     public function __construct(
         Context $context,
         VotingState $votingStateService,
-
     ) {
         $this->votingStateService = $votingStateService;
         parent::__construct($context);
     }
 
     /**
-     * Get button data
+     * Get button configuration depending on voting state
      *
      * @return array
      */

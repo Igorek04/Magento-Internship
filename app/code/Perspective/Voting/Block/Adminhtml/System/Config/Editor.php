@@ -29,6 +29,8 @@ class Editor extends Field
     }
 
     /**
+     * Get WYSIWYG editor element HTML
+     *
      * @param AbstractElement $element
      * @return string
      */

@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\Voting\ViewModel;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
@@ -8,8 +7,19 @@ use Perspective\Voting\Service\ActiveWinners;
 
 class WinnerLabel implements ArgumentInterface
 {
+    /**
+     * @var RequestInterface
+     */
     protected $request;
+    /**
+     * @var ActiveWinners
+     */
     protected $activeWinnersService;
+
+    /**
+     * @param RequestInterface $request
+     * @param ActiveWinners $activeWinnersService
+     */
     public function __construct(
         RequestInterface $request,
         ActiveWinners $activeWinnersService
@@ -18,6 +28,9 @@ class WinnerLabel implements ArgumentInterface
         $this->activeWinnersService = $activeWinnersService;
     }
 
+    /**
+     * @return string
+     */
     public function getWinnerHtml()
     {
         $currentProductId = $this->request->getParam('id');
