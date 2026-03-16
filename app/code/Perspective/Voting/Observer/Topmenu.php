@@ -30,7 +30,9 @@ class Topmenu implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        if ($this->configDataService->isShowVotingsLinkInMenu()) {
+        if ($this->configDataService->isShowVotingsLinkInMenu() &&
+            $this->configDataService->isModuleEnabled()
+        ) {
             $menu = $observer->getMenu();
             $tree = $menu->getTree();
             $data = [

@@ -11,6 +11,7 @@ use Perspective\Voting\Model\VotingOptionManager;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Perspective\Voting\Service\ConfigData;
 
 class Voting extends Template implements BlockInterface
 {
@@ -39,6 +40,10 @@ class Voting extends Template implements BlockInterface
      * @var TimezoneInterface
      */
     protected $timezone;
+    /**
+     * @var ConfigData
+     */
+    protected $configDataService;
 
     /**
      * @param Template\Context $context
@@ -48,6 +53,7 @@ class Voting extends Template implements BlockInterface
      * @param ProductRepositoryInterface $productRepository
      * @param Image $imageHelper
      * @param TimezoneInterface $timezone
+     * @param ConfigData $configDataService
      * @param array $data
      */
     public function __construct(
@@ -58,6 +64,7 @@ class Voting extends Template implements BlockInterface
         ProductRepositoryInterface $productRepository,
         Image $imageHelper,
         TimezoneInterface $timezone,
+        ConfigData $configDataService,
         array $data = []
     ) {
         $this->votingManager = $votingManager;
@@ -66,9 +73,9 @@ class Voting extends Template implements BlockInterface
         $this->productRepository = $productRepository;
         $this->imageHelper = $imageHelper;
         $this->timezone = $timezone;
+        $this->configDataService = $configDataService;
         parent::__construct($context, $data);
     }
-
 
     /**
      * Prepare voting data with caching support
@@ -141,5 +148,16 @@ class Voting extends Template implements BlockInterface
         $votes = array_column($result, 'votes');
         array_multisort($votes, SORT_DESC, $result);
         return $result;
+    }
+
+    /**
+     * @return string
+     */
+    protected function _toHtml(): string
+    {
+        if (!$this->configDataService->isModuleEnabled()) {
+            return '';
+        }
+        return parent::_toHtml();
     }
 }

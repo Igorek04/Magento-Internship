@@ -7,26 +7,38 @@ use Magento\Quote\Model\Quote;
 use Magento\Quote\Api\Data\ShippingAssignmentInterface;
 use Magento\Framework\Phrase;
 use Perspective\Voting\Service\ActiveWinners;
+use Perspective\Voting\Service\ConfigData;
 
 class WinnersDiscount extends AbstractTotal
 {
     public const TOTAL_TITLE = 'Winners Discount';
     public const TOTAL_CODE = 'perspective_voting_winners_discount_total';
 
+    /**
+     * @var null
+     */
     protected $totalDiscount = null;
 
     /**
      * @var ActiveWinners
      */
     protected $activeWinnersService;
+    /**
+     * @var ConfigData
+     */
+    protected $configDataService;
+
 
     /**
      * @param ActiveWinners $activeWinnersService
+     * @param ConfigData $configDataService
      */
     public function __construct(
         ActiveWinners $activeWinnersService,
+        ConfigData $configDataService,
     ) {
         $this->activeWinnersService = $activeWinnersService;
+        $this->configDataService = $configDataService;
     }
 
     /**
@@ -46,10 +58,11 @@ class WinnersDiscount extends AbstractTotal
             return $this;
         }
 
-        $winnersDiscount = $this->getTotalDiscount($quote);
-
-        $total->addTotalAmount(self::TOTAL_CODE, $winnersDiscount);
-        $total->addBaseTotalAmount(self::TOTAL_CODE, $winnersDiscount);
+        if ($this->configDataService->isModuleEnabled()) {
+            $winnersDiscount = $this->getTotalDiscount($quote);
+            $total->addTotalAmount(self::TOTAL_CODE, $winnersDiscount);
+            $total->addBaseTotalAmount(self::TOTAL_CODE, $winnersDiscount);
+        }
 
         return $this;
     }

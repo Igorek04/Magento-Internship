@@ -5,6 +5,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class ConfigData
 {
+    protected $isModuleEnabled = null;
     private const XML_PATH_ENABLED = 'perspective_voting/general_settings/enabled';
     private const XML_PATH_ADMIN_EDIT_VOTES = 'perspective_voting/general_settings/allow_admin_edit_votes';
     private const XML_PATH_SHOW_DISCOUNT_LABEL = 'perspective_voting/general_settings/product_discount_label';
@@ -32,7 +33,10 @@ class ConfigData
      */
     public function isModuleEnabled(): bool
     {
-        return $this->scopeConfig->isSetFlag($this::XML_PATH_ENABLED);
+        if ($this->isModuleEnabled === null) {
+            $this->isModuleEnabled = $this->scopeConfig->getValue(self::XML_PATH_ENABLED);
+        }
+        return $this->isModuleEnabled;
     }
 
     /**
