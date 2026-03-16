@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminVotingFormSection">
+        <element name="marketingMenu" type="button" selector="#menu-magento-backend-marketing"/>
+        <element name="votingGridLink" type="button" selector="li[data-ui-id='menu-perspective-voting-voting-grid'] a"/>
+        <element name="addNewVotingButton" type="button" selector="button[data-ui-id='add-button']"/>
+
+        <element name="title" type="input" selector="input[name='title']"/>
+        <element name="description" type="textarea" selector="textarea[name='description']"/>
+        <element name="managementType" type="select" selector="select[name='management_type']"/>
+        <element name="statusToggle" type="button" selector="input[name='status'] + label"/>
+        <element name="allowGuestsToggle" type="button" selector="input[name='allow_guests'] + label"/>
+
+        <element name="optionsContainer" type="block" selector="div[data-index='options_container']"/>
+        <element name="addAnswerButton" type="button" selector="button[data-action='add_new_row']"/>
+
+        <element name="answerTitle" type="input" selector="input[name='data[options_container][options_container][{{index}}][title]']" parameterized="true"/>
+        <element name="answerDescription" type="textarea" selector="textarea[name='data[options_container][options_container][{{index}}][description]']" parameterized="true"/>
+        <element name="answerProduct" type="select" selector="select[name='data[options_container][options_container][{{index}}][product_id]']" parameterized="true"/>
+        <element name="answerPercent" type="input" selector="input[name='data[options_container][options_container][{{index}}][discount_percent]']" parameterized="true"/>
+        <element name="answerAdminVotes" type="input" selector="input[name='data[options_container][options_container][{{index}}][additional_admin_votes]']" parameterized="true"/>
+
+        <element name="deleteAnswerButton" type="button" selector="div[data-index='options_container'] tr[data-repeat-index='{{index}}'] button.action-delete" parameterized="true"/>
+
+        <element name="saveButton" type="button" selector="#save-button"/>
+        <element name="successMessage" type="text" selector=".message-success"/>
+    </section>
+</sections>

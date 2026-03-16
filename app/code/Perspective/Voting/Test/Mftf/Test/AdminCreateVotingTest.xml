@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminCreateVotingTest">
+        <annotations>
+            <features value="Perspective Voting"/>
+            <stories value="Create Voting with Options"/>
+            <title value="Admin should be able to create a voting with detailed options and deletions"/>
+            <description value="Full flow: fill form, add 3 options, detail 1st option, delete 3rd option, save."/>
+            <severity value="CRITICAL"/>
+            <group value="perspective_voting"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+        </before>
+
+        <click selector="{{AdminVotingFormSection.marketingMenu}}" stepKey="clickMarketing"/>
+        <click selector="{{AdminVotingFormSection.votingGridLink}}" stepKey="clickVotingLink"/>
+        <waitForPageLoad stepKey="waitForGridLoad"/>
+        <click selector="{{AdminVotingFormSection.addNewVotingButton}}" stepKey="clickAddNew"/>
+        <waitForElementVisible selector="{{AdminVotingFormSection.title}}" stepKey="waitForFormVisible"/>
+
+        <fillField selector="{{AdminVotingFormSection.title}}" userInput="Complex MFTF Voting" stepKey="fillTitle"/>
+        <fillField selector="{{AdminVotingFormSection.description}}" userInput="Testing all fields" stepKey="fillDescription"/>
+        <selectOption selector="{{AdminVotingFormSection.managementType}}" userInput="Manual" stepKey="selectManagementType"/>
+        <click selector="{{AdminVotingFormSection.statusToggle}}" stepKey="toggleStatusOn"/>
+
+        <scrollTo selector="{{AdminVotingFormSection.optionsContainer}}" stepKey="scrollToOptions"/>
+
+        <click selector="{{AdminVotingFormSection.addAnswerButton}}" stepKey="addFirst"/>
+        <click selector="{{AdminVotingFormSection.addAnswerButton}}" stepKey="addSecond"/>
+        <click selector="{{AdminVotingFormSection.addAnswerButton}}" stepKey="addThird"/>
+
+        <fillField selector="{{AdminVotingFormSection.answerTitle('0')}}" userInput="Option with Product" stepKey="fillTitle0"/>
+        <fillField selector="{{AdminVotingFormSection.answerDescription('0')}}" userInput="This option is linked to a product" stepKey="fillDesc0"/>
+        <selectOption selector="{{AdminVotingFormSection.answerProduct('0')}}" userInput="WT04 (Nona Fitness Tank)" stepKey="selectProduct0"/>
+        <fillField selector="{{AdminVotingFormSection.answerPercent('0')}}" userInput="15" stepKey="fillPercent0"/>
+        <fillField selector="{{AdminVotingFormSection.answerAdminVotes('0')}}" userInput="100" stepKey="fillVotes0"/>
+
+        <fillField selector="{{AdminVotingFormSection.answerTitle('1')}}" userInput="Regular Option" stepKey="fillTitle1"/>
+
+        <click selector="{{AdminVotingFormSection.deleteAnswerButton('2')}}" stepKey="deleteThirdOption"/>
+
+        <click selector="{{AdminVotingFormSection.saveButton}}" stepKey="clickSave"/>
+        <waitForPageLoad stepKey="waitForSave"/>
+        <see selector="{{AdminVotingFormSection.successMessage}}" userInput="The data has been saved." stepKey="seeSuccessMessage"/>
+
+        <wait time="5" stepKey="pauseToSeeSuccessMessage"/>
+
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+    </test>
+</tests>
