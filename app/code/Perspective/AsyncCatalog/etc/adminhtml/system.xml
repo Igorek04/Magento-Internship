@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="perspective_tab" translate="label" sortOrder="1">
+            <label>Perspective</label>
+        </tab>
+
+        <section id="perspective_async_catalog" sortOrder="111" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Async Catalog Config</label>
+            <tab>perspective_tab</tab>
+            <resource>Perspective_AsyncCatalog::config</resource> <!-- -->
+
+            <group id="general_settings" sortOrder="1" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+                <attribute type="expanded">1</attribute>
+                <label>General Settings</label>
+
+                <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Module enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="catalog_filter_auto_update" sortOrder="10" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>filter_auto_update</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="catalog_product_lazyload" sortOrder="20" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>catalog_product_lazyload</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

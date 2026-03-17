@@ -1,0 +1,10 @@
+<div class="component-wrapper">
+    <h2 data-bind="i18n: 'Async Products List'"></h2>
+
+    <ul data-bind="foreach: products">
+        <li>
+            <span data-bind="text: name"></span>
+            <small>(<span data-bind="text: sku"></span>)</small>
+        </li>
+    </ul>
+</div>

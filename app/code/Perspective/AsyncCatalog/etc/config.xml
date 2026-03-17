@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/config.xsd">
+    <default>
+        <perspective_async_catalog>
+            <general_settings>
+                <enabled>0</enabled>
+                <catalog_filter_auto_update>0</catalog_filter_auto_update>
+                <catalog_product_lazyload>0</catalog_product_lazyload>
+            </general_settings>
+        </perspective_async_catalog>
+    </default>
+</config>
