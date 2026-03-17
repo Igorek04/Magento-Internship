@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="StorefrontVotingFlowTest">
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+            <actionGroup ref="AdminCreateVotingActionGroup" stepKey="createVoting">
+                <argument name="votingTitle" value="E2E MFTF Voting"/>
+            </actionGroup>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAdmin"/>
+        </before>
+
+        <after>
+            <actionGroup ref="StorefrontCustomerLogoutActionGroup" stepKey="logoutCustomer"/>
+        </after>
+
+        <amOnPage url="/" stepKey="goToHome"/>
+        <waitForElementVisible selector="{{StorefrontVotingSection.navMyVotings}}" stepKey="waitNav"/>
+        <click selector="{{StorefrontVotingSection.navMyVotings}}" stepKey="clickNav"/>
+        <waitForPageLoad stepKey="waitForVotingsPage"/>
+
+        <scrollTo selector="{{StorefrontVotingSection.votingCardByTitle('E2E MFTF Voting')}}" stepKey="scrollToOurVoting"/>
+        <wait time="3" stepKey="testWait1"/>
+        <click selector="{{StorefrontVotingSection.optionInCardByNumber('E2E MFTF Voting', '1')}}" stepKey="selectAsGuest"/>
+        <wait time="3" stepKey="testWait2"/>
+        <click selector="{{StorefrontVotingSection.voteButtonInCard('E2E MFTF Voting')}}" stepKey="clickVoteAsGuest"/>
+
+        <waitForPageLoad stepKey="waitForRegistrationPageLoad"/>
+        <waitForElementVisible selector="#firstname" stepKey="waitFormVisible"/>
+
+        <wait time="3" stepKey="testWait3"/>
+
+        <fillField selector="#firstname" userInput="{{VotingCustomer.firstname}}" stepKey="fName"/>
+        <fillField selector="#lastname" userInput="{{VotingCustomer.lastname}}" stepKey="lName"/>
+
+        <generateDate date="now" format="His" stepKey="randomSuffix"/>
+        <fillField selector="#email_address" userInput="tester{$randomSuffix}@voting.com" stepKey="fillEmail"/>
+
+        <fillField selector="#password" userInput="Password123!Q@" stepKey="fPass"/>
+        <fillField selector="#password-confirmation" userInput="Password123!Q@" stepKey="fConfirm"/>
+
+        <wait time="3" stepKey="testWait4"/>
+        <pressKey selector="#password-confirmation" parameterArray="[\Facebook\WebDriver\WebDriverKeys::ENTER]" stepKey="pressEnterToSubmitForm"/>
+        <waitForPageLoad stepKey="waitAfterRegSubmit"/>
+
+        <wait time="3" stepKey="testWait5"/>
+        <conditionalClick selector="a.action.create.primary" dependentSelector="a.action.create.primary" visible="true" stepKey="clickCreateIfBackOnLogin"/>
+
+        <seeInCurrentUrl url="perspective_voting/index/index" stepKey="checkFinalUrl"/>
+
+        <wait time="3" stepKey="testWait6"/>
+        <click selector="{{StorefrontVotingSection.optionInCardByNumber('E2E MFTF Voting', '2')}}" stepKey="selectSecond"/>
+        <wait time="3" stepKey="testWait7"/>
+        <click selector="{{StorefrontVotingSection.voteButtonInCard('E2E MFTF Voting')}}" stepKey="clickRevote"/>
+        <wait time="3" stepKey="testWait8"/>
+        <waitForElementVisible selector=".message-success" stepKey="waitMsg"/>
+        <wait time="3" stepKey="testWait9"/>
+
+        <amOnPage url="customer/account" stepKey="goToAccount"/>
+        <wait time="3" stepKey="testWait10"/>
+        <click selector=".sidebar.sidebar-main a[href*='voting/customer/index']" stepKey="clickAccountMenu"/>
+        <waitForPageLoad stepKey="waitAccPage"/>
+        <waitForElementVisible selector=".voting-widget-item" stepKey="waitWidgetVisible"/>
+        <see userInput="E2E MFTF Voting" selector=".voting-widget-item h2" stepKey="checkInAccount"/>
+        <wait time="7" stepKey="testWait11"/>
+    </test>
+</tests>

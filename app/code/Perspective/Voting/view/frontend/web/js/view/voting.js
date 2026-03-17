@@ -51,15 +51,15 @@ define([
                 // dynamic button label
                 this.buttonText = ko.computed(function () {
                     if (this.votingData.is_finished) {
-                        return $.__('Finished');
+                        return 'Finished';
                     }
                     if (this.votingData.management_type == 0 && this.votingData.manual_status == 0) {
-                        return $.__('Inactive');
+                        return 'Inactive';
                     }
                     if (this.userVotedOptionId()) {
-                        return $.__('Revote');
+                        return 'Revote';
                     }
-                    return $.__('Vote');
+                    return 'Vote';
                 }, this);
 
                 // calculated variable to lock voting if its finished or manually disabled

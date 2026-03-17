@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataEntity/etc/dataEntitySchema.xsd">
+    <entity name="VotingCustomer">
+        <data key="firstname">Voting</data>
+        <data key="lastname">Tester</data>
+        <data key="email" unique="suffix">tester@voting.com</data>
+        <data key="password">Password123!</data>
+    </entity>
+</entities>

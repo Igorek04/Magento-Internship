@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="StorefrontVotingSection">
+        <element name="navMyVotings" type="button" selector=".nav-7 a"/>
+
+        <element name="votingCardByTitle" type="block" selector="//div[contains(@class, 'voting-widget-item')][.//h2[contains(text(), '{{var1}}')]]" parameterized="true"/>
+
+        <element name="optionInCardByNumber" type="button" selector="//div[contains(@class, 'voting-widget-item')][.//h2[contains(text(), '{{var1}}')]]//div[contains(@class, 'bar')][{{var2}}]" parameterized="true"/>
+
+        <element name="voteButtonInCard" type="button" selector="//div[contains(@class, 'voting-widget-item')][.//h2[contains(text(), '{{var1}}')]]//button[contains(@class, 'action')]" parameterized="true"/>
+
+        <element name="customerMenuMyVotings" type="button" selector=".sidebar.sidebar-main a[href*='voting/customer/index']"/>
+        <element name="customerVotingTitle" type="text" selector=".table-voting h2"/>
+    </section>
+</sections>

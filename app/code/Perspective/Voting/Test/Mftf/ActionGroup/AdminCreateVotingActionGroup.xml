@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
-    <test name="AdminCreateVotingTest">
-        <annotations>
-            <features value="Perspective Voting"/>
-            <stories value="Create Voting with Options"/>
-            <title value="Admin should be able to create a voting with detailed options and deletions"/>
-            <description value="Full flow: fill form, add 3 options, detail 1st option, delete 3rd option, save."/>
-            <severity value="CRITICAL"/>
-            <group value="perspective_voting"/>
-        </annotations>
-
-        <before>
-            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
-        </before>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="AdminCreateVotingActionGroup">
+        <arguments>
+            <argument name="votingTitle" type="string" defaultValue="Complex MFTF Voting"/>
+        </arguments>
 
         <click selector="{{AdminVotingFormSection.marketingMenu}}" stepKey="clickMarketing"/>
         <click selector="{{AdminVotingFormSection.votingGridLink}}" stepKey="clickVotingLink"/>
@@ -20,7 +11,7 @@
         <click selector="{{AdminVotingFormSection.addNewVotingButton}}" stepKey="clickAddNew"/>
         <waitForElementVisible selector="{{AdminVotingFormSection.title}}" stepKey="waitForFormVisible"/>
 
-        <fillField selector="{{AdminVotingFormSection.title}}" userInput="Complex MFTF Voting" stepKey="fillTitle"/>
+        <fillField selector="{{AdminVotingFormSection.title}}" userInput="{{votingTitle}}" stepKey="fillTitle"/>
         <fillField selector="{{AdminVotingFormSection.description}}" userInput="Testing all fields" stepKey="fillDescription"/>
         <selectOption selector="{{AdminVotingFormSection.managementType}}" userInput="Manual" stepKey="selectManagementType"/>
         <click selector="{{AdminVotingFormSection.statusToggle}}" stepKey="toggleStatusOn"/>
@@ -41,14 +32,12 @@
 
         <click selector="{{AdminVotingFormSection.deleteAnswerButton('2')}}" stepKey="deleteThirdOption"/>
 
+        <wait time="3" stepKey="testWait1"/>
+
         <click selector="{{AdminVotingFormSection.saveButton}}" stepKey="clickSave"/>
         <waitForPageLoad stepKey="waitForSave"/>
         <see selector="{{AdminVotingFormSection.successMessage}}" userInput="The data has been saved." stepKey="seeSuccessMessage"/>
 
-        <wait time="5" stepKey="pauseToSeeSuccessMessage"/>
-
-        <after>
-            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
-        </after>
-    </test>
-</tests>
+        <wait time="5" stepKey="testWait1111"/>
+    </actionGroup>
+</actionGroups>
