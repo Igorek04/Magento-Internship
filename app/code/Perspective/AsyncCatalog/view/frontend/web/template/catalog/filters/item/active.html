@@ -1,0 +1,22 @@
+<!-- ko if: activeFilters().length > 0 -->
+<div class="filter-current">
+    <strong class="block-subtitle filter-current-subtitle"
+            data-bind="i18n: 'Now Shopping by'"></strong>
+    <ol class="items">
+        <!-- ko foreach: { data: activeFilters(), as: 'filter' } -->
+        <li class="item">
+            <span class="filter-label" data-bind="text: filter.attrLabel"></span>
+            <span class="filter-value" data-bind="text: filter.label"></span>
+            <a class="action remove" href="#" data-bind="click: $parent.removeFilter.bind($parent)">
+                <span data-bind="i18n: 'Remove This Item'"></span>
+            </a>
+        </li>
+        <!-- /ko -->
+    </ol>
+    <div class="block-actions filter-actions">
+        <a href="#" class="action clear filter-clear" data-bind="click: clearAll">
+            <span data-bind="i18n: 'Clear All'"></span>
+        </a>
+    </div>
+</div>
+<!-- /ko -->

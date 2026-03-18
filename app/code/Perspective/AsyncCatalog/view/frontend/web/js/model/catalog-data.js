@@ -1,28 +1,43 @@
-define(['ko', 'jquery', 'mage/accordion'], function (ko, $) {
+define(['ko', 'jquery'], function (ko, $) {
     'use strict';
     return {
         products: ko.observableArray([]),
         aggregations: ko.observableArray([]),
         isLoading: ko.observable(false),
-        categoryId: ko.observable('4'),
+        categoryId: ko.observable(null),
 
-        activeFilters: ko.observable({}),
+        activeFilters: ko.observableArray([]),
 
-        applyFilter: function (code, value, event) {
-            if (event) event.preventDefault();
 
-            console.log('Фильтруем по:', code, value);
+        getPreparedFilters: function() {
+            var filterInput = { category_id: { eq: this.categoryId() } };
+            this.activeFilters().forEach(function(f) {
+                if (!filterInput[f.code]) {
+                    filterInput[f.code] = { in: [] };
+                }
+                filterInput[f.code].in.push(String(f.value));
+            });
+            return filterInput;
+        },
 
-            var filterObject = {};
-            filterObject[code] = { eq: String(value) };
 
-            this.loadProducts(filterObject);
+
+        removeFilter: function(filter) {
+            this.activeFilters.remove(filter);
+            this.loadProducts();
+            this.loadFilters();
+        },
+
+        clearAll: function() {
+            this.activeFilters([]);
+            this.loadProducts();
+            this.loadFilters();
         },
 
         loadFilters: function () {
             var self = this;
-            var query = `query GetFilters($id: String!) {
-                products(filter: {category_id: {eq: $id}}) {
+            var query = `query GetFilters($filter: ProductAttributeFilterInput) {
+                products(filter: $filter) {
                     aggregations {
                         label
                         attribute_code
@@ -36,36 +51,19 @@ define(['ko', 'jquery', 'mage/accordion'], function (ko, $) {
                 contentType: 'application/json',
                 data: JSON.stringify({
                     query: query,
-                    variables: { id: this.categoryId() }
+                    variables: { filter: this.getPreparedFilters() }
                 }),
                 success: function (res) {
-                    if (res.data) {
+                    if (res.data && res.data.products) {
                         self.aggregations(res.data.products.aggregations);
-                        console.log('filters', res);
-
-                        setTimeout(function() {
-                            var $list = $('#narrow-by-list');
-                            if ($list.length) {
-                                $list.accordion({
-                                    "openedState": "active",
-                                    "collapsible": true,
-                                    "active": false,
-                                    "multipleCollapsible": true
-                                });
-                            }
-                        }, 200);
                     }
                 }
             });
         },
 
-        loadProducts: function (appliedFilters = {}) {
+        loadProducts: function () {
             var self = this;
             this.isLoading(true);
-
-            var filterInput = Object.assign({
-                category_id: { eq: this.categoryId() }
-            }, appliedFilters);
 
             var query = `query GetProducts($filter: ProductAttributeFilterInput) {
                 products(filter: $filter, pageSize: 12) {
@@ -75,6 +73,8 @@ define(['ko', 'jquery', 'mage/accordion'], function (ko, $) {
                       sku
                       url_key
                       stock_status
+                      rating_summary
+                      review_count
                       small_image { url label }
                       price_range {
                         minimum_price {
@@ -85,22 +85,43 @@ define(['ko', 'jquery', 'mage/accordion'], function (ko, $) {
                 }
             }`;
 
-            $.ajax({
+            return $.ajax({
                 url: '/graphql',
                 method: 'POST',
+                global: false,
                 contentType: 'application/json',
                 data: JSON.stringify({
                     query: query,
-                    variables: { filter: filterInput }
+                    variables: { filter: this.getPreparedFilters() }
                 }),
                 success: function (res) {
-                    if (res.data) {
+                    if (res.data && res.data.products) {
                         self.products(res.data.products.items);
-                        console.log('products', res);
                     }
                 },
                 complete: function () { self.isLoading(false); }
             });
+        },
+
+        applyFilter: function (code, value, label, attrLabel) {
+            try {
+                var exists = this.activeFilters().find(f => f.code === code && f.value === value);
+                if (exists) {
+                    this.activeFilters.remove(exists);
+                } else {
+                    this.activeFilters.push({
+                        code: code,
+                        value: value,
+                        label: label,
+                        attrLabel: attrLabel
+                    });
+                }
+                this.loadProducts();
+                this.loadFilters();
+            } catch (err) {
+                console.error("Ошибка в applyFilter:", err);
+            }
         }
+
     };
 });

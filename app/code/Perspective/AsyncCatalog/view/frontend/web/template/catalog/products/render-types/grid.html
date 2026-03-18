@@ -1,0 +1,20 @@
+<div class="products wrapper grid products-grid">
+    <ol class="products list items product-items" data-bind="foreach: products">
+        <li class="item product product-item">
+            <div class="product-item-info" data-container="product-grid">
+
+                <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/image' --> <!-- /ko -->
+
+                <div class="product details product-item-details">
+                    <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/title' --> <!-- /ko -->
+                    <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/reviews' --> <!-- /ko -->
+                    <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/price' --> <!-- /ko -->
+
+                    <div class="product-item-inner">
+                        <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/actions' --> <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ol>
+</div>

@@ -1,0 +1,12 @@
+<a data-bind="attr: {href: url_key + '.html'}" class="product photo product-item-photo" tabindex="-1">
+    <span class="product-image-container" style="width: 240px;">
+        <span class="product-image-wrapper" style="padding-bottom: 125%;">
+            <img class="product-image-photo"
+                 data-bind="attr: {
+                                src: small_image ? small_image.url : '',
+                                alt: name
+                            }"
+                 width="240" height="300" alt="Product Image">
+        </span>
+    </span>
+</a>

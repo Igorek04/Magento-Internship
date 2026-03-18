@@ -65,7 +65,8 @@ class GuestVoteRedirectAfterRegister
         //get temp guest vote(vote before redirect)
         $temporaryVote = $this->customerSession->getData('temporary_vote', true);
         if ($this->configDataService->isModuleEnabled() &&
-            $this->customerSession->isLoggedIn()
+            $this->customerSession->isLoggedIn() &&
+            $temporaryVote
         ) {
             //redirect to voting page
             $result->setUrl($this->customerSession->getData('voting_referer', true));
