@@ -30,6 +30,7 @@ define([
             this.aggregations.subscribe(function () {
                 setTimeout(function () {
                     self.initAccordion($('#narrow-by-list'));
+                    $('body').trigger('contentUpdated');
                 }, 50);
             });
 

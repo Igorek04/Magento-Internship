@@ -12,30 +12,35 @@ define([
     return Component.extend({
         defaults: {
             template: 'Perspective_AsyncCatalog/catalog/products/renderer',
-            displayMode: 'grid'
+            pageConfig: {}
         },
 
         products: catalogData.products,
         isLoading: catalogData.isLoading,
+        currentMode: catalogData.currentMode,
 
         initialize: function () {
             var self = this;
             this._super();
 
-            this.displayMode = ko.observable(this.displayMode);
+            var config = this.pageConfig;
+            if (config) {
+                var mode = config.listMode.includes('grid') ? 'grid' : 'list';
+                catalogData.currentMode(mode);
+
+                var defLimit = (mode === 'grid') ? config.gridPerPageDefault : config.listPerPageDefault;
+                catalogData.pageSize(defLimit);
+                catalogData.availablePages(mode === 'grid' ? config.gridPerPageValues : config.listPerPageValues);
+            }
+            console.log(config);
+
+            this.products.subscribe(function () {
+                self.reinitCart();
+            });
 
             catalogData.loadFilters();
-
             catalogData.loadProducts().done(function() {
-                setTimeout(function() {
-                    var forms = $('form[data-role="tocart-form"]');
-
-                    if (forms.length > 0) {
-                        forms.catalogAddToCart();
-                    }
-
-                    $('body').trigger('contentUpdated');
-                }, 200);
+                self.reinitCart();
             });
 
             return this;
@@ -70,6 +75,19 @@ define([
             return window.BASE_URL + 'checkout/cart/add/uenc/' + this.getUenc() + '/product/' + productId + '/';
         },
 
+        reinitCart: function () {
+            setTimeout(function () {
+                var forms = $('form[data-role="tocart-form"]');
+                forms.each(function () {
+                    var $form = $(this);
+                    if (!$form.data('mage-catalog-add-to-cart')) {
+                        $form.catalogAddToCart();
+                    }
+                });
+                $('body').trigger('contentUpdated');
+            }, 500);
+        },
+
         addToWishlist: function (productId) {
             var self = this;
             var url = window.BASE_URL + 'wishlist/index/add/product/' + productId + '/';
@@ -83,28 +101,55 @@ define([
                 },
                 type: 'post',
                 dataType: 'json',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
                 showLoader: true,
-                success: function (res) {
-                    // Сценарий 1: Сервер прислал JSON (все ок или управляемый редирект)
-                    if (res && res.backUrl) {
-                        window.location.assign(res.backUrl);
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+
+                complete: function (res) {
+                    if (res.responseText && res.responseText.includes('customer-account-login')) {
+                        window.location.assign(window.BASE_URL + 'customer/account/login/');
                         return;
                     }
-                    this._updateSections();
-                }.bind(this),
 
-                error: function (res) {
-                    console.log('Wishlist request status:', res.status);
+                    var sections = ['wishlist', 'messages'];
+                    customerData.invalidate(sections);
+                    customerData.reload(sections, true).done(function() {
+                        var messages = $.cookieStorage.get('mage-messages');
+                        if (messages && messages.length > 0) {
+                            customerData.set('messages', { messages: messages });
+                            $.cookieStorage.set('mage-messages', '');
+                        }
+                    });
+                }
+            });
+        },
 
-                    if (res.status === 200 && res.responseText.includes('customer-account-login')) {
-                        window.location.assign(window.BASE_URL + 'customer/account/login/');
-                    } else {
-                        this._updateSections();
-                    }
-                }.bind(this)
+        addToCompare: function (productId) {
+            var self = this;
+            var url = window.BASE_URL + 'catalog/product_compare/add/product/' + productId + '/';
+
+            $.ajax({
+                url: url,
+                data: {
+                    'product': productId,
+                    'uenc': self.getUenc(),
+                    'form_key': self.getFormKey()
+                },
+                type: 'post',
+                showLoader: true,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+
+                complete: function (res) {
+                    var sections = ['compare-products', 'messages'];
+
+                    customerData.invalidate(sections);
+                    customerData.reload(sections, true).done(function() {
+                        var messages = $.cookieStorage.get('mage-messages');
+                        if (messages && messages.length > 0) {
+                            customerData.set('messages', { messages: messages });
+                            $.cookieStorage.set('mage-messages', '');
+                        }
+                    });
+                }
             });
         },
 

@@ -5,6 +5,14 @@ define(['ko', 'jquery'], function (ko, $) {
         aggregations: ko.observableArray([]),
         isLoading: ko.observable(false),
         categoryId: ko.observable(null),
+        totalCount: ko.observable(0),
+
+
+        pageSize: ko.observable(12),
+        currentPage: ko.observable(1),
+        availablePages: ko.observableArray([]),
+        currentSortOrder: ko.observable(''),
+        currentMode: ko.observable('grid'),
 
         activeFilters: ko.observableArray([]),
 
@@ -24,12 +32,14 @@ define(['ko', 'jquery'], function (ko, $) {
 
         removeFilter: function(filter) {
             this.activeFilters.remove(filter);
+            this.currentPage(1)
             this.loadProducts();
             this.loadFilters();
         },
 
         clearAll: function() {
             this.activeFilters([]);
+            this.currentPage(1)
             this.loadProducts();
             this.loadFilters();
         },
@@ -65,8 +75,9 @@ define(['ko', 'jquery'], function (ko, $) {
             var self = this;
             this.isLoading(true);
 
-            var query = `query GetProducts($filter: ProductAttributeFilterInput) {
-                products(filter: $filter, pageSize: 12) {
+            var query = `query GetProducts($filter: ProductAttributeFilterInput, $pageSize: Int, $currentPage: Int) {
+                products(filter: $filter, pageSize: $pageSize, currentPage: $currentPage) {
+                    total_count
                     items {
                       id
                       name
@@ -92,11 +103,16 @@ define(['ko', 'jquery'], function (ko, $) {
                 contentType: 'application/json',
                 data: JSON.stringify({
                     query: query,
-                    variables: { filter: this.getPreparedFilters() }
+                    variables: {
+                        filter: this.getPreparedFilters(),
+                        pageSize: parseInt(this.pageSize()),
+                        currentPage: parseInt(this.currentPage())
+                    }
                 }),
                 success: function (res) {
                     if (res.data && res.data.products) {
                         self.products(res.data.products.items);
+                        self.totalCount(res.data.products.total_count);
                     }
                 },
                 complete: function () { self.isLoading(false); }
@@ -116,6 +132,8 @@ define(['ko', 'jquery'], function (ko, $) {
                         attrLabel: attrLabel
                     });
                 }
+                this.currentPage(1)
+
                 this.loadProducts();
                 this.loadFilters();
             } catch (err) {

@@ -8,7 +8,11 @@
             <block class="Magento\Framework\View\Element\Template"
                    name="async.product-list"
                    template="Perspective_AsyncCatalog::catalog/product-list.phtml"
-                   after="-"/>
+                   after="-">
+                <arguments>
+                    <argument name="viewModel" xsi:type="object">Perspective\AsyncCatalog\ViewModel\CatalogCategory</argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

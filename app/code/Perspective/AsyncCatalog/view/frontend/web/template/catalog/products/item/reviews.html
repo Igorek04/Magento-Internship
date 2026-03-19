@@ -1,5 +1,5 @@
+<!-- ko if: review_count > 0 -->
 <div class="product-reviews-summary short" data-bind="css: { 'no-rating': !rating_summary }">
-
     <div class="rating-summary">
         <span class="label"><span data-bind="i18n: 'Rating'"></span>:</span>
         <div class="rating-result" data-bind="attr: { title: rating_summary + '%' }">
@@ -16,3 +16,4 @@
         </a>
     </div>
 </div>
+<!-- /ko -->

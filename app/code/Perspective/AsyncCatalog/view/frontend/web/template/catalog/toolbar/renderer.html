@@ -1,0 +1,26 @@
+<div class="toolbar toolbar-products">
+    <!-- ko ifnot: isBottom -->
+        <!-- ko template: {
+                name: 'Perspective_AsyncCatalog/catalog/toolbar/item/amount',
+                data: $parent
+        } --><!-- /ko -->
+
+
+
+    <!-- /ko -->
+
+    <!-- ko if: isBottom -->
+
+        <!-- ko if: $parent.totalPages() > 1 -->
+            <!-- ko template: {
+                   name: 'Perspective_AsyncCatalog/catalog/toolbar/item/pager',
+                   data: $parent
+           } --><!-- /ko -->
+        <!-- /ko -->
+
+    <!-- /ko -->
+</div>
+
+
+
+
