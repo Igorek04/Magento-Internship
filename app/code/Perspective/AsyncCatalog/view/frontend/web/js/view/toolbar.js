@@ -84,12 +84,43 @@ define([
         },
 
         changePageSize: function (size) {
-            if (size && size !== catalogData.pageSize()) {
-                catalogData.pageSize(parseInt(size));
+            catalogData.pageSize(size);
+            catalogData.currentPage(1);
+            catalogData.loadProducts();
+        },
+
+        changeSort: function (field, direction) {
+            if (field) {
+                catalogData.currentSortField(field);
+                catalogData.currentSortDirection(direction || 'asc');
                 catalogData.currentPage(1);
                 catalogData.loadProducts();
-
             }
+        },
+
+        changeDirection: function (data, event) {
+            event.preventDefault();
+            var currentDir = catalogData.currentSortDirection();
+            var newDir = (currentDir === 'asc') ? 'desc' : 'asc';
+
+            catalogData.currentSortDirection(newDir);
+            catalogData.currentPage(1);
+            catalogData.loadProducts();
+        },
+
+        getSortDirectionClass: function () {
+            return 'sort-' + catalogData.currentSortDirection();
+        },
+
+        getSortDirectionTitle: function () {
+            return catalogData.currentSortDirection() === 'asc'
+                ? 'Set Descending Direction'
+                : 'Set Ascending Direction';
+        },
+
+        changeMode: function (mode, event) {
+            if (event) event.preventDefault();
+            catalogData.currentMode(mode);
         }
     });
 });

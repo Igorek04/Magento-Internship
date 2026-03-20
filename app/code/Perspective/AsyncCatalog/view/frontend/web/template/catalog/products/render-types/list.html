@@ -1,11 +1,11 @@
 <!-- ko scope: 'product-listing-toolbar' -->
     <!-- ko template: { name: getTemplate(), data: { isBottom: false } } --><!-- /ko -->
 <!-- /ko -->
-<div class="products wrapper grid products-grid" data-bind="blockLoader: isLoading">
+<div class="products wrapper list products-list" data-bind="blockLoader: isLoading">
     <ol class="products list items product-items" data-bind="foreach: products">
         <!-- ko if: $data -->
         <li class="item product product-item">
-            <div class="product-item-info" data-container="product-grid">
+            <div class="product-item-info" data-container="product-list">
 
                 <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/image' --> <!-- /ko -->
 
@@ -13,7 +13,6 @@
                     <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/title' --> <!-- /ko -->
                     <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/reviews' --> <!-- /ko -->
                     <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/price' --> <!-- /ko -->
-                    <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/swatch' --> <!-- /ko -->
 
                     <div class="product-item-inner">
                         <!-- ko template: 'Perspective_AsyncCatalog/catalog/products/item/actions' --> <!-- /ko -->

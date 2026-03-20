@@ -1,0 +1,14 @@
+<div class="field limiter">
+    <label class="label" for="limiter">
+        <span data-bind="i18n: 'Show'"></span>
+    </label>
+    <div class="control">
+        <select id="limiter" data-role="limiter" class="limiter-options" data-bind="
+            options: catalogData.availablePages(),
+            value: catalogData.pageSize,
+            event: { change: function() { changePageSize(catalogData.pageSize()) } }
+        ">
+        </select>
+    </div>
+    <span class="limiter-text" data-bind="i18n: 'per page'"></span>
+</div>

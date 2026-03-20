@@ -25,12 +25,28 @@ define([
 
             var config = this.pageConfig;
             if (config) {
-                var mode = config.listMode.includes('grid') ? 'grid' : 'list';
-                catalogData.currentMode(mode);
+                catalogData.availableModes(config.availableModes);
+                catalogData.availableSortList(config.availableSortList);
+                catalogData.currentSortField(config.defaultSortBy);
 
-                var defLimit = (mode === 'grid') ? config.gridPerPageDefault : config.listPerPageDefault;
-                catalogData.pageSize(defLimit);
-                catalogData.availablePages(mode === 'grid' ? config.gridPerPageValues : config.listPerPageValues);
+                var initialMode = config.currentMode || 'grid';
+                var isGrid = (initialMode === 'grid');
+
+                catalogData.pageSize(isGrid ? config.gridPerPageDefault : config.listPerPageDefault);
+                catalogData.availablePages(isGrid ? config.gridPerPageValues : config.listPerPageValues);
+
+                catalogData.currentMode.subscribe(function (newMode) {
+                    var isGrid = (newMode === 'grid');
+                    catalogData.pageSize(isGrid ? config.gridPerPageDefault : config.listPerPageDefault);
+                    catalogData.availablePages(isGrid ? config.gridPerPageValues : config.listPerPageValues);
+                    catalogData.currentPage(1);
+                    catalogData.loadProducts().done(function() {
+                        self.reinitCart();
+                    });
+                });
+
+                catalogData.currentMode(initialMode);
+
             }
             console.log(config);
 
@@ -39,9 +55,9 @@ define([
             });
 
             catalogData.loadFilters();
-            catalogData.loadProducts().done(function() {
-                self.reinitCart();
-            });
+            //catalogData.loadProducts().done(function() {
+            //    self.reinitCart();
+            //});
 
             return this;
         },

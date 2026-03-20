@@ -1,26 +1,17 @@
 <div class="toolbar toolbar-products">
     <!-- ko ifnot: isBottom -->
-        <!-- ko template: {
-                name: 'Perspective_AsyncCatalog/catalog/toolbar/item/amount',
-                data: $parent
-        } --><!-- /ko -->
+        <!-- ko template: {name: 'Perspective_AsyncCatalog/catalog/toolbar/item/view-mode', data: $parent} --><!-- /ko -->
 
+        <!-- ko template: {name: 'Perspective_AsyncCatalog/catalog/toolbar/item/amount', data: $parent} --><!-- /ko -->
 
-
+        <!-- ko template: { name: 'Perspective_AsyncCatalog/catalog/toolbar/item/sorter', data: $parent } --><!-- /ko -->
     <!-- /ko -->
 
     <!-- ko if: isBottom -->
-
         <!-- ko if: $parent.totalPages() > 1 -->
-            <!-- ko template: {
-                   name: 'Perspective_AsyncCatalog/catalog/toolbar/item/pager',
-                   data: $parent
-           } --><!-- /ko -->
+            <!-- ko template: {name: 'Perspective_AsyncCatalog/catalog/toolbar/item/pager', data: $parent} --><!-- /ko -->
         <!-- /ko -->
 
+        <!-- ko template: {name: 'Perspective_AsyncCatalog/catalog/toolbar/item/limiter', data: $parent} --><!-- /ko -->
     <!-- /ko -->
 </div>
-
-
-
-

@@ -3,15 +3,21 @@ define(['ko', 'jquery'], function (ko, $) {
     return {
         products: ko.observableArray([]),
         aggregations: ko.observableArray([]),
-        isLoading: ko.observable(false),
+
         categoryId: ko.observable(null),
         totalCount: ko.observable(0),
 
+        isLoading: ko.observable(false),
 
         pageSize: ko.observable(12),
         currentPage: ko.observable(1),
         availablePages: ko.observableArray([]),
-        currentSortOrder: ko.observable(''),
+
+        currentSortField: ko.observable(''),
+        currentSortDirection: ko.observable('asc'),
+        availableSortList: ko.observableArray([]),
+
+        availableModes: ko.observableArray([]),
         currentMode: ko.observable('grid'),
 
         activeFilters: ko.observableArray([]),
@@ -75,14 +81,16 @@ define(['ko', 'jquery'], function (ko, $) {
             var self = this;
             this.isLoading(true);
 
-            var query = `query GetProducts($filter: ProductAttributeFilterInput, $pageSize: Int, $currentPage: Int) {
-                products(filter: $filter, pageSize: $pageSize, currentPage: $currentPage) {
+            var query = `query GetProducts($filter: ProductAttributeFilterInput, $pageSize: Int, $currentPage: Int, $sort: ProductAttributeSortInput) {
+                products(filter: $filter, pageSize: $pageSize, currentPage: $currentPage, sort: $sort) {
                     total_count
                     items {
                       id
                       name
                       sku
-                      url_key
+                      url_rewrites {
+                         url
+                      }
                       stock_status
                       rating_summary
                       review_count
@@ -106,11 +114,19 @@ define(['ko', 'jquery'], function (ko, $) {
                     variables: {
                         filter: this.getPreparedFilters(),
                         pageSize: parseInt(this.pageSize()),
-                        currentPage: parseInt(this.currentPage())
+                        currentPage: parseInt(this.currentPage()),
+                        sort: { [this.currentSortField() || 'position']: this.currentSortDirection().toUpperCase() }
                     }
                 }),
                 success: function (res) {
                     if (res.data && res.data.products) {
+                        var baseUrl = window.BASE_URL.replace(/\/$/, '');
+                        var processedItems = res.data.products.items.map(function (item) {
+                            item.url = baseUrl + '/' + item.url_rewrites[0].url;
+                            return item;
+                        });
+                        self.products(processedItems);
+
                         self.products(res.data.products.items);
                         self.totalCount(res.data.products.total_count);
                     }
