@@ -8,9 +8,5 @@ var config = {
         'alpine': {
             'exports': 'Alpine'
         }
-    },
-
-    deps: [
-        'alpine'
-    ]
+    }
 };

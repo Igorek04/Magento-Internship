@@ -1,0 +1,25 @@
+<div class="actions-primary">
+    <template x-if="product.stock_status === 'IN_STOCK'">
+        <form data-role="tocart-form"
+              method="post"
+              :data-product-sku="product.sku"
+              :action="getAddToCartUrl(product.id)">
+
+            <input type="hidden" name="product" :value="product.id">
+            <input type="hidden" name="uenc" :value="getUenc()">
+            <input type="hidden" name="form_key" :value="getFormKey()">
+
+            <button type="submit"
+                    title="<?= __('Add to Cart') ?>"
+                    class="action tocart primary">
+                <span><?= __('Add to Cart') ?></span>
+            </button>
+        </form>
+    </template>
+
+    <template x-if="product.stock_status !== 'IN_STOCK'">
+        <div class="stock unavailable">
+            <span><?= __('Out of stock') ?></span>
+        </div>
+    </template>
+</div>

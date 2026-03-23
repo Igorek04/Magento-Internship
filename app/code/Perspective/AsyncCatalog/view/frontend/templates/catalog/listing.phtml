@@ -1,0 +1,53 @@
+<?php
+use Magento\Framework\View\Element\Template;
+use Perspective\AsyncCatalog\ViewModel\CatalogCategory;
+/** @var Template $block */
+/** @var CatalogCategory $viewModel */
+$viewModel = $block->getData('viewModel');
+
+$pageConfig = $viewModel->getPageConfig();
+$categoryId = $viewModel->getCategoryId();
+$uniqueId = 'catalog_' . uniqid();
+
+$defaultMode = $pageConfig['currentMode'];
+
+$renderers = [];
+$layout = $block->getLayout();
+$rendererNames = $layout->getChildNames('async.catalog.render.types') ?: [];
+
+foreach ($rendererNames as $name) {
+    $child = $layout->getBlock($name);
+    if ($child && $modeCode = $child->getData('renderer_code')) {
+        $renderers[$modeCode] = $name;
+    }
+}
+?>
+
+<div class="async-catalog-root"
+     id="<?= $uniqueId ?>"
+     x-data="catalogProvider"
+     @filter-apply.window="handleFilterClick($event.detail)"
+     @filters-clear.window="handleClearAll()"
+     @catalog-filters-updated.window="initAccordion()"
+     x-cloak>
+
+    <?php foreach ($renderers as $code => $blockName): ?>
+        <template x-if="currentMode === '<?= $code ?>'">
+            <div class="mode-wrapper-<?= $code ?>">
+                <?= $block->getLayout()->renderElement($blockName) ?>
+            </div>
+        </template>
+    <?php endforeach; ?>
+
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "#<?= $uniqueId ?>": {
+        "Perspective_AsyncCatalog/js/view/catalog-provider": {
+            "categoryId": "<?= $categoryId ?>",
+            "pageConfig": <?= /* @noEscape */ json_encode($pageConfig) ?>
+        }
+    }
+}
+</script>

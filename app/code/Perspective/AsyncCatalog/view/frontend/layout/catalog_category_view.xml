@@ -5,18 +5,59 @@
 
             <referenceBlock name="category.products" remove="true"/>
 
-            <block class="Magento\Framework\View\Element\Template"
-                   name="async.product-list"
-                   template="Perspective_AsyncCatalog::catalog/product-list.phtml"
+
+
+            <block name="async.catalog.listing"
+                   template="Perspective_AsyncCatalog::catalog/listing.phtml"
                    after="-">
                 <arguments>
                     <argument name="viewModel" xsi:type="object">Perspective\AsyncCatalog\ViewModel\CatalogCategory</argument>
                 </arguments>
+
+                <container name="async.catalog.render.types">
+                    <block name="render.grid" template="Perspective_AsyncCatalog::catalog/render-types/grid.phtml">
+                        <arguments><argument name="renderer_code" xsi:type="string">grid</argument></arguments>
+                    </block>
+                    <block name="render.list" template="Perspective_AsyncCatalog::catalog/render-types/list.phtml">
+                        <arguments><argument name="renderer_code" xsi:type="string">list</argument></arguments>
+                    </block>
+                </container>
+
+                <container name="async.catalog.item.elements">
+                    <block name="item.elements.image" template="Perspective_AsyncCatalog::catalog/item/image.phtml"/>
+                    <block name="item.elements.details" template="Perspective_AsyncCatalog::catalog/item/details.phtml">
+                        <block name="item.elements.title" template="Perspective_AsyncCatalog::catalog/item/details/title.phtml"/>
+                        <block name="item.elements.price" template="Perspective_AsyncCatalog::catalog/item/details/price.phtml"/>
+                        <block name="item.elements.reviews" template="Perspective_AsyncCatalog::catalog/item/details/reviews.phtml"/>
+
+                        <block name="item.elements.actions" template="Perspective_AsyncCatalog::catalog/item/details/actions.phtml">
+                            <container name="elements.actions.primary">
+                                <block name="actions.addtocart" template="Perspective_AsyncCatalog::catalog/item/details/actions/add-to-cart.phtml"/>
+                            </container>
+
+                            <container name="elements.actions.secondary">
+                                <block name="actions.wishlist" template="Perspective_AsyncCatalog::catalog/item/details/actions/add-to-wishlist.phtml"/>
+                                <block name="actions.compare" template="Perspective_AsyncCatalog::catalog/item/details/actions/add-to-compare.phtml"/>
+                            </container>
+                        </block>
+                    </block>
+                </container>
+
+                <container name="async.catalog.toolbar">
+                    <block name="toolbar.top" template="Perspective_AsyncCatalog::catalog/toolbar/wrapper.phtml">
+                        <block name="toolbar.viewmode" template="Perspective_AsyncCatalog::catalog/toolbar/item/view-mode.phtml"/>
+                        <block name="toolbar.amount" template="Perspective_AsyncCatalog::catalog/toolbar/item/amount.phtml"/>
+                        <block name="toolbar.sorter" template="Perspective_AsyncCatalog::catalog/toolbar/item/sorter.phtml"/>
+                    </block>
+
+                    <block name="toolbar.bottom" template="Perspective_AsyncCatalog::catalog/toolbar/wrapper.phtml">
+                        <block name="toolbar.pager" template="Perspective_AsyncCatalog::catalog/toolbar/item/pager.phtml"/>
+                        <block name="toolbar.limiter" template="Perspective_AsyncCatalog::catalog/toolbar/item/limiter.phtml"/>
+                    </block>
+                </container>
             </block>
 
-            <block class="Magento\Framework\View\Element\Template"
-                   name="testik-alpine"
-                   template="Perspective_AsyncCatalog::alpine-test.phtml"/>
+
         </referenceContainer>
     </body>
 </page>

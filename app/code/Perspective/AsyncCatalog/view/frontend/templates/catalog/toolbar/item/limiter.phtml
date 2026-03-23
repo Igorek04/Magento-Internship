@@ -1,0 +1,20 @@
+<div class="field limiter">
+    <label class="label" for="limiter">
+        <span><?= __('Show') ?></span>
+    </label>
+    <div class="control">
+        <select id="limiter"
+                class="limiter-options"
+                x-model="pageSize"
+                @change="changePageSize()">
+
+            <template x-for="size in getAvailablePages()" :key="size">
+                <option :value="size"
+                        x-text="size"
+                        :selected="size == pageSize">
+                </option>
+            </template>
+        </select>
+    </div>
+    <span class="limiter-text"><?= __('per page') ?></span>
+</div>

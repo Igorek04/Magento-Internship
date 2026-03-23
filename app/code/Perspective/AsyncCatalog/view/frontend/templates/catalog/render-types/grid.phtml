@@ -1,0 +1,24 @@
+<?php
+use Magento\Framework\View\Element\Template;
+/** @var Template $block */
+$layout = $block->getLayout();
+?>
+
+<?= $layout->renderElement('toolbar.top') ?>
+
+<div class="products wrapper grid products-grid">
+    <ol class="products list items product-items">
+        <template x-for="product in products" :key="product.id">
+            <li class="item product product-item">
+                <div class="product-item-info" data-container="product-grid">
+
+                    <?= $layout->renderElement('item.elements.image') ?>
+
+                    <?= $layout->renderElement('item.elements.details') ?>
+                </div>
+            </li>
+        </template>
+    </ol>
+</div>
+
+<?= $layout->renderElement('toolbar.bottom') ?>

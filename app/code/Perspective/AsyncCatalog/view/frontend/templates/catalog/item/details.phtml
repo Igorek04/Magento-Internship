@@ -1,0 +1,17 @@
+<?php
+use Magento\Framework\View\Element\Template;
+/** @var Template $block */
+$layout = $block->getLayout();
+?>
+
+<div class="product details product-item-details">
+    <?= $layout->renderElement('item.elements.title') ?>
+    <?=  $layout->renderElement('item.elements.reviews') ?>
+    <?= $layout->renderElement('item.elements.price') ?>
+
+    <div class="product-item-inner">
+        <div class="product actions product-item-actions">
+            <?= $layout->renderElement('item.elements.actions') ?>
+        </div>
+    </div>
+</div>

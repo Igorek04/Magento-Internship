@@ -1,0 +1,12 @@
+<?php
+use Magento\Framework\View\Element\Template;
+/** @var Template $block */
+$layout = $block->getLayout();
+?>
+<div class="actions-primary">
+    <?= $layout->renderElement('elements.actions.primary') ?>
+</div>
+
+<div data-role="add-to-links" class="actions-secondary">
+    <?= $layout->renderElement('elements.actions.secondary') ?>
+</div>

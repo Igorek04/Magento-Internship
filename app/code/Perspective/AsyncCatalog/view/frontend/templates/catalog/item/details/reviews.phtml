@@ -1,0 +1,18 @@
+<template x-if="product.review_count > 0">
+    <div class="product-reviews-summary short" :class="{ 'no-rating': !product.rating_summary }">
+        <div class="rating-summary">
+            <span class="label"><span><?= __('Rating') ?></span>:</span>
+            <div class="rating-result" :title="product.rating_summary + '%'">
+                <span :style="{ width: product.rating_summary + '%' }">
+                    <span><span x-text="product.rating_summary"></span>%</span>
+                </span>
+            </div>
+        </div>
+        <div class="reviews-actions">
+            <a class="action view" :href="product.url + '#reviews'">
+                <span x-text="product.review_count"></span>&nbsp;
+                <span x-text="product.review_count == 1 ? '<?= __('Review') ?>' : '<?= __('Reviews') ?>'"></span>
+            </a>
+        </div>
+    </div>
+</template>

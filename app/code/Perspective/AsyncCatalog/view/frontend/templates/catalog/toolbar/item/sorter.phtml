@@ -1,0 +1,26 @@
+<div class="toolbar-sorter sorter">
+    <label class="sorter-label" for="sorter">
+        <span><?= __('Sort By') ?></span>
+    </label>
+
+    <select id="sorter"
+            data-role="sorter"
+            class="sorter-options"
+            x-model="currentSortField"
+            @change="changeSort()">
+        <template x-for="option in pageConfig.availableSortList" :key="option.value">
+            <option :value="option.value"
+                    x-text="option.label"
+                    :selected="option.value == currentSortField">
+            </option>
+        </template>
+    </select>
+
+    <a href="#"
+       class="action sorter-action"
+       :class="getSortDirectionClass()"
+       :title="getSortDirectionTitle()"
+       @click.prevent="changeDirection($event)">
+        <span x-text="getSortDirectionTitle()"></span>
+    </a>
+</div>
