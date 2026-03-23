@@ -123,11 +123,14 @@ define(['ko', 'jquery'], function (ko, $) {
                         var baseUrl = window.BASE_URL.replace(/\/$/, '');
                         var processedItems = res.data.products.items.map(function (item) {
                             item.url = baseUrl + '/' + item.url_rewrites[0].url;
+
+                            item.isRendered = ko.observable(false);
+
                             return item;
                         });
                         self.products(processedItems);
 
-                        self.products(res.data.products.items);
+                        //self.products(res.data.products.items);
                         self.totalCount(res.data.products.total_count);
                     }
                 },
