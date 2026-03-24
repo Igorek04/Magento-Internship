@@ -1,0 +1,12 @@
+<div x-data="{ scrolled: false }"
+     x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 800)"
+     x-show="parseInt(moduleConfig.lazyloadMode) && scrolled"
+     x-transition
+     style="position: fixed; bottom: 20px; right: 20px; z-index: 99;">
+    <button type="button"
+            class="action primary"
+            @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+            style="padding: 10px 15px;">
+        <span>↑ Back to top</span>
+    </button>
+</div>

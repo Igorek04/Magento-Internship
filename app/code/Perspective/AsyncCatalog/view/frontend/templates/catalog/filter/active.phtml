@@ -1,0 +1,32 @@
+<template x-if="activeFilters.length > 0">
+    <div class="filter-current">
+        <strong class="block-subtitle filter-current-subtitle"><?= __('Now Shopping by') ?></strong>
+        <ol class="items">
+            <template x-for="filter in activeFilters" :key="filter.code + filter.value">
+                <li class="item">
+                    <span class="filter-label" x-text="filter.attrLabel"></span>
+
+                    <template x-if="filter.code === 'price'">
+                        <span class="filter-value">
+                            <span x-text="formatPrice({value: filter.value.split('_')[0], currency: currencyCode})"></span>
+                            -
+                            <span x-text="formatPrice({value: filter.value.split('_')[1], currency: currencyCode})"></span>
+                        </span>
+                    </template>
+                    <template x-if="filter.code !== 'price'">
+                        <span class="filter-value" x-text="filter.label"></span>
+                    </template>
+
+                    <a class="action remove" href="#" @click.prevent="$dispatch('filter-apply', filter)">
+                        <span><?= __('Remove This Item') ?></span>
+                    </a>
+                </li>
+            </template>
+        </ol>
+        <div class="block-actions filter-actions">
+            <a href="#" class="action clear filter-clear" @click.prevent="$dispatch('filters-clear')">
+                <span><?= __('Clear All') ?></span>
+            </a>
+        </div>
+    </div>
+</template>

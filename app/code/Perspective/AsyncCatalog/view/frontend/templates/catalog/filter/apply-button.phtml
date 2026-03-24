@@ -1,0 +1,10 @@
+<template x-if="hasChanges">
+    <div class="block-actions filter-actions-apply" style="margin: 15px 0; text-align: center;">
+        <button type="button"
+                class="action primary"
+                style="width: 100%"
+                @click="$dispatch('filter-submit')">
+            <span><?= __('Apply Filters') ?></span>
+        </button>
+    </div>
+</template>

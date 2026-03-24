@@ -1,0 +1,9 @@
+.async-catalog-root {
+    position: relative;
+}
+.async-catalog-root .loading-mask {
+    position: absolute;
+}
+.async-catalog-root .loader img {
+    position: absolute;
+}

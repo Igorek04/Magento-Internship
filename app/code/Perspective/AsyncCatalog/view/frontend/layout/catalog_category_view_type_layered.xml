@@ -6,6 +6,9 @@
             <block name="async.catalog.filters"
                    template="Perspective_AsyncCatalog::catalog/filters.phtml"
                    after="-">
+                <block name="filters.active" template="Perspective_AsyncCatalog::catalog/filter/active.phtml"/>
+                <block name="filters.apply" template="Perspective_AsyncCatalog::catalog/filter/apply-button.phtml"/>
+                <block name="filters.options" template="Perspective_AsyncCatalog::catalog/filter/options.phtml"/>
             </block>
         </referenceContainer>
     </body>

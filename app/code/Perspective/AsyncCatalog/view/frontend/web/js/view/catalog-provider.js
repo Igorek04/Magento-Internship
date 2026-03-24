@@ -1,12 +1,18 @@
 define([
     'alpine',
+    'alpine-intersect',
     'jquery',
     'Magento_Catalog/js/price-utils',
     'Magento_Customer/js/customer-data',
     'Magento_Catalog/js/catalog-add-to-cart',
-    'mage/accordion'
-], function (Alpine, $, priceUtils, customerData) {
+    'mage/accordion',
+    'mage/loader',
+], function (Alpine, alpineIntersect, $, priceUtils, customerData) {
     'use strict';
+
+    if (typeof Alpine.plugin === 'function') {
+        Alpine.plugin(alpineIntersect);
+    }
 
     return function (config) {
         Alpine.data('catalogProvider', () => ({
@@ -14,6 +20,8 @@ define([
             isLoading: false,
             categoryId: config.categoryId,
             pageConfig: config.pageConfig,
+            moduleConfig: config.moduleConfig,
+            categoryConfig: config.categoryConfig,
 
             currentMode: config.pageConfig.currentMode,
 
@@ -27,12 +35,36 @@ define([
             currentPage: 1,
 
             aggregations: [],
+
             activeFilters: [],
+            stagedFilters: [],
+
+            hasChanges: false,
+
+            currencyCode: config.currencyCode,
 
             init() {
                 this.pageSize = this.pageConfig[`${this.currentMode}PerPageDefault`];
 
-                this.loadCatalog();
+                window.formatPrice = this.formatPrice.bind(this);
+                window.currencyCode = this.currencyCode;
+
+                this.stagedFilters = [...this.activeFilters];
+
+                const $container = $(this.$el);
+                $container.loader({
+                    icon: config.loaderIcon
+                });
+
+                this.$watch('isLoading', (value) => {
+                    if (value) {
+                        $container.loader('show');
+                    } else {
+                        $container.loader('hide');
+                    }
+                });
+
+                this.loadCatalog(false);
 
                 this.$watch('products', () => {
                     this.reinitCart();
@@ -41,7 +73,7 @@ define([
                 this.$watch('currentMode', (newMode) => {
                     this.pageSize = this.pageConfig[`${newMode}PerPageDefault`];
                     this.currentPage = 1;
-                    this.loadCatalog();
+                    this.loadCatalog(false);
                 });
             },
 
@@ -142,7 +174,7 @@ define([
 
             changePageSize() {
                 this.currentPage = 1;
-                this.loadCatalog();
+                this.loadCatalog(false);
             },
 
             getAvailablePages() { //sizes
@@ -173,20 +205,20 @@ define([
 
             changePage(pageNumber) {
                 this.currentPage = parseInt(pageNumber);
-                this.loadCatalog();
+                this.loadCatalog(false);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             },
 
             changeSort() {
                 this.currentPage = 1;
-                this.loadCatalog();
+                this.loadCatalog(false);
             },
 
             changeDirection(event) {
                 if (event) event.preventDefault();
                 this.currentSortDirection = (this.currentSortDirection === 'asc') ? 'desc' : 'asc';
-                //this.currentPage = 1;
-                this.loadCatalog();
+                this.currentPage = 1;
+                this.loadCatalog(false);
             },
 
             getSortDirectionClass() {
@@ -207,17 +239,37 @@ define([
             getPreparedFilters() {
                 let filterInput = { category_id: { eq: String(this.categoryId) } };
                 this.activeFilters.forEach(f => {
-                    if (!filterInput[f.code]) {
-                        filterInput[f.code] = { in: [] };
+                    if (f.code === 'price') {
+                        const [from, to] = f.value.split('_');
+                        filterInput['price'] = {
+                            from: String(from),
+                            to: String(to)
+                        };
+                    } else {
+                        if (!filterInput[f.code]) {
+                            filterInput[f.code] = { in: [] };
+                        }
+                        filterInput[f.code].in.push(String(f.value));
                     }
-                    filterInput[f.code].in.push(String(f.value));
                 });
                 return filterInput;
             },
 
-            loadCatalog() {
+            loadCatalog(isLazy = false) {
                 const self = this;
                 this.isLoading = true;
+
+                const aggregationsQuery = this.categoryConfig.isAnchor ? `
+                    aggregations {
+                        attribute_code
+                        label
+                        options {
+                            label
+                            value
+                            count
+                        }
+                    }
+                ` : '';
 
                 const query = `query GetCatalog($filter: ProductAttributeFilterInput, $pageSize: Int, $currentPage: Int, $sort: ProductAttributeSortInput) {
                                         products(filter: $filter, pageSize: $pageSize, currentPage: $currentPage, sort: $sort) {
@@ -237,11 +289,7 @@ define([
                                                     }
                                                 }
                                             }
-                                            aggregations {
-                                                label
-                                                attribute_code
-                                                options { label value count }
-                                            }
+                                            ${aggregationsQuery}
                                         }
                                     }`;
 
@@ -264,10 +312,17 @@ define([
                             const baseUrl = (window.BASE_URL || '').replace(/\/$/, '');
 
                             self.totalCount = data.total_count;
-                            self.products = data.items.map(item => {
+
+                            const newItems = data.items.map(item => {
                                 item.url = item.url_rewrites?.[0] ? baseUrl + '/' + item.url_rewrites[0].url : '#';
                                 return item;
                             });
+
+                            if (isLazy) {
+                                self.products = [...self.products, ...newItems];
+                            } else {
+                                self.products = newItems;
+                            }
 
                             self.aggregations = data.aggregations;
 
@@ -289,27 +344,49 @@ define([
 
             handleFilterClick(detail) {
                 const { code, value, label, attrLabel } = detail;
-                const exists = this.activeFilters.find(f => f.code === code && f.value === value);
+
+                const exists = this.stagedFilters.find(f => f.code === code && f.value === value);
 
                 if (exists) {
-                    this.activeFilters = this.activeFilters.filter(f => f !== exists);
+                    this.stagedFilters = this.stagedFilters.filter(f => f !== exists);
                 } else {
-                    this.activeFilters.push({ code, value, label, attrLabel });
+                    this.stagedFilters.push({ code, value, label, attrLabel });
                 }
 
+                const isAutoUpdate = parseInt(this.moduleConfig.filtrationMode);
+
+                if (isAutoUpdate) {
+                    this.activeFilters = [...this.stagedFilters];
+                    this.hasChanges = false;
+                    this.currentPage = 1;
+                    this.loadCatalog(false);
+                } else {
+                    this.hasChanges = JSON.stringify(this.stagedFilters) !== JSON.stringify(this.activeFilters);
+                }
+
+                this.broadcastFilters(this.stagedFilters);
+            },
+
+            broadcastFilters(filtersToDisplay) {
                 const filteredAggs = this.aggregations.filter(agg =>
-                    !this.activeFilters.some(f => f.code === agg.attribute_code)
+                    !filtersToDisplay.some(f => f.code === agg.attribute_code)
                 );
 
                 window.dispatchEvent(new CustomEvent('catalog-filters-updated', {
                     detail: {
                         aggregations: filteredAggs,
-                        activeFilters: this.activeFilters
+                        activeFilters: filtersToDisplay,
+                        hasChanges: this.hasChanges
                     }
                 }));
+            },
 
+            applyStagedFilters() {
+                this.activeFilters = [...this.stagedFilters];
+                this.hasChanges = false;
                 this.currentPage = 1;
-                this.loadCatalog();
+                this.loadCatalog(false);
+                this.broadcastFilters(this.activeFilters);
             },
 
             initAccordion() {
@@ -339,17 +416,29 @@ define([
             },
 
             handleClearAll() {
-                this.activeFilters = [];
-                this.currentPage = 1;
+                this.stagedFilters = [];
 
-                window.dispatchEvent(new CustomEvent('catalog-filters-updated', {
-                    detail: {
-                        aggregations: this.aggregations,
-                        activeFilters: []
-                    }
-                }));
+                const isAutoUpdate = parseInt(this.moduleConfig.filtrationMode);
 
-                this.loadCatalog();
+                if (isAutoUpdate) {
+                    this.activeFilters = [];
+                    this.hasChanges = false;
+                    this.currentPage = 1;
+                    this.loadCatalog(false);
+                } else {
+                    this.hasChanges = this.activeFilters.length > 0;
+                }
+
+                this.broadcastFilters(this.stagedFilters);
+            },
+
+            lazyLoadNextPage() {
+                if (this.isLoading) return;
+
+                if (this.currentPage < this.getTotalPages()) {
+                    this.currentPage++;
+                    this.loadCatalog(true);
+                }
             },
         }));
 

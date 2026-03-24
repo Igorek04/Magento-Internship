@@ -1,0 +1,40 @@
+<strong role="heading" aria-level="2" class="block-subtitle filter-subtitle"><?= __('Shopping Options') ?></strong>
+
+<div class="filter-options" id="narrow-by-list">
+    <template x-for="aggregation in aggregations" :key="aggregation.attribute_code">
+        <div class="filter-options-item" data-role="collapsible">
+            <div data-role="title" class="filter-options-title" role="tab" aria-level="3" tabindex="0">
+                <span x-text="aggregation.label"></span>
+            </div>
+
+            <div data-role="content" class="filter-options-content" role="tabpanel" style="display: none;">
+                <ol class="items">
+                    <template x-for="option in aggregation.options" :key="option.value">
+                        <li class="item">
+                            <a href="#" @click.prevent="$dispatch('filter-apply', {
+                                        code: aggregation.attribute_code,
+                                        value: option.value,
+                                        label: option.label,
+                                        attrLabel: aggregation.label
+                                    })">
+                                <template x-if="aggregation.attribute_code === 'price'">
+                                    <span>
+                                        <span class="price" x-text="formatPrice({value: option.value.split('_')[0], currency: currencyCode})"></span>
+                                        -
+                                        <span class="price" x-text="formatPrice({value: option.value.split('_')[1], currency: currencyCode})"></span>
+                                    </span>
+                                </template>
+
+                                <template x-if="aggregation.attribute_code !== 'price'">
+                                    <span x-text="option.label"></span>
+                                </template>
+
+                                <span class="count" x-text="option.count"></span>
+                            </a>
+                        </li>
+                    </template>
+                </ol>
+            </div>
+        </div>
+    </template>
+</div>

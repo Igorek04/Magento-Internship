@@ -1,68 +1,26 @@
-<div class="block filter"
-     x-data="{ aggregations: [], activeFilters: [] }"
-     @catalog-filters-updated.window="
-        aggregations = $event.detail.aggregations;
-        activeFilters = $event.detail.activeFilters;
-     "
-     x-show="aggregations.length > 0 || activeFilters.length > 0">
+<?php
+use Magento\Framework\View\Element\Template;
+/** @var Template $block */
+?>
 
-    <div class="block-title filter-title">
-        <strong><?= __('Shop By') ?></strong>
-    </div>
+<template x-if="categoryIsAnchor">
 
-    <div class="block-content filter-content">
-        <template x-if="activeFilters.length > 0">
-            <div class="filter-current">
-                <strong class="block-subtitle filter-current-subtitle"><?= __('Now Shopping by') ?></strong>
-                <ol class="items">
-                    <template x-for="filter in activeFilters" :key="filter.code + filter.value">
-                        <li class="item">
-                            <span class="filter-label" x-text="filter.attrLabel"></span>
-                            <span class="filter-value" x-text="filter.label"></span>
-                            <a class="action remove" href="#" @click.prevent="$dispatch('filter-apply', filter)">
-                                <span><?= __('Remove This Item') ?></span>
-                            </a>
-                        </li>
-                    </template>
-                </ol>
-                <div class="block-actions filter-actions">
-                    <a href="#" class="action clear filter-clear" @click.prevent="$dispatch('filters-clear')">
-                        <span><?= __('Clear All') ?></span>
-                    </a>
-                </div>
-            </div>
-        </template>
+    <div class="block filter"
+         x-data="{ aggregations: [], activeFilters: [], hasChanges: false }"
+         @catalog-filters-updated.window="
+            aggregations = $event.detail.aggregations;
+            activeFilters = $event.detail.activeFilters;
+            hasChanges = $event.detail.hasChanges;
+         "
+         x-show="aggregations.length > 0 || activeFilters.length > 0 || hasChanges">
 
-        <strong role="heading" aria-level="2" class="block-subtitle filter-subtitle"><?= __('Shopping Options') ?></strong>
+        <div class="block-title filter-title">
+            <strong><?= __('Shop By') ?></strong>
+        </div>
 
-        <div class="filter-options" id="narrow-by-list">
-            <template x-for="aggregation in aggregations" :key="aggregation.attribute_code">
-                <div class="filter-options-item" data-role="collapsible">
-                    <div data-role="title" class="filter-options-title" role="tab" aria-level="3" tabindex="0">
-                        <span x-text="aggregation.label"></span>
-                    </div>
-
-                    <div data-role="content" class="filter-options-content" role="tabpanel" style="display: none;">
-                        <ol class="items">
-                            <template x-for="option in aggregation.options" :key="option.value">
-                                <li class="item">
-                                    <a href="#" @click.prevent="$dispatch('filter-apply', {
-                                        code: aggregation.attribute_code,
-                                        value: option.value,
-                                        label: option.label,
-                                        attrLabel: aggregation.label
-                                    })">
-                                        <span x-text="option.label"></span>
-                                        <template x-if="option.count">
-                                            <span class="count" x-text="option.count"></span>
-                                        </template>
-                                    </a>
-                                </li>
-                            </template>
-                        </ol>
-                    </div>
-                </div>
-            </template>
+        <div class="block-content filter-content">
+            <?= $block->getChildHtml() ?>
         </div>
     </div>
-</div>
+
+</template>

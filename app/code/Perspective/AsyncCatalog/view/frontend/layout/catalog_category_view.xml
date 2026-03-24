@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Perspective_AsyncCatalog::css/catalog-loader.css"/>
+    </head>
+
     <body>
         <referenceContainer name="content">
 
@@ -43,6 +47,11 @@
                     </block>
                 </container>
 
+                <container name="async.catalog.footer">
+                    <block name="footer.catalog-empty" template="Perspective_AsyncCatalog::catalog/footer/empty.phtml"/>
+                    <block name="footer.catalog-lazyloader" template="Perspective_AsyncCatalog::catalog/footer/lazyloader.phtml"/>
+                </container>
+
                 <container name="async.catalog.toolbar">
                     <block name="toolbar.top" template="Perspective_AsyncCatalog::catalog/toolbar/wrapper.phtml">
                         <block name="toolbar.viewmode" template="Perspective_AsyncCatalog::catalog/toolbar/item/view-mode.phtml"/>
@@ -53,6 +62,7 @@
                     <block name="toolbar.bottom" template="Perspective_AsyncCatalog::catalog/toolbar/wrapper.phtml">
                         <block name="toolbar.pager" template="Perspective_AsyncCatalog::catalog/toolbar/item/pager.phtml"/>
                         <block name="toolbar.limiter" template="Perspective_AsyncCatalog::catalog/toolbar/item/limiter.phtml"/>
+                        <block name="toolbar.backtotop" template="Perspective_AsyncCatalog::catalog/toolbar/item/back-to-top.phtml"/>
                     </block>
                 </container>
             </block>

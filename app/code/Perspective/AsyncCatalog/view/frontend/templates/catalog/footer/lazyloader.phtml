@@ -1,0 +1,15 @@
+<template x-if="parseInt(moduleConfig.lazyloadMode) && products.length > 0">
+    <div style="height: 50px; display: flex; align-items: center; justify-content: center;">
+
+        <template x-if="isLoading || currentPage < getTotalPages()">
+            <div class="lazyload-trigger" x-intersect="lazyLoadNextPage()">
+                <span><?= __('Loading next page...') ?></span>
+            </div>
+        </template>
+
+        <template x-if="!isLoading && currentPage >= getTotalPages()">
+            <span><?= __('You\'ve reached the end of the catalog.') ?></span>
+        </template>
+
+    </div>
+</template>

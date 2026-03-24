@@ -7,6 +7,9 @@ $viewModel = $block->getData('viewModel');
 
 $pageConfig = $viewModel->getPageConfig();
 $categoryId = $viewModel->getCategoryId();
+$moduleConfig = $viewModel->getModuleConfig();
+$categoryConfig = $viewModel->getCategoryConfig();
+
 $uniqueId = 'catalog_' . uniqid();
 
 $defaultMode = $pageConfig['currentMode'];
@@ -29,6 +32,7 @@ foreach ($rendererNames as $name) {
      @filter-apply.window="handleFilterClick($event.detail)"
      @filters-clear.window="handleClearAll()"
      @catalog-filters-updated.window="initAccordion()"
+     @filter-submit.window="applyStagedFilters()"
      x-cloak>
 
     <?php foreach ($renderers as $code => $blockName): ?>
@@ -46,7 +50,11 @@ foreach ($rendererNames as $name) {
         "#<?= $uniqueId ?>": {
         "Perspective_AsyncCatalog/js/view/catalog-provider": {
             "categoryId": "<?= $categoryId ?>",
-            "pageConfig": <?= /* @noEscape */ json_encode($pageConfig) ?>
+            "pageConfig": <?= /* @noEscape */ json_encode($pageConfig) ?>,
+            "loaderIcon": "<?= $block->getViewFileUrl('images/loader-2.gif'); ?>",
+            "moduleConfig": <?= /* @noEscape */ json_encode($moduleConfig) ?>,
+            "categoryConfig": <?= /* @noEscape */ json_encode($categoryConfig) ?>,
+            "currencyCode": "<?= $viewModel->getCurrencyCode(); ?>"
         }
     }
 }
