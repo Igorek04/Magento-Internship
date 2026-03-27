@@ -1,0 +1,7 @@
+interface ProductInterface {
+    swatches_html: String @resolver(class: "\\Perspective\\AsyncCatalog\\Model\\Resolver\\ProductSwatches") @doc(description: "Pre-rendered Swatches HTML for catalog")
+}
+
+type ConfigurableProduct {
+    swatches_html: String @resolver(class: "\\Perspective\\AsyncCatalog\\Model\\Resolver\\ProductSwatches")
+}

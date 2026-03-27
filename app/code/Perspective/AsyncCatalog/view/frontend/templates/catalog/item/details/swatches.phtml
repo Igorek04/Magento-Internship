@@ -1,0 +1,7 @@
+<template x-if="product.swatches_html">
+    <div class="swatch-holder"
+         :data-id="product.id"
+         x-html="product.swatches_html"
+         x-init="$nextTick(() => { jQuery($el).trigger('contentUpdated') })">
+    </div>
+</template>

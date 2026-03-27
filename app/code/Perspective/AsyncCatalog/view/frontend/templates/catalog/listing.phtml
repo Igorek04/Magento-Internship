@@ -1,14 +1,19 @@
 <?php
 use Magento\Framework\View\Element\Template;
 use Perspective\AsyncCatalog\ViewModel\CatalogCategory;
+use Magento\Catalog\Model\Category;
 /** @var Template $block */
 /** @var CatalogCategory $viewModel */
 $viewModel = $block->getData('viewModel');
 
+$categoryConfig = $viewModel->getCategoryConfig();
+
+// if category display mode "only cms" - product listing not init
+if ($categoryConfig['displayMode'] === Category::DM_PAGE) return;
+
 $pageConfig = $viewModel->getPageConfig();
 $categoryId = $viewModel->getCategoryId();
 $moduleConfig = $viewModel->getModuleConfig();
-$categoryConfig = $viewModel->getCategoryConfig();
 
 $uniqueId = 'catalog_' . uniqid();
 

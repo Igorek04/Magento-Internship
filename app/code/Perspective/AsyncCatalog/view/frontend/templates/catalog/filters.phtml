@@ -1,9 +1,15 @@
 <?php
 use Magento\Framework\View\Element\Template;
+use Perspective\AsyncCatalog\ViewModel\CatalogCategory;
+use Magento\Catalog\Model\Category;
 /** @var Template $block */
-?>
+/** @var CatalogCategory $viewModel */
+$viewModel = $block->getData('viewModel');
 
-<template x-if="categoryIsAnchor">
+// if category display mode "only cms" - product filters not init
+$categoryConfig = $viewModel->getCategoryConfig();
+if ($categoryConfig['displayMode'] === Category::DM_PAGE) return;
+?>
 
     <div class="block filter"
          x-data="{ aggregations: [], activeFilters: [], hasChanges: false }"
@@ -22,5 +28,3 @@ use Magento\Framework\View\Element\Template;
             <?= $block->getChildHtml() ?>
         </div>
     </div>
-
-</template>

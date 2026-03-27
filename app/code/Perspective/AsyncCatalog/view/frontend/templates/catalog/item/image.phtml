@@ -1,12 +1,9 @@
 <a :href="product.url" class="product photo product-item-photo" tabindex="-1">
     <span class="product-image-container" style="width: 240px; display: block;">
         <span class="product-image-wrapper" style="padding-bottom: 125%; display: block; position: relative;">
-            <template x-if="product.small_image">
-                <img class="product-image-photo"
-                     :src="product.small_image.url"
-                     :alt="product.name"
-                >
-            </template>
+            <img class="product-image-photo"
+                 :src="product.small_image.url"
+                 :alt="product.name">
         </span>
     </span>
 </a>

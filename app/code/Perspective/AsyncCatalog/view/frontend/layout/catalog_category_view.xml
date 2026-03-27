@@ -33,6 +33,7 @@
                         <block name="item.elements.title" template="Perspective_AsyncCatalog::catalog/item/details/title.phtml"/>
                         <block name="item.elements.price" template="Perspective_AsyncCatalog::catalog/item/details/price.phtml"/>
                         <block name="item.elements.reviews" template="Perspective_AsyncCatalog::catalog/item/details/reviews.phtml"/>
+                        <block name="item.elements.swatches" template="Perspective_AsyncCatalog::catalog/item/details/swatches.phtml"/>
 
                         <block name="item.elements.actions" template="Perspective_AsyncCatalog::catalog/item/details/actions.phtml">
                             <container name="elements.actions.primary">

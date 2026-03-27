@@ -8,6 +8,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Catalog\Model\Config as CatalogConfig;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
+use Magento\Catalog\Model\Category;
 
 class CatalogCategory implements ArgumentInterface
 {
@@ -35,7 +36,7 @@ class CatalogCategory implements ArgumentInterface
         if (!$categoryId) {
             $categoryId = 0;
         }
-        return $categoryId;
+        return (string)$categoryId;
     }
 
     public function getCategoryConfig()
@@ -43,8 +44,14 @@ class CatalogCategory implements ArgumentInterface
         $categoryId = $this->getCategoryId();
         $category = $this->categoryRepository->get($categoryId);
 
+        //manual set default value, because if that not changed it was return null
+        $displayMode = $category->getDisplayMode() ?: Category::DM_PRODUCT;
+
         return [
-          'isAnchor' => (bool)$category->getIsAnchor(),
+            'isAnchor' => (bool)$category->getIsAnchor(),
+            'displayMode' => $displayMode,
+            'categoryUid' => base64_encode($this->getCategoryId()),
+            'hasChildCategories' => $category->getChildrenCount() > 0
         ];
     }
 

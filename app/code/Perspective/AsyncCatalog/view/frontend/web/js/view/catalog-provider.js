@@ -46,6 +46,8 @@ define([
             init() {
                 this.pageSize = this.pageConfig[`${this.currentMode}PerPageDefault`];
 
+                this.parseUrlToFilters();
+
                 window.formatPrice = this.formatPrice.bind(this);
                 window.currencyCode = this.currencyCode;
 
@@ -61,6 +63,7 @@ define([
                         $container.loader('show');
                     } else {
                         $container.loader('hide');
+                        this.updateUrl();
                     }
                 });
 
@@ -75,6 +78,76 @@ define([
                     this.currentPage = 1;
                     this.loadCatalog(false);
                 });
+
+                // product swatches
+                this.swatchCache = {};
+                //on first swatch option click
+                $(document).ajaxComplete((event, xhr, settings) => {
+                    // filter of ajax requests
+                    if (!settings.url.includes('/swatches/ajax/media/')) return;
+
+                    const urlParams = new URLSearchParams(settings.url.split('?')[1]);
+                    const simpleId = urlParams.get('product_id');
+                    const res = JSON.parse(xhr.responseText);
+                    const newUrl = res.medium;
+
+                    if (!simpleId || !newUrl) return;
+
+                    // search configurable product by simple from ajax response
+                    let confId = null;
+                    $('.swatch-holder').each(function() {
+                        const widget = $(this).find('[class^="swatch-opt-"]').data('mage-SwatchRenderer')
+                            || $(this).find('[class^="swatch-opt-"]').data('mageSwatchRenderer');
+                        if (widget && widget.getProduct() == simpleId) {
+                            confId = $(this).attr('data-id');
+                            return false;
+                        }
+                    });
+
+                    if (confId) {
+                        if (!this.swatchCache[confId]) this.swatchCache[confId] = {};
+                        this.swatchCache[confId][simpleId] = newUrl;
+
+                        const product = this.products.find(p => p.id == confId);
+                        // set option img url to product card
+                        if (product) {
+                            product.small_image.url = newUrl;
+                        }
+                    }
+                });
+
+                // on repeated swatch option click
+                $(this.$el).on('click', '.swatch-option', (e) => {
+                    const $container = $(e.currentTarget).closest('.swatch-holder');
+                    const confId = $container.attr('data-id');
+                    const product = this.products.find(p => p.id == confId);
+
+                    // save base product img url
+                    if (product && !product._baseImage) {
+                        product._baseImage = product.small_image.url;
+                    }
+
+                    const widget = $container.find('[class^="swatch-opt-"]').data('mage-SwatchRenderer')
+                        || $container.find('[class^="swatch-opt-"]').data('mageSwatchRenderer');
+
+                    // get current selected simple product id from swatch renderer widget
+                    const currentSimpleId = widget ? widget.getProduct() : null;
+
+                    // if clean swatch selection - set base image
+                    if (!currentSimpleId) {
+                        product.small_image.url = product._baseImage;
+
+                        // if user repeat selection of same options - get cached option img url
+                    } else if (this.swatchCache[confId] && this.swatchCache[confId][currentSimpleId]) {
+                        product.small_image.url = this.swatchCache[confId][currentSimpleId];
+                    }
+                });
+
+                //
+                window.onpopstate = () => {
+                    this.parseUrlToFilters();
+                    this.loadCatalog(false);
+                };
             },
 
             formatPrice(priceData) {
@@ -237,7 +310,7 @@ define([
             },
 
             getPreparedFilters() {
-                let filterInput = { category_id: { eq: String(this.categoryId) } };
+                let filterInput = { category_uid: { eq: String(this.categoryConfig.categoryUid) } };
                 this.activeFilters.forEach(f => {
                     if (f.code === 'price') {
                         const [from, to] = f.value.split('_');
@@ -245,6 +318,8 @@ define([
                             from: String(from),
                             to: String(to)
                         };
+                    } else if (f.code === 'category_uid') {
+                        filterInput['category_uid'] = { eq: String(f.value) };
                     } else {
                         if (!filterInput[f.code]) {
                             filterInput[f.code] = { in: [] };
@@ -288,6 +363,9 @@ define([
                                                         final_price { value currency }
                                                     }
                                                 }
+                                                ... on ConfigurableProduct {
+                                                    swatches_html
+                                                }
                                             }
                                             ${aggregationsQuery}
                                         }
@@ -297,6 +375,9 @@ define([
                     url: '/graphql',
                     method: 'POST',
                     contentType: 'application/json',
+                    headers: {
+                        'X-Async-Catalog-Category-Filter': 'intersect'
+                    },
                     data: JSON.stringify({
                         query: query,
                         variables: {
@@ -324,16 +405,11 @@ define([
                                 self.products = newItems;
                             }
 
-                            self.aggregations = data.aggregations;
+                            self.aggregations = data.aggregations || [];
 
-                            window.dispatchEvent(new CustomEvent('catalog-filters-updated', {
-                                detail: {
-                                    aggregations: self.aggregations.filter(agg =>
-                                        !self.activeFilters.some(f => f.code === agg.attribute_code)
-                                    ),
-                                    activeFilters: self.activeFilters
-                                }
-                            }));
+                            self.stagedFilters = [...self.activeFilters];
+
+                            self.broadcastFilters(self.activeFilters);
                         }
                     },
                     complete: function () {
@@ -368,14 +444,24 @@ define([
             },
 
             broadcastFilters(filtersToDisplay) {
+                const enrichedFilters = filtersToDisplay.map(f => {
+                    if (f.label) return f;
+
+                    const agg = this.aggregations.find(a => a.attribute_code === f.code);
+                    const opt = agg?.options.find(o => String(o.value) === String(f.value));
+
+                    return opt ? { ...f, label: opt.label, attrLabel: agg.label } : f;
+                });
+
                 const filteredAggs = this.aggregations.filter(agg =>
-                    !filtersToDisplay.some(f => f.code === agg.attribute_code)
+                    !enrichedFilters.some(f => f.code === agg.attribute_code) &&
+                    !(agg.attribute_code === 'category_uid' && !this.categoryConfig.hasChildCategories)
                 );
 
                 window.dispatchEvent(new CustomEvent('catalog-filters-updated', {
                     detail: {
                         aggregations: filteredAggs,
-                        activeFilters: filtersToDisplay,
+                        activeFilters: enrichedFilters,
                         hasChanges: this.hasChanges
                     }
                 }));
@@ -424,6 +510,7 @@ define([
                     this.activeFilters = [];
                     this.hasChanges = false;
                     this.currentPage = 1;
+
                     this.loadCatalog(false);
                 } else {
                     this.hasChanges = this.activeFilters.length > 0;
@@ -439,6 +526,43 @@ define([
                     this.currentPage++;
                     this.loadCatalog(true);
                 }
+            },
+
+            updateUrl() {
+                const params = new URLSearchParams();
+
+                this.activeFilters.forEach(f => {
+                    const current = params.get(f.code);
+                    params.set(f.code, current ? `${current},${f.value}` : f.value);
+                });
+
+                const queryString = params.toString();
+                const newUrl = window.location.pathname + (queryString ? '?' + queryString : '');
+
+                if (window.location.search !== (queryString ? '?' + queryString : '')) {
+                    window.history.pushState(null, '', newUrl);
+                }
+
+                return newUrl;
+            },
+
+            parseUrlToFilters() {
+                const params = new URLSearchParams(window.location.search);
+                const newFilters = [];
+
+                params.forEach((value, code) => {
+                    value.split(',').forEach(val => {
+                        newFilters.push({
+                            code: code,
+                            value: val,
+                            label: '',
+                            attrLabel: ''
+                        });
+                    });
+                });
+
+                this.activeFilters = newFilters;
+                this.stagedFilters = [...this.activeFilters];
             },
         }));
 
