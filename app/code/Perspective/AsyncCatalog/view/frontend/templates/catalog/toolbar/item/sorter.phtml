@@ -6,21 +6,20 @@
     <select id="sorter"
             data-role="sorter"
             class="sorter-options"
-            x-model="currentSortField"
-            @change="changeSort()">
-        <template x-for="option in pageConfig.availableSortList" :key="option.value">
+            x-model="catalogData.currentSortField"
+            @change="catalogToolbarSorter.changeSort()">
+        <template x-for="option in catalogData.pageConfig.availableSortList" :key="option.value">
             <option :value="option.value"
                     x-text="option.label"
-                    :selected="option.value == currentSortField">
             </option>
         </template>
     </select>
 
     <a href="#"
        class="action sorter-action"
-       :class="getSortDirectionClass()"
-       :title="getSortDirectionTitle()"
-       @click.prevent="changeDirection($event)">
-        <span x-text="getSortDirectionTitle()"></span>
+       :class="catalogToolbarSorter.getSortDirectionClass()"
+       :title="catalogToolbarSorter.getSortDirectionTitle()"
+       @click.prevent="catalogToolbarSorter.changeDirection($event)">
+        <span x-text="catalogToolbarSorter.getSortDirectionTitle()"></span>
     </a>
 </div>

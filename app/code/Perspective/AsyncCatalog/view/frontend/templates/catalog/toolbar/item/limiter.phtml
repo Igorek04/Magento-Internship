@@ -1,4 +1,4 @@
-<template x-if="!parseInt(moduleConfig.lazyloadMode)">
+<template x-if="!parseInt(catalogData.moduleConfig?.lazyloadMode || 0)">
     <div class="field limiter">
         <label class="label" for="limiter">
             <span><?= __('Show') ?></span>
@@ -6,14 +6,11 @@
         <div class="control">
             <select id="limiter"
                     class="limiter-options"
-                    x-model="pageSize"
-                    @change="changePageSize()">
+                    x-model="catalogData.pageSize"
+                    @change="catalogToolbarLimiter.changePageSize()">
 
-                <template x-for="size in getAvailablePages()" :key="size">
-                    <option :value="size"
-                            x-text="size"
-                            :selected="size == pageSize">
-                    </option>
+                <template x-for="size in catalogToolbarLimiter.getAvailablePages()" :key="size">
+                    <option :value="size" x-text="size"></option>
                 </template>
             </select>
         </div>

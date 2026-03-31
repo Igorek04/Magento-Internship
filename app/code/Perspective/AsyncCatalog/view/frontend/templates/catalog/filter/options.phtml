@@ -1,39 +1,73 @@
 <strong role="heading" aria-level="2" class="block-subtitle filter-subtitle"><?= __('Shopping Options') ?></strong>
 
 <div class="filter-options" id="narrow-by-list">
-    <template x-for="aggregation in aggregations" :key="aggregation.attribute_code">
+    <template x-for="aggregation in catalogFiltersData.aggregations" :key="aggregation.attribute_code">
         <div class="filter-options-item" data-role="collapsible">
             <div data-role="title" class="filter-options-title" role="tab" aria-level="3" tabindex="0">
                 <span x-text="aggregation.label"></span>
             </div>
 
             <div data-role="content" class="filter-options-content" role="tabpanel" style="display: none;">
-                <ol class="items">
-                    <template x-for="option in aggregation.options" :key="option.value">
-                        <li class="item">
-                            <a href="#" @click.prevent="$dispatch('filter-apply', {
-                                        code: aggregation.attribute_code,
-                                        value: option.value,
-                                        label: option.label,
-                                        attrLabel: aggregation.label
-                                    })">
-                                <template x-if="aggregation.attribute_code === 'price'">
-                                    <span>
-                                        <span class="price" x-text="formatPrice({value: option.value.split('_')[0], currency: currencyCode})"></span>
-                                        -
-                                        <span class="price" x-text="formatPrice({value: option.value.split('_')[1], currency: currencyCode})"></span>
-                                    </span>
-                                </template>
 
-                                <template x-if="aggregation.attribute_code !== 'price'">
-                                    <span x-text="option.label"></span>
-                                </template>
+                <!-- swatch filter -->
+                <template x-if="catalogFilterSwatches.isSwatchAttribute(aggregation.attribute_code)">
+                    <div class="swatch-attribute swatch-layered"
+                         :class="aggregation.attribute_code"
+                         :data-attribute-code="aggregation.attribute_code">
+                        <div class="swatch-attribute-options clearfix">
+                            <template x-for="option in aggregation.options" :key="option.value">
+                                <a href="#"
+                                   class="swatch-option-link-layered"
+                                   :aria-label="option.label"
+                                   @click.prevent="$dispatch('filter-apply', {
+                                       code: aggregation.attribute_code,
+                                       value: option.value,
+                                       label: option.label,
+                                       attrLabel: aggregation.label
+                                   })">
+                                    <div class="swatch-option"
+                                         :class="catalogFilterSwatches.getSwatchClass(aggregation.attribute_code, option.value)"
+                                         :style="catalogFilterSwatches.getSwatchStyle(aggregation.attribute_code, option.value)"
+                                         :data-option-label="option.label"
+                                         :title="option.label + ' (' + option.count + ')'"
+                                         x-text="catalogFilterSwatches.getSwatchText(aggregation.attribute_code, option.value)">
+                                    </div>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                </template>
 
-                                <span class="count" x-text="option.count"></span>
-                            </a>
-                        </li>
-                    </template>
-                </ol>
+                <!-- non swatch filter -->
+                <template x-if="!catalogFilterSwatches.isSwatchAttribute(aggregation.attribute_code)">
+                    <ol class="items">
+                        <template x-for="option in aggregation.options" :key="option.value">
+                            <li class="item">
+                                <a href="#" @click.prevent="$dispatch('filter-apply', {
+                                            code: aggregation.attribute_code,
+                                            value: option.value,
+                                            label: option.label,
+                                            attrLabel: aggregation.label
+                                        })">
+                                    <template x-if="aggregation.attribute_code === 'price'">
+                                        <span>
+                                            <span class="price" x-text="productPrice.formatPrice({value: option.value.split('_')[0], currency: catalogData.currencyCode})"></span>
+                                            -
+                                            <span class="price" x-text="productPrice.formatPrice({value: option.value.split('_')[1], currency: catalogData.currencyCode})"></span>
+                                        </span>
+                                    </template>
+
+                                    <template x-if="aggregation.attribute_code !== 'price'">
+                                        <span x-text="option.label"></span>
+                                    </template>
+
+                                    <span class="count" x-text="option.count"></span>
+                                </a>
+                            </li>
+                        </template>
+                    </ol>
+                </template>
+
             </div>
         </div>
     </template>

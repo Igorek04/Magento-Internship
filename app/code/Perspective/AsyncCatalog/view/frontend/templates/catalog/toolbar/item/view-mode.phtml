@@ -1,23 +1,23 @@
-<template x-if="pageConfig.availableModes && pageConfig.availableModes.length > 1">
+<template x-if="catalogData.pageConfig.availableModes && catalogData.pageConfig.availableModes.length > 1">
     <div class="modes">
         <strong class="modes-label" id="modes-label"><?= __('View as') ?></strong>
 
-        <template x-for="mode in pageConfig.availableModes" :key="mode.code">
+        <template x-for="mode in catalogData.pageConfig.availableModes" :key="mode.code">
             <span>
-                <template x-if="mode.code === currentMode">
+                <template x-if="mode.code === catalogToolbarViewmode.currentMode">
                     <strong :title="mode.label"
                             :class="'modes-mode active mode-' + mode.code">
                         <span x-text="mode.label"></span>
                     </strong>
                 </template>
 
-                <template x-if="mode.code !== currentMode">
+                <template x-if="mode.code !== catalogToolbarViewmode.currentMode">
                     <a href="#"
                        class="modes-mode"
                        :id="'mode-' + mode.code"
                        :title="mode.label"
                        :class="'modes-mode mode-' + mode.code"
-                       @click="changeMode(mode.code, $event)">
+                       @click="catalogToolbarViewmode.changeMode(mode.code, $event)">
                         <span x-text="mode.label"></span>
                     </a>
                 </template>

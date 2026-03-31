@@ -1,18 +1,21 @@
-<template x-if="!parseInt(moduleConfig.lazyloadMode)">
-    <div class="pages" x-show="getTotalPages() > 1">
+<template x-if="!parseInt(catalogData.moduleConfig?.lazyloadMode || 0)">
+    <div class="pages" x-show="catalogToolbarPager.getTotalPages() > 1">
         <strong class="label pages-label"><span><?= __('Page') ?></span></strong>
         <ul class="items pages-items">
 
-            <template x-if="currentPage > 1">
+            <template x-if="catalogData.currentPage > 1">
                 <li class="item pages-item-previous">
-                    <a class="action previous" href="#" @click.prevent="changePage(currentPage - 1)" title="<?= __('Previous') ?>">
+                    <a class="action previous"
+                       href="#"
+                       @click.prevent="catalogToolbarPager.changePage(catalogData.currentPage - 1)"
+                       title="<?= __('Previous') ?>">
                         <span class="label"><?= __('Page') ?></span>
                         <span><?= __('Previous') ?></span>
                     </a>
                 </li>
             </template>
 
-            <template x-for="(page, index) in getFramePages()" :key="index">
+            <template x-for="(page, index) in catalogToolbarPager.getFramePages()" :key="index">
                 <li class="item" :class="{ 'current': page.isCurrent }">
 
                     <template x-if="page.type === 'jump'">
@@ -27,7 +30,9 @@
                     </template>
 
                     <template x-if="page.type === 'page' && !page.isCurrent">
-                        <a href="#" class="page" @click.prevent="changePage(page.number)">
+                        <a href="#"
+                           class="page"
+                           @click.prevent="catalogToolbarPager.changePage(page.number)">
                             <span class="label"><?= __('Page') ?></span>
                             <span x-text="page.number"></span>
                         </a>
@@ -36,9 +41,12 @@
                 </li>
             </template>
 
-            <template x-if="currentPage < getTotalPages()">
+            <template x-if="catalogData.currentPage < catalogToolbarPager.getTotalPages()">
                 <li class="item pages-item-next">
-                    <a class="action next" href="#" @click.prevent="changePage(currentPage + 1)" title="<?= __('Next') ?>">
+                    <a class="action next"
+                       href="#"
+                       @click.prevent="catalogToolbarPager.changePage(catalogData.currentPage + 1)"
+                       title="<?= __('Next') ?>">
                         <span class="label"><?= __('Page') ?></span>
                         <span><?= __('Next') ?></span>
                     </a>

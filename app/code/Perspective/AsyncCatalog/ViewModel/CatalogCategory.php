@@ -1,36 +1,33 @@
 <?php
-
 namespace Perspective\AsyncCatalog\ViewModel;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Catalog\Model\Config as CatalogConfig;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\Category;
+use Perspective\AsyncCatalog\Service\StorefrontConfig;
+use Perspective\AsyncCatalog\Service\SwatchConfig;
 
 class CatalogCategory implements ArgumentInterface
 {
     protected $request;
-    protected $scopeConfig;
-    protected $catalogConfig;
-    protected $storeManager;
     protected $categoryRepository;
+    protected $swatchConfig;
+    protected $storefrontConfig;
+
     public function __construct(
         RequestInterface $request,
-        ScopeConfigInterface $scopeConfig,
-        CatalogConfig $catalogConfig,
-        StoreManagerInterface $storeManager,
-        CategoryRepositoryInterface $categoryRepository
+        CategoryRepositoryInterface $categoryRepository,
+        StoreFrontConfig $storefrontConfig,
+        SwatchConfig $swatchConfig
+
     ) {
         $this->request = $request;
-        $this->scopeConfig = $scopeConfig;
-        $this->catalogConfig = $catalogConfig;
-        $this->storeManager = $storeManager;
         $this->categoryRepository = $categoryRepository;
+        $this->storefrontConfig = $storefrontConfig;
+        $this->swatchConfig = $swatchConfig;
     }
-    public function getCategoryId()
+    public function getCategoryId(): string
     {
         $categoryId = $this->request->getParam('id');
         if (!$categoryId) {
@@ -39,7 +36,7 @@ class CatalogCategory implements ArgumentInterface
         return (string)$categoryId;
     }
 
-    public function getCategoryConfig()
+    public function getCategoryConfig(): array
     {
         $categoryId = $this->getCategoryId();
         $category = $this->categoryRepository->get($categoryId);
@@ -48,61 +45,23 @@ class CatalogCategory implements ArgumentInterface
         $displayMode = $category->getDisplayMode() ?: Category::DM_PRODUCT;
 
         return [
+            'categoryId' => $categoryId,
             'isAnchor' => (bool)$category->getIsAnchor(),
             'displayMode' => $displayMode,
-            'categoryUid' => base64_encode($this->getCategoryId()),
+            'categoryUid' => base64_encode($categoryId),
             'hasChildCategories' => $category->getChildrenCount() > 0
         ];
     }
 
-    public function getModuleConfig()
+    public function getConfig(): array
     {
         return [
-            'moduleEnabled' => $this->scopeConfig->getValue('perspective_async_catalog/general_settings/enabled'),
-            'filtrationMode' => $this->scopeConfig->getValue('perspective_async_catalog/general_settings/catalog_filter_auto_update'),
-            'lazyloadMode' => $this->scopeConfig->getValue('perspective_async_catalog/general_settings/catalog_product_lazyload')
+            'categoryConfig' => $this->getCategoryConfig(),
+            'pageConfig' => $this->storefrontConfig->getPageConfig(),
+            'moduleConfig' => $this->storefrontConfig->getModuleConfig(),
+            'loaderIcon' => $this->storefrontConfig->getLoaderImg(),
+            'storeConfig' => $this->storefrontConfig->getStoreConfig(),
+            'swatchConfig' => $this->swatchConfig->getSwatchConfig(),
         ];
     }
-
-    public function getPageConfig()
-    {
-
-        $sortList = [];
-        $rawSortList = $this->catalogConfig->getAttributeUsedForSortByArray();
-
-        foreach ($rawSortList as $code => $label) {
-            $sortList[] = [
-                'value' => (string)$code,
-                'label' => (string)$label
-            ];
-        }
-
-        $listMode = $this->scopeConfig->getValue('catalog/frontend/list_mode');
-        $modesArray = explode('-', $listMode ?? '');
-        $availableModes = [];
-        foreach ($modesArray as $mode) {
-            $availableModes[] = [
-                'code'  => $mode,
-                'label' => ($mode === 'grid') ? (string)__('Grid') : (string)__('List')
-            ];
-        }
-
-
-        return [
-            'availableModes' => $availableModes,
-            'currentMode'    => $modesArray[0] ?? 'grid',
-            'gridPerPageValues'  => explode(',', $this->scopeConfig->getValue('catalog/frontend/grid_per_page_values') ?? ''),
-            'gridPerPageDefault' => $this->scopeConfig->getValue('catalog/frontend/grid_per_page'),
-            'listPerPageValues'  => explode(',', $this->scopeConfig->getValue('catalog/frontend/list_per_page_values') ?? ''),
-            'listPerPageDefault' => $this->scopeConfig->getValue('catalog/frontend/list_per_page'),
-            'defaultSortBy'      => $this->scopeConfig->getValue('catalog/frontend/default_sort_by'),
-            'availableSortList' => $sortList,
-        ];
-    }
-
-    public function getCurrencyCode()
-    {
-        return $this->storeManager->getStore()->getCurrentCurrency()->getCode();
-    }
-
 }

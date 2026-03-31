@@ -1,0 +1,33 @@
+<?php
+use Magento\Framework\View\Element\Template;
+use Perspective\AsyncCatalog\ViewModel\CatalogCategory;
+use Magento\Catalog\Model\Category;
+/** @var Template $block */
+/** @var CatalogCategory $viewModel */
+$viewModel = $block->getData('viewModel');
+
+$config = $viewModel->getConfig();
+
+// if category display mode "only cms" - product listing not init
+if ($config['categoryConfig']['displayMode'] === Category::DM_PAGE) return;
+
+$uniqueId = 'async_catalog_' . uniqid();
+?>
+
+<div class="async-catalog-root"
+     id="<?= $uniqueId ?>"
+     x-data='window.catalogCore ? window.catalogCore.create(<?= json_encode($config, JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT) ?>) : {}'
+>
+
+    <?= $block->getChildHtml('async.catalog.root.listing') ?>
+
+    <template x-teleport="#async-catalog-filters-target">
+        <div class="async-catalog-root-filters">
+            <?= $block->getChildHtml('async.catalog.root.filters') ?>
+        </div>
+    </template>
+</div>
+
+<script>
+    require(['async-catalog-core']);
+</script>

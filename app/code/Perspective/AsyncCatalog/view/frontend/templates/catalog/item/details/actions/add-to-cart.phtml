@@ -3,11 +3,11 @@
         <form data-role="tocart-form"
               method="post"
               :data-product-sku="product.sku"
-              :action="getAddToCartUrl(product.id)">
+              :action="catalogAddToCart.getAddToCartUrl(product.id)">
 
             <input type="hidden" name="product" :value="product.id">
-            <input type="hidden" name="uenc" :value="getUenc()">
-            <input type="hidden" name="form_key" :value="getFormKey()">
+            <input type="hidden" name="uenc" :value="catalogAddToCart.getUenc()">
+            <input type="hidden" name="form_key" :value="catalogAddToCart.getFormKey()">
 
             <button type="submit"
                     title="<?= __('Add to Cart') ?>"

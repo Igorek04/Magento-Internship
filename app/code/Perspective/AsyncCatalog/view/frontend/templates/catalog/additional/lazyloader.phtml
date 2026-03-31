@@ -1,13 +1,13 @@
-<template x-if="parseInt(moduleConfig.lazyloadMode) && products.length > 0">
+<template x-if="parseInt(catalogData.moduleConfig?.lazyloadMode || 0) && catalogData.products.length > 0">
     <div style="height: 50px; display: flex; align-items: center; justify-content: center;">
 
-        <template x-if="isLoading || currentPage < getTotalPages()">
-            <div class="lazyload-trigger" x-intersect="lazyLoadNextPage()">
+        <template x-if="catalogData.isLoading || catalogData.currentPage < catalogToolbarPager.getTotalPages()">
+            <div class="lazyload-trigger" x-intersect="catalogLazyload.lazyLoadNextPage()">
                 <span><?= __('Loading next page...') ?></span>
             </div>
         </template>
 
-        <template x-if="!isLoading && currentPage >= getTotalPages()">
+        <template x-if="!catalogData.isLoading && catalogData.currentPage >= catalogToolbarPager.getTotalPages()">
             <span><?= __('You\'ve reached the end of the catalog.') ?></span>
         </template>
 

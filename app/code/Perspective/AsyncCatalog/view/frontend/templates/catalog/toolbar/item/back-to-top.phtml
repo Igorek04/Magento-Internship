@@ -1,6 +1,6 @@
 <div x-data="{ scrolled: false }"
      x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 800)"
-     x-show="parseInt(moduleConfig.lazyloadMode) && scrolled"
+     x-show="parseInt(catalogData.moduleConfig?.lazyloadMode || 0) && scrolled"
      x-transition
      style="position: fixed; bottom: 20px; right: 20px; z-index: 99;">
     <button type="button"

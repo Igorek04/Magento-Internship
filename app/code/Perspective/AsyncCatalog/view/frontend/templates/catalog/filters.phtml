@@ -1,30 +1,16 @@
 <?php
 use Magento\Framework\View\Element\Template;
-use Perspective\AsyncCatalog\ViewModel\CatalogCategory;
-use Magento\Catalog\Model\Category;
 /** @var Template $block */
-/** @var CatalogCategory $viewModel */
-$viewModel = $block->getData('viewModel');
-
-// if category display mode "only cms" - product filters not init
-$categoryConfig = $viewModel->getCategoryConfig();
-if ($categoryConfig['displayMode'] === Category::DM_PAGE) return;
 ?>
 
-    <div class="block filter"
-         x-data="{ aggregations: [], activeFilters: [], hasChanges: false }"
-         @catalog-filters-updated.window="
-            aggregations = $event.detail.aggregations;
-            activeFilters = $event.detail.activeFilters;
-            hasChanges = $event.detail.hasChanges;
-         "
-         x-show="aggregations.length > 0 || activeFilters.length > 0 || hasChanges">
+<div class="block filter"
+     x-show="catalogFiltersData.aggregations.length > 0 || catalogFiltersUI.enrichedDisplayFilters.length > 0 || catalogFiltersData.hasChanges">
 
-        <div class="block-title filter-title">
-            <strong><?= __('Shop By') ?></strong>
-        </div>
-
-        <div class="block-content filter-content">
-            <?= $block->getChildHtml() ?>
-        </div>
+    <div class="block-title filter-title">
+        <strong><?= __('Shop By') ?></strong>
     </div>
+
+    <div class="block-content filter-content">
+        <?= $block->getChildHtml() ?>
+    </div>
+</div>

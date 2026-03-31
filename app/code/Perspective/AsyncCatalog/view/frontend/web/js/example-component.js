@@ -3,23 +3,21 @@ define(['async-catalog-core'], function (Core) {
 
     /**
      * @param {Object} root   - Alpine (root.products, root.config etc)
-     * @param {Object} config - ConfcatalogCore.create({ ... }) в PHTML
+     * @param {Object} config - Config from phtml Core.create({ ... })
      */
     Core.register('componentName', (root, config) => ({
-        // 1. Свойства (Data)
-        items: [],
-        isLoading: false,
+        // 1. Data
+        testik: [],
+        isTest: false,
 
-        // 2. Инициализация (Вызывается ядром автоматически)
+        // 2. Initialize component
         init() {
-            // Здесь можно запустить первичную загрузку или подписаться на события
             console.log('[Module: componentName] Ready');
         },
 
-        // 3. Методы (Actions)
+        // 3. Actions
         getData() {
-            this.isLoading = true;
-            // Логика модуля...
+            this.isTest = true;
             console.log('Accessing total from products:', root.products.total);
         }
     }));
