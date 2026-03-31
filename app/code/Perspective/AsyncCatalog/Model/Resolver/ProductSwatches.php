@@ -1,7 +1,9 @@
 <?php
 namespace Perspective\AsyncCatalog\Model\Resolver;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
+use Magento\Framework\GraphQl\Query\Resolver\Value;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\View\LayoutInterface;
@@ -13,11 +15,29 @@ use Magento\Catalog\Model\ProductRepository;
 
 class ProductSwatches implements ResolverInterface
 {
+    /**
+     * @var LayoutInterface
+     */
     private $layout;
+    /**
+     * @var ConfigurableViewModel
+     */
     private $configurableViewModel;
+    /**
+     * @var State
+     */
     private $state;
+    /**
+     * @var ProductRepository
+     */
     private $productRepository;
 
+    /**
+     * @param LayoutInterface $layout
+     * @param ConfigurableViewModel $configurableViewModel
+     * @param State $state
+     * @param ProductRepository $productRepository
+     */
     public function __construct(
         LayoutInterface $layout,
         ConfigurableViewModel $configurableViewModel,
@@ -30,6 +50,15 @@ class ProductSwatches implements ResolverInterface
         $this->productRepository = $productRepository;
     }
 
+    /**
+     * @param Field $field
+     * @param $context
+     * @param ResolveInfo $info
+     * @param array|null $value
+     * @param array|null $args
+     * @return Value|mixed
+     * @throws NoSuchEntityException
+     */
     public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
     {
         $product = $this->productRepository->getById($value['model']->getId());
@@ -41,6 +70,12 @@ class ProductSwatches implements ResolverInterface
         );
     }
 
+    /**
+     * create swatch block html for product
+     *
+     * @param $product
+     * @return array|string|string[]
+     */
     public function renderSwatches($product)
     {
         $html = $this->layout->createBlock(SwatchRenderer::class, 'swatch_renderer_' . $product->getId())

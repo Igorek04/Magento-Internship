@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\AsyncCatalog\Observer;
 
 use Magento\Framework\App\RequestInterface;
@@ -10,9 +9,19 @@ use Perspective\AsyncCatalog\Service\StorefrontConfig;
 
 class AddAsyncCatalogHandles implements ObserverInterface
 {
+    /**
+     * @var RequestInterface
+     */
     private RequestInterface $request;
+    /**
+     * @var StorefrontConfig
+     */
     private StorefrontConfig $storefrontConfig;
 
+    /**
+     * @param RequestInterface $request
+     * @param StorefrontConfig $storefrontConfig
+     */
     public function __construct(
         RequestInterface $request,
         StorefrontConfig $storefrontConfig
@@ -21,6 +30,12 @@ class AddAsyncCatalogHandles implements ObserverInterface
         $this->storefrontConfig = $storefrontConfig;
     }
 
+    /**
+     * replace default catalog to custom async catalog if module enabled
+     *
+     * @param Observer $observer
+     * @return void
+     */
     public function execute(Observer $observer): void
     {
         /** @var Layout|null $layout */
@@ -44,12 +59,18 @@ class AddAsyncCatalogHandles implements ObserverInterface
         }
     }
 
+    /**
+     * @return bool
+     */
     private function isModuleEnabled(): bool
     {
         $moduleConfig = $this->storefrontConfig->getModuleConfig();
         return $moduleConfig['moduleEnabled'];
     }
 
+    /**
+     * @return bool
+     */
     private function isCategoryPage(): bool
     {
         return $this->request->getFullActionName() === 'catalog_category_view';

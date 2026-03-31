@@ -15,12 +15,14 @@
                 <label>General Settings</label>
 
                 <field id="enabled" sortOrder="1" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Module enabled</label>
+                    <label>Enable Async Catalog</label>
+                    <comment>Replace default catalog with custom async version. Original theme styles are preserved.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
                 <field id="catalog_filter_auto_update" sortOrder="10" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>filter_auto_update</label>
+                    <label>Auto-Apply Filters</label>
+                    <comment>If disabled, customer needs to click "Apply" button</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
@@ -28,7 +30,8 @@
                 </field>
 
                 <field id="catalog_product_lazyload" sortOrder="20" translate="label" type="select" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>catalog_product_lazyload</label>
+                    <label>Infinite Scroll</label>
+                    <comment>Load next page automatically when scrolling down</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
                         <field id="enabled">1</field>
