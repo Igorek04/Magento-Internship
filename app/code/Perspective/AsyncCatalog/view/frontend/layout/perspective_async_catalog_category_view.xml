@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Perspective_AsyncCatalog::css/catalog-loader.css"/>
+    </head>
+
+    <body>
+        <referenceContainer name="content">
+            <referenceBlock name="category.products" remove="true"/>
+
+            <block name="async.catalog.root"
+                   template="Perspective_AsyncCatalog::async-catalog-root.phtml"
+                   after="-">
+                <arguments>
+                    <argument name="viewModel" xsi:type="object">Perspective\AsyncCatalog\ViewModel\CatalogCategory</argument>
+                </arguments>
+
+                <block name="async.catalog.root.listing" template="Perspective_AsyncCatalog::catalog/listing.phtml">
+                    <container name="catalog.root.listing.render-types">
+                        <block name="render-types.grid" template="Perspective_AsyncCatalog::catalog/render-types/grid.phtml">
+                            <arguments><argument name="renderer_code" xsi:type="string">grid</argument></arguments>
+                        </block>
+                        <block name="render-types.list" template="Perspective_AsyncCatalog::catalog/render-types/list.phtml">
+                            <arguments><argument name="renderer_code" xsi:type="string">list</argument></arguments>
+                        </block>
+                    </container>
+
+                    <container name="catalog.root.listing.item.elements">
+                        <block name="item.elements.image" template="Perspective_AsyncCatalog::catalog/item/image.phtml"/>
+                        <block name="item.elements.details" template="Perspective_AsyncCatalog::catalog/item/details.phtml">
+                            <block name="item.elements.title" template="Perspective_AsyncCatalog::catalog/item/details/title.phtml"/>
+                            <block name="item.elements.price" template="Perspective_AsyncCatalog::catalog/item/details/price.phtml"/>
+                            <block name="item.elements.reviews" template="Perspective_AsyncCatalog::catalog/item/details/reviews.phtml"/>
+                            <block name="item.elements.swatches" template="Perspective_AsyncCatalog::catalog/item/details/swatches.phtml"/>
+
+                            <block name="item.elements.actions" template="Perspective_AsyncCatalog::catalog/item/details/actions.phtml">
+                                <container name="elements.actions.primary">
+                                    <block name="actions.addtocart" template="Perspective_AsyncCatalog::catalog/item/details/actions/add-to-cart.phtml"/>
+                                </container>
+
+                                <container name="elements.actions.secondary">
+                                    <block name="actions.wishlist" template="Perspective_AsyncCatalog::catalog/item/details/actions/add-to-wishlist.phtml"/>
+                                    <block name="actions.compare" template="Perspective_AsyncCatalog::catalog/item/details/actions/add-to-compare.phtml"/>
+                                </container>
+                            </block>
+                        </block>
+                    </container>
+
+                    <container name="catalog.root.listing.additional">
+                        <block name="additional.catalog-empty" template="Perspective_AsyncCatalog::catalog/additional/empty.phtml"/>
+                        <block name="additional.catalog-lazyloader" template="Perspective_AsyncCatalog::catalog/additional/lazyloader.phtml"/>
+                    </container>
+
+                    <container name="catalog.root.listing.toolbar">
+                        <block name="toolbar.top" template="Perspective_AsyncCatalog::catalog/toolbar/wrapper.phtml">
+                            <block name="toolbar.viewmode" template="Perspective_AsyncCatalog::catalog/toolbar/item/view-mode.phtml"/>
+                            <block name="toolbar.amount" template="Perspective_AsyncCatalog::catalog/toolbar/item/amount.phtml"/>
+                            <block name="toolbar.sorter" template="Perspective_AsyncCatalog::catalog/toolbar/item/sorter.phtml"/>
+                        </block>
+
+                        <block name="toolbar.bottom" template="Perspective_AsyncCatalog::catalog/toolbar/wrapper.phtml">
+                            <block name="toolbar.pager" template="Perspective_AsyncCatalog::catalog/toolbar/item/pager.phtml"/>
+                            <block name="toolbar.limiter" template="Perspective_AsyncCatalog::catalog/toolbar/item/limiter.phtml"/>
+                            <block name="toolbar.backtotop" template="Perspective_AsyncCatalog::catalog/toolbar/item/back-to-top.phtml"/>
+                        </block>
+                    </container>
+                </block>
+
+                <!-- teleported to app/code/Perspective/AsyncCatalog/view/frontend/layout/catalog_category_view_type_layered.xml on root.phtml -->
+                <block name="async.catalog.root.filters" template="Perspective_AsyncCatalog::catalog/filters.phtml">
+                    <block name="filters.active" template="Perspective_AsyncCatalog::catalog/filter/active.phtml"/>
+                    <block name="filters.apply" template="Perspective_AsyncCatalog::catalog/filter/apply-button.phtml"/>
+                    <block name="filters.options" template="Perspective_AsyncCatalog::catalog/filter/options.phtml"/>
+                </block>
+            </block>
+
+        </referenceContainer>
+    </body>
+</page>
