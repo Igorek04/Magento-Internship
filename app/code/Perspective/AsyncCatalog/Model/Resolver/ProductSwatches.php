@@ -18,19 +18,19 @@ class ProductSwatches implements ResolverInterface
     /**
      * @var LayoutInterface
      */
-    private $layout;
+    protected $layout;
     /**
      * @var ConfigurableViewModel
      */
-    private $configurableViewModel;
+    protected $configurableViewModel;
     /**
      * @var State
      */
-    private $state;
+    protected $state;
     /**
      * @var ProductRepository
      */
-    private $productRepository;
+    protected $productRepository;
 
     /**
      * @param LayoutInterface $layout

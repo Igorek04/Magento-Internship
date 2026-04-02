@@ -2,10 +2,7 @@ define(['async-catalog-core'], function (Core) {
     'use strict';
 
     Core.register('catalogLazyload', (root, config) => ({
-
-        init() {
-
-        },
+        init() {},
 
         lazyLoadNextPage() {
             if (root.catalogData.isLoading) return;
@@ -14,7 +11,6 @@ define(['async-catalog-core'], function (Core) {
                 root.catalogData.currentPage++;
                 root.catalogData.loadCatalog(true);
             }
-        },
-
+        }
     }));
 });

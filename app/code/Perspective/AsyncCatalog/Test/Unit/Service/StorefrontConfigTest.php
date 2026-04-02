@@ -18,6 +18,9 @@ class StorefrontConfigTest extends TestCase
     private Repository|MockObject $assetRepository;
     private StorefrontConfig $storefrontConfig;
 
+    /**
+     * @return void
+     */
     protected function setUp(): void
     {
         $this->storeManager = $this->createMock(StoreManagerInterface::class);
@@ -66,6 +69,9 @@ class StorefrontConfigTest extends TestCase
         $this->assertEquals($expectedSortList, $result['availableSortList']);
     }
 
+    /**
+     * @return array[]
+     */
     public static function getPageConfigDataProvider(): array
     {
         return [

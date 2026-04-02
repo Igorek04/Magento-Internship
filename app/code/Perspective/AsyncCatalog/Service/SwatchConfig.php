@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\AsyncCatalog\Service;
 
 use Magento\Swatches\Helper\Data as SwatchHelper;
@@ -7,9 +6,19 @@ use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as A
 
 class SwatchConfig
 {
+    /**
+     * @var SwatchHelper
+     */
     protected $swatchHelper;
+    /**
+     * @var AttributeCollectionFactory
+     */
     protected $attributeCollectionFactory;
 
+    /**
+     * @param SwatchHelper $swatchHelper
+     * @param AttributeCollectionFactory $attributeCollectionFactory
+     */
     public function __construct(
         SwatchHelper $swatchHelper,
         AttributeCollectionFactory $attributeCollectionFactory
@@ -18,6 +27,9 @@ class SwatchConfig
         $this->attributeCollectionFactory = $attributeCollectionFactory;
     }
 
+    /**
+     * @return array
+     */
     public function getSwatchConfig()
     {
         $result = [];

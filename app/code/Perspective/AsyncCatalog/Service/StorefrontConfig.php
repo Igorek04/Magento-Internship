@@ -1,20 +1,39 @@
 <?php
-
 namespace Perspective\AsyncCatalog\Service;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Catalog\Model\Config as CatalogConfig;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\View\Asset\Repository;
 
 
 class StorefrontConfig
 {
+    /**
+     * @var StoreManagerInterface
+     */
     protected $storeManager;
+    /**
+     * @var ScopeConfigInterface
+     */
     protected $scopeConfig;
+    /**
+     * @var CatalogConfig
+     */
     protected $catalogConfig;
+    /**
+     * @var Repository
+     */
     protected $assetRepository;
 
+    /**
+     * @param StoreManagerInterface $storeManager
+     * @param ScopeConfigInterface $scopeConfig
+     * @param CatalogConfig $catalogConfig
+     * @param Repository $assetRepository
+     */
     public function __construct(
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
@@ -26,6 +45,10 @@ class StorefrontConfig
         $this->catalogConfig = $catalogConfig;
         $this->assetRepository = $assetRepository;
     }
+
+    /**
+     * @return array
+     */
     public function getModuleConfig()
     {
         return [
@@ -35,6 +58,9 @@ class StorefrontConfig
         ];
     }
 
+    /**
+     * @return array
+     */
     public function getPageConfig()
     {
 
@@ -70,16 +96,23 @@ class StorefrontConfig
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getLoaderImg()
     {
         return $this->assetRepository->getUrl('images/loader-2.gif');
     }
 
+    /**
+     * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     */
     public function getStoreConfig()
     {
         return [
             'currencyCode' => $this->storeManager->getStore()->getCurrentCurrency()->getCode()
         ];
     }
-
 }

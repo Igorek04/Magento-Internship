@@ -20,9 +20,6 @@ define(['async-catalog-core', 'jquery'], function (Core, $) {
         pageConfig: config.pageConfig,
         moduleConfig: config.moduleConfig,
 
-
-
-
         init() {
             this.loadCatalog();
         },

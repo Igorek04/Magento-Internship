@@ -36,8 +36,8 @@ class AddAsyncCatalogHandlesTest extends AbstractController
     {
         $this->dispatch('catalog/category/view/id/333');
 
-        /** @var \Magento\Framework\View\LayoutInterface $layout */
-        $layout = $this->_objectManager->get(\Magento\Framework\View\LayoutInterface::class);
+        /** @var LayoutInterface $layout */
+        $layout = $this->_objectManager->get(LayoutInterface::class);
 
         $this->assertNotFalse($layout->getBlock('async.catalog.root'));
     }
@@ -53,8 +53,8 @@ class AddAsyncCatalogHandlesTest extends AbstractController
     {
         $this->dispatch('catalog/category/view/id/333');
 
-        /** @var \Magento\Framework\View\LayoutInterface $layout */
-        $layout = $this->_objectManager->get(\Magento\Framework\View\LayoutInterface::class);
+        /** @var LayoutInterface $layout */
+        $layout = $this->_objectManager->get(LayoutInterface::class);
 
         $this->assertNotFalse($layout->getBlock('async.catalog.root.filters.placeholder'));
     }

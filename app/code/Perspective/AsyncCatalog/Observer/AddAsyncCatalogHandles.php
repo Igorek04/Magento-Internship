@@ -12,11 +12,11 @@ class AddAsyncCatalogHandles implements ObserverInterface
     /**
      * @var RequestInterface
      */
-    private RequestInterface $request;
+    protected RequestInterface $request;
     /**
      * @var StorefrontConfig
      */
-    private StorefrontConfig $storefrontConfig;
+    protected StorefrontConfig $storefrontConfig;
 
     /**
      * @param RequestInterface $request
@@ -40,15 +40,11 @@ class AddAsyncCatalogHandles implements ObserverInterface
     {
         /** @var Layout|null $layout */
         $layout = $observer->getData('layout');
-        if (!$layout) {
-            return;
-        }
-
-        if (!$this->isModuleEnabled()) {
-            return;
-        }
-
-        if (!$this->isCategoryPage()) {
+        if (
+            !$layout ||
+            !$this->isModuleEnabled() ||
+            !$this->isCategoryPage()
+        ) {
             return;
         }
 
@@ -65,7 +61,7 @@ class AddAsyncCatalogHandles implements ObserverInterface
     private function isModuleEnabled(): bool
     {
         $moduleConfig = $this->storefrontConfig->getModuleConfig();
-        return $moduleConfig['moduleEnabled'];
+        return (bool)$moduleConfig['moduleEnabled'];
     }
 
     /**

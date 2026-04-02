@@ -17,6 +17,9 @@ class SwatchConfigTest extends TestCase
     private CollectionFactory|MockObject $attributeCollectionFactory;
     private SwatchConfig $swatchConfig;
 
+    /**
+     * @return void
+     */
     protected function setUp(): void
     {
         $this->swatchHelper = $this->createMock(SwatchHelper::class);
@@ -68,6 +71,9 @@ class SwatchConfigTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
+    /**
+     * @return array[]
+     */
     public static function getSwatchConfigDataProvider(): array
     {
         return [
