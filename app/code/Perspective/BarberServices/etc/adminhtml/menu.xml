@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+<menu>
+    <add id="Perspective_BarberServices::perspective_tab"
+         title="Perspective"
+         module="Perspective_BarberServices"
+         sortOrder="10"
+         resource="Perspective_BarberServices::perspective_tab"/>
+
+    <add
+        id="Perspective_BarberServices::barber_services"
+        title="Barber Services"
+        module="Perspective_BarberServices"
+        sortOrder="80"
+        resource="Perspective_BarberServices::barber_services"
+        parent="Perspective_BarberServices::perspective_tab"/>
+
+    <add
+        id="Perspective_BarberServices::import"
+        title="Import"
+        module="Perspective_BarberServices"
+        sortOrder="10"
+        resource="Perspective_BarberServices::import"
+        parent="Perspective_BarberServices::barber_services"
+        action="barberservices/import/index"/>
+</menu>
+</config>
