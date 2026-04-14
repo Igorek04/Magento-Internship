@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\BarberServices\Service\File;
 
 use Generator;
@@ -8,9 +7,19 @@ use Psr\Log\LoggerInterface;
 
 class CsvReader
 {
+    /**
+     * @var Csv
+     */
     protected $csv;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
+    /**
+     * @param Csv $csv
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         Csv $csv,
         LoggerInterface $logger
@@ -26,7 +35,7 @@ class CsvReader
     public function readFile(string $path): Generator
     {
         if (!file_exists($path)) {
-            $this->logger->error(sprintf('BarberServices Reader: File not found - %s', $path));
+            $this->logger->error(__('BarberServices Reader: File not found - %1', $path));
             return;
         }
 
@@ -41,7 +50,7 @@ class CsvReader
 
         while (($row = fgetcsv($stream, 0, ',')) !== false) {
             if (count($headers) !== count($row)) {
-                $this->logger->warning(sprintf('BarberServices Reader: Row length mismatch in %s', $path));
+                $this->logger->warning(__('BarberServices Reader: Row length mismatch in %1', $path));
                 continue;
             }
 

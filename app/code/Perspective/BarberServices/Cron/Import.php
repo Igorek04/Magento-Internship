@@ -33,11 +33,11 @@ class Import
     public function execute()
     {
         try {
-            $this->logger->info('BarberServices: Cron import started.');
+            $this->logger->info(__('BarberServices: Cron import started.'));
             $this->importManager->execute();
-            $this->logger->info('BarberServices: Cron import finished.');
+            $this->logger->info(__('BarberServices: Cron import finished.'));
         } catch (\Exception $e) {
-            $this->logger->error('BarberServices: Cron import failed. Error: ' . $e->getMessage());
+            $this->logger->error(__('BarberServices: Cron import failed. Error: ', $e->getMessage()));
         }
     }
 }

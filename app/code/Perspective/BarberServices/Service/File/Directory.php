@@ -1,7 +1,9 @@
 <?php
 namespace Perspective\BarberServices\Service\File;
 
+use Exception;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Directory\WriteInterface;
 use Psr\Log\LoggerInterface;
@@ -16,10 +18,21 @@ class Directory
     const ENTITY_TYPES = ['attribute', 'category', 'product'];
 
 
+    /**
+     * @var WriteInterface
+     */
     protected $varDirectory;
 
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
+    /**
+     * @param Filesystem $filesystem
+     * @param LoggerInterface $logger
+     * @throws FileSystemException
+     */
     public function __construct(
         Filesystem $filesystem,
         LoggerInterface $logger
@@ -28,6 +41,9 @@ class Directory
         $this->logger = $logger;
     }
 
+    /**
+     * @return void
+     */
     public function createStructure(): void
     {
         try {
@@ -37,15 +53,19 @@ class Directory
 
                     if (!$this->varDirectory->isExist($path)) {
                         $this->varDirectory->create($path);
-                        $this->logger->info(sprintf('BarberServices: Created var/%s', $path));
+                        $this->logger->info(__('BarberServices: Created var/%1', $path));
                     }
                 }
             }
-        } catch (\Exception $e) {
-            $this->logger->error(sprintf('BarberServices Directory Error: %s', $e->getMessage()));
+        } catch (Exception $e) {
+            $this->logger->error(__('BarberServices Directory Error: %1', $e->getMessage()));
         }
     }
 
+    /**
+     * @param string $subPath
+     * @return array
+     */
     public function getFilesFromDir(string $subPath): array
     {
         $parts = explode('/', $subPath);
@@ -75,20 +95,26 @@ class Directory
         foreach ($files as $relativePath) {
             $fileName = basename($relativePath);
 
-            $newFileName = date('Ymd_His') . '_' . $fileName;
-            $targetPath = $archiveDir . '/' . $newFileName;
+            $newFileName = sprintf('%s_%s', date('Ymd_His'), $fileName);
+            $targetPath = sprintf('%s/%s', $archiveDir, $newFileName);
 
             try {
                 if ($this->varDirectory->isExist($relativePath)) {
                     $this->varDirectory->renameFile($relativePath, $targetPath);
-                    $this->logger->info(sprintf('BarberServices: Archived %s to %s', $fileName, $targetPath));
+                    $this->logger->info(__('BarberServices: Archived %1 to %2', $fileName, $targetPath));
                 }
-            } catch (\Exception $e) {
-                $this->logger->error(sprintf('BarberServices: Failed to archive %s. Error: %s', $fileName, $e->getMessage()));
+            } catch (Exception $e) {
+                $this->logger->error(__('BarberServices: Failed to archive %1. Error: %2', $fileName, $e->getMessage()));
             }
         }
     }
 
+    /**
+     * @param string $type
+     * @param array $uploadedFiles
+     * @return int
+     * @throws FileSystemException
+     */
     public function moveFromTmpToSource(string $type, array $uploadedFiles): int
     {
         $movedCount = 0;
@@ -97,8 +123,9 @@ class Directory
 
         foreach ($uploadedFiles as $fileInfo) {
             $fileName = $fileInfo['file'];
-            $sourceFile = $tmpDir . '/' . $fileName;
-            $destFile = $sourceDir . '/' . $fileName;
+            $sourceFile = sprintf('%s/%s', $tmpDir, $fileName);
+            $destFile = sprintf('%s/%s', $sourceDir, $fileName);
+
 
             if ($this->varDirectory->isExist($sourceFile)) {
                 $this->varDirectory->writeFile($destFile, $this->varDirectory->readFile($sourceFile));
@@ -106,12 +133,16 @@ class Directory
                 $movedCount++;
             }
         }
-
         $this->varDirectory->delete($tmpDir);
 
         return $movedCount;
     }
 
+    /**
+     * @param string $relativePath
+     * @return void
+     * @throws FileSystemException
+     */
     public function clearDirectory(string $relativePath): void
     {
         if ($this->varDirectory->isExist($relativePath)) {

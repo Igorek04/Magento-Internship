@@ -1,74 +1,136 @@
 <?php
-
 namespace Perspective\BarberServices\Service\Create;
 
-use Exception;
-use Magento\Catalog\Api\Data\ProductExtensionFactory;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
-use Magento\Catalog\Model\Product\Visibility;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\ConfigurableProduct\Api\Data\OptionInterfaceFactory;
-use Magento\ConfigurableProduct\Api\Data\OptionValueInterfaceFactory;
-use Magento\ConfigurableProduct\Api\LinkManagementInterface;
-use Magento\Catalog\Api\CategoryLinkManagementInterface;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Perspective\BarberServices\Service\Create\Category as CategoryService;
-use Perspective\BarberServices\Service\Create\Attribute as AttributeService;
-use Psr\Log\LoggerInterface;
+use Magento\Framework\Exception\StateException;
+use Perspective\BarberServices\Service\Create\AttributeSet as AttributeSetService;
+use Perspective\BarberServices\Service\Create\Product\Linker as ProductLinker;
+use Perspective\BarberServices\Service\Create\Product\Data\Simple as SimpleDataService;
+use Perspective\BarberServices\Service\Create\Product\Data\Configurable as ConfigurableDataService;
 
 class Product
 {
+    /**
+     * @var ProductInterfaceFactory
+     */
     protected $productFactory;
+    /**
+     * @var ProductRepositoryInterface
+     */
     protected $productRepository;
-    protected $categoryService;
-    protected $attributeService;
-    protected $logger;
-    protected $extensionFactory;
-    protected $optionFactory;
-    protected $optionValueFactory;
-    protected $linkManagement;
-    protected $categoryLinkManagement;
+    /**
+     * @var AttributeSetService
+     */
+    protected $attributeSetService;
+    /**
+     * @var ProductLinker
+     */
+    protected $productLinker;
+    /**
+     * @var SimpleDataService
+     */
+    protected $simpleDataService;
+    /**
+     * @var ConfigurableDataService
+     */
+    protected $configurableDataService;
 
+    /**
+     * @param ProductInterfaceFactory $productFactory
+     * @param ProductRepositoryInterface $productRepository
+     * @param AttributeSetService $attributeSetService
+     * @param ProductLinker $productLinker
+     * @param SimpleDataService $simpleDataService
+     * @param ConfigurableDataService $configurableDataService
+     */
     public function __construct(
         ProductInterfaceFactory $productFactory,
         ProductRepositoryInterface $productRepository,
-        CategoryService $categoryService,
-        AttributeService $attributeService,
-        ProductExtensionFactory $extensionFactory,
-        OptionInterfaceFactory $optionFactory,
-        OptionValueInterfaceFactory $optionValueFactory,
-        LinkManagementInterface $linkManagement,
-        CategoryLinkManagementInterface $categoryLinkManagement,
-        LoggerInterface $logger
+        AttributeSetService $attributeSetService,
+        ProductLinker $productLinker,
+        SimpleDataService $simpleDataService,
+        ConfigurableDataService $configurableDataService
     ) {
         $this->productFactory = $productFactory;
         $this->productRepository = $productRepository;
-        $this->categoryService = $categoryService;
-        $this->attributeService = $attributeService;
-        $this->extensionFactory = $extensionFactory;
-        $this->optionFactory = $optionFactory;
-        $this->optionValueFactory = $optionValueFactory;
-        $this->linkManagement = $linkManagement;
-        $this->categoryLinkManagement = $categoryLinkManagement;
-        $this->logger = $logger;
+        $this->attributeSetService = $attributeSetService;
+        $this->productLinker = $productLinker;
+        $this->simpleDataService = $simpleDataService;
+        $this->configurableDataService = $configurableDataService;
     }
 
+    /**
+     * @param array $data
+     * @param array $childSkus
+     * @return string|null
+     * @throws CouldNotSaveException
+     * @throws InputException
+     * @throws LocalizedException
+     * @throws StateException
+     */
     public function execute(array $data, array $childSkus = []): ?string
     {
         // update or create
-        try {
-            $product = $this->productRepository->get($data['sku']);
-        } catch (NoSuchEntityException $e) {
-            $product = $this->productFactory->create();
+        $product = $this->initProduct($data['sku']);
+        $setId = $this->attributeSetService->getAttributeSetIdByName($data['attribute_set']);
+
+        // base data
+        $this->setBaseProductData($product, $data, $setId);
+
+        if ($data['type'] === Configurable::TYPE_CODE) {
+            // configurable
+            $this->configurableDataService->setConfigurableProductData($product, $childSkus, $setId);
+        } else {
+            // simple
+            $this->simpleDataService->setSimpleProductData($product, $data, $setId);
         }
 
-        $categoryId = $this->categoryService->getCategoryIdByPath($data['categories']);
-        $setId = $this->attributeService->getAttributeSetIdByName($data['attribute_set']);
+        $this->productRepository->save($product);
+
+        // links (categories, configurable children)
+        $this->productLinker->linkCategory($product, $data['categories']);
+        if ($data['type'] === Configurable::TYPE_CODE) {
+            $this->productLinker->linkConfigurableChildren($product, $childSkus);
+        }
+
+        return $data['parent_sku'] ?? null;
+    }
+
+    /**
+     * Load or create product
+     *
+     * @param string $sku
+     * @return ProductInterface
+     */
+    private function initProduct(string $sku): ProductInterface
+    {
+        try {
+            return $this->productRepository->get($sku);
+        } catch (NoSuchEntityException $e) {
+            return $this->productFactory->create();
+        }
+    }
+
+    /**
+     * Set common data
+     *
+     * @param ProductInterface $product
+     * @param array $data
+     * @param int $setId
+     * @return void
+     */
+    private function setBaseProductData(ProductInterface $product, array $data, int $setId): void
+    {
         $urlKey = strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $data['name'] . '-' . $data['sku']), '-'));
 
-        // common product data
         $product->setStoreId(0)
             ->setWebsiteIds([1])
             ->setSku($data['sku'])
@@ -78,110 +140,5 @@ class Product
             ->setTypeId($data['type'])
             ->setStatus(Status::STATUS_ENABLED)
             ->setData('save_rewrites_history', false);
-
-        //configurable
-        if ($data['type'] === Configurable::TYPE_CODE) {
-            $product->setPrice(0);
-            $product->setVisibility(Visibility::VISIBILITY_BOTH);
-            $product->setStockData(['is_in_stock' => 1]);
-
-            $childProducts = [];
-            foreach ($childSkus as $sku) {
-                try {
-                    $childProducts[] = $this->productRepository->get($sku);
-                } catch (Exception $e) {
-                    $this->logger->error(sprintf('Could not find child product with SKU %s', $sku));
-                }
-            }
-
-            $extensionAttributes = $product->getExtensionAttributes() ?: $this->extensionFactory->create();
-            $extensionAttributes->setConfigurableProductOptions($this->getConfigurableAttributesData($childProducts, $setId));
-            $product->setExtensionAttributes($extensionAttributes);
-        } else {
-            //simple
-            $product->setPrice($data['price']);
-            $product->setVisibility(Visibility::VISIBILITY_NOT_VISIBLE);
-            $product->setStockData(['use_config_manage_stock' => 0, 'is_in_stock' => 1, 'qty' => 999]);
-
-            foreach ($this->attributeService->getAttributesBySetId($setId) as $code => $id) {
-                if (!empty($data[$code])) {
-                    $optionId = $this->attributeService->getOptionIdByLabel($code, $data[$code]);
-                    if ($optionId !== null) {
-                        $product->setData($code, $optionId);
-                    }
-                }
-            }
-        }
-
-        $this->productRepository->save($product);
-
-        try {
-            $this->categoryLinkManagement->assignProductToCategories($data['sku'], [$categoryId]);
-        } catch (Exception $e) {
-            $this->logger->error(sprintf('Failed category link: %s', $data['sku']));
-        }
-
-        if ($data['type'] === Configurable::TYPE_CODE && !empty($childSkus)) {
-            $existingChildren = $this->linkManagement->getChildren($product->getSku());
-            $existingSkus = [];
-            foreach ($existingChildren as $child) {
-                $existingSkus[] = $child->getSku();
-            }
-
-            foreach ($childSkus as $childSku) {
-                if (in_array($childSku, $existingSkus)) {
-                    continue;
-                }
-
-                try {
-                    $this->linkManagement->addChild($product->getSku(), $childSku);
-                } catch (Exception $e) {
-                    $this->logger->error(sprintf('Failed child link: %s to %s', $childSku, $product->getSku()));
-                }
-            }
-        }
-
-        return $data['parent_sku'] ?? null;
-    }
-
-    private function getConfigurableAttributesData(array $childProducts, int $setId): array
-    {
-        $options = [];
-        $position = 0;
-        $attributesInSet = $this->attributeService->getAttributesBySetId($setId);
-
-        foreach ($attributesInSet as $code => $id) {
-            try {
-                $uniqueOptionIds = [];
-                foreach ($childProducts as $childProduct) {
-                    if ($val = $childProduct->getData($code)) {
-                        $uniqueOptionIds[$val] = true;
-                    }
-                }
-
-                if (empty($uniqueOptionIds)) {
-                    continue;
-                }
-
-                $optionValues = [];
-                foreach (array_keys($uniqueOptionIds) as $optionValueId) {
-                    $valueObj = $this->optionValueFactory->create();
-                    $valueObj->setValueIndex($optionValueId);
-                    $optionValues[] = $valueObj;
-                }
-
-                $attribute = $this->attributeService->getAttributeByCode($code);
-                $option = $this->optionFactory->create();
-                $option->setAttributeId($attribute->getAttributeId())
-                    ->setLabel($attribute->getDefaultFrontendLabel())
-                    ->setPosition($position++)
-                    ->setValues($optionValues);
-
-                $options[] = $option;
-            } catch (Exception $e) {
-                $this->logger->error('Configurable option error: ' . $code);
-            }
-        }
-        return $options;
     }
 }

@@ -4,14 +4,31 @@ namespace Perspective\BarberServices\Service\Create;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Model\CategoryFactory;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
+use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Catalog\Model\Category as CategoryModel;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class Category
 {
+    /**
+     * @var CategoryFactory
+     */
     protected $categoryFactory;
+    /**
+     * @var CategoryRepositoryInterface
+     */
     protected $categoryRepository;
+    /**
+     * @var CollectionFactory
+     */
     protected $collectionFactory;
 
+    /**
+     * @param CategoryFactory $categoryFactory
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param CollectionFactory $collectionFactory
+     */
     public function __construct(
         CategoryFactory $categoryFactory,
         CategoryRepositoryInterface $categoryRepository,
@@ -22,10 +39,14 @@ class Category
         $this->collectionFactory = $collectionFactory;
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function execute(array $data): void
     {
         $parts = explode('/', $data['path']);
-        $currentParentId = 1;
+        $currentParentId = CategoryModel::TREE_ROOT_ID;
 
         foreach ($parts as $categoryName) {
             $categoryName = trim($categoryName);
@@ -33,7 +54,7 @@ class Category
 
             if (!$categoryId) {
                 $categoryId = $this->createCategory($categoryName, $currentParentId, $data);
-            } elseif ($categoryName === $data['name']) {
+            } elseif ($categoryName === trim($data['name'])) {
                 $this->updateCategory($categoryId, $data['description']);
             }
 
@@ -41,6 +62,12 @@ class Category
         }
     }
 
+    /**
+     * @param string $name
+     * @param int $parentId
+     * @return int|null
+     * @throws LocalizedException
+     */
     private function getCategoryIdByName(string $name, int $parentId): ?int
     {
         $collection = $this->collectionFactory->create();
@@ -51,6 +78,14 @@ class Category
         return $collection->getFirstItem()->getId();
     }
 
+    /**
+     * @param string $name
+     * @param int $parentId
+     * @param array $data
+     * @return int
+     * @throws CouldNotSaveException
+     * @throws LocalizedException
+     */
     private function createCategory(string $name, int $parentId, array $data): int
     {
         $urlKey = $this->generateUrlKey($name, $parentId);
@@ -72,20 +107,28 @@ class Category
         return $category->getId();
     }
 
+    /**
+     * @param string $name
+     * @param int $parentId
+     * @return string
+     * @throws LocalizedException
+     */
     private function generateUrlKey(string $name, int $parentId): string
     {
-        // transliterate and slugify
         $urlKey = strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', $name), '-'));
-
-        // check if exists under same parent - add parent id suffix to make unique
-        $existing = $this->getCategoryIdByName($name, $parentId);
-        if ($existing) {
-            $urlKey .= '-' . $parentId;
+        if ($this->getCategoryIdByName($name, $parentId)) {
+            $urlKey = sprintf('%s-%s', $urlKey, $parentId);
         }
-
         return $urlKey;
     }
 
+    /**
+     * @param int $categoryId
+     * @param string $description
+     * @return void
+     * @throws CouldNotSaveException
+     * @throws NoSuchEntityException
+     */
     private function updateCategory(int $categoryId, string $description): void
     {
         $category = $this->categoryRepository->get($categoryId);
@@ -93,6 +136,11 @@ class Category
         $this->categoryRepository->save($category);
     }
 
+    /**
+     * @param string $path
+     * @return int
+     * @throws LocalizedException
+     */
     public function getCategoryIdByPath(string $path): int
     {
         $parts = explode('/', $path);
@@ -107,7 +155,6 @@ class Category
             }
             $parentId = $categoryId;
         }
-
         return $parentId;
     }
 }

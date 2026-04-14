@@ -61,11 +61,9 @@ class Import extends Action
             } else {
                 $this->messageManager->addWarningMessage(__('No files found to import.'));
             }
-
         } catch (Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
         }
-
         return $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setPath('*/*/index');
     }
 }
