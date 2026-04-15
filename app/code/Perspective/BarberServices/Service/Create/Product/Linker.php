@@ -53,9 +53,9 @@ class Linker
     {
         try {
             $categoryId = $this->categoryService->getCategoryIdByPath($categoryPath);
-            $this->categoryLinkManagement->assignProductToCategories($product->getSku(), [(int)$categoryId]);
+            $this->categoryLinkManagement->assignProductToCategories($product->getSku(), [$categoryId]);
         } catch (Exception $e) {
-            $this->logger->error(__('Failed category link: %1', $product->getSku()));
+            $this->logger->error(__('Failed category link: %1. Error: %3', $product->getSku(), $e->getMessage()));
         }
     }
 
@@ -66,7 +66,9 @@ class Linker
      */
     public function linkConfigurableChildren($product, array $childSkus): void
     {
-        if (empty($childSkus)) return;
+        if (empty($childSkus)) {
+            return;
+        }
 
         $existing = $this->linkManagement->getChildren($product->getSku());
         $attachedSkus = [];
@@ -79,7 +81,7 @@ class Linker
             try {
                 $this->linkManagement->addChild($product->getSku(), $childSku);
             } catch (Exception $e) {
-                $this->logger->error(__('Failed child link: %1 to %2', $childSku, $product->getSku()));
+                $this->logger->error(__('Failed child link: %1 to %2. Error: %3', $childSku, $product->getSku(), $e->getMessage()));
             }
         }
     }

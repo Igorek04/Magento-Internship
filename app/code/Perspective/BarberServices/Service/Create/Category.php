@@ -42,6 +42,9 @@ class Category
     /**
      * @param array $data
      * @return void
+     * @throws CouldNotSaveException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function execute(array $data): void
     {

@@ -132,7 +132,7 @@ class Configurable
 
                 $options[] = $option;
             } catch (Exception $e) {
-                $this->logger->error(__('Configurable option error: %1', $code));
+                $this->logger->error(__('Configurable option error: %1. Error: %2', $code, $e->getMessage()));
             }
         }
         return $options;

@@ -1,5 +1,4 @@
 <?php
-
 namespace Perspective\BarberServices\Controller\Adminhtml\Import;
 
 use Exception;

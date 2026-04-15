@@ -35,7 +35,6 @@ class CsvReader
     public function readFile(string $path): Generator
     {
         if (!file_exists($path)) {
-            $this->logger->error(__('BarberServices Reader: File not found - %1', $path));
             return;
         }
 

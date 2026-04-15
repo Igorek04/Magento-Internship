@@ -63,7 +63,9 @@ class AttributeSet
             ->addFilter('attribute_set_name', $setName)
             ->addFilter('entity_type_id', $entityTypeId)
             ->create();
-        if ($this->attributeSetRepository->getList($searchCriteria)->getTotalCount() > 0) return;
+        if ($this->attributeSetRepository->getList($searchCriteria)->getTotalCount() > 0) {
+            return;
+        }
 
         //create attribute set
         $defaultSetId = $eavSetup->getDefaultAttributeSetId($entityTypeId);

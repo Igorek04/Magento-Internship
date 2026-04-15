@@ -1,29 +1,29 @@
 <?php
 namespace Perspective\BarberServices\Cron;
 
-use Perspective\BarberServices\Service\ImportManager;
+use Perspective\BarberServices\Model\Queue\Publisher;
 use Psr\Log\LoggerInterface;
 
 class Import
 {
     /**
-     * @var ImportManager
+     * @var Publisher
      */
-    protected $importManager;
+    protected $publisher;
     /**
      * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     * @param ImportManager $importManager
+     * @param Publisher $publisher
      * @param LoggerInterface $logger
      */
     public function __construct(
-        ImportManager $importManager,
+        Publisher $publisher,
         LoggerInterface $logger
     ) {
-        $this->importManager = $importManager;
+        $this->publisher = $publisher;
         $this->logger = $logger;
     }
 
@@ -33,11 +33,10 @@ class Import
     public function execute()
     {
         try {
-            $this->logger->info(__('BarberServices: Cron import started.'));
-            $this->importManager->execute();
-            $this->logger->info(__('BarberServices: Cron import finished.'));
+            $this->logger->info(__('BarberServices: Cron job has successfully dispatched the import task to the queue.'));
+            $this->publisher->execute('cron');
         } catch (\Exception $e) {
-            $this->logger->error(__('BarberServices: Cron import failed. Error: ', $e->getMessage()));
+            $this->logger->error(__('BarberServices: Cron failed to queue the import task. Error: ', $e->getMessage()));
         }
     }
 }

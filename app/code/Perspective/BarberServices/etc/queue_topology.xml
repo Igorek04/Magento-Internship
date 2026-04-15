@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">
+    <exchange name="barber.services.import.exchange" type="topic" connection="amqp">
+        <binding id="BarberImportBinding" topic="barber.services.import" destinationType="queue" destination="barber.services.import.queue"/>
+    </exchange>
+</config>

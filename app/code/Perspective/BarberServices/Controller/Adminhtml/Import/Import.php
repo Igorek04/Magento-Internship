@@ -7,33 +7,33 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
-use Perspective\BarberServices\Service\ImportManager;
 use Perspective\BarberServices\Service\File\Directory as DirectoryService;
 use Magento\Framework\Controller\ResultFactory;
+use Perspective\BarberServices\Model\Queue\Publisher;
 
 class Import extends Action
 {
     /**
-     * @var ImportManager
-     */
-    protected $importManager;
-    /**
      * @var DirectoryService
      */
     protected $directoryService;
+    /**
+     * @var Publisher
+     */
+    protected $publisher;
 
     /**
      * @param Context $context
-     * @param ImportManager $importManager
+     * @param Publisher $publisher
      * @param DirectoryService $directoryService
      */
     public function __construct(
         Context $context,
-        ImportManager $importManager,
+        Publisher $publisher,
         DirectoryService $directoryService
     ) {
         parent::__construct($context);
-        $this->importManager = $importManager;
+        $this->publisher = $publisher;
         $this->directoryService = $directoryService;
     }
 
@@ -56,8 +56,8 @@ class Import extends Action
             }
 
             if ($filesFound > 0) {
-                $this->importManager->execute();
-                $this->messageManager->addSuccessMessage(__('Import process finished. Files: %1', $filesFound));
+                $this->publisher->execute('manual');
+                $this->messageManager->addSuccessMessage(__('The import task has been successfully queued for background processing. Files: %1', $filesFound));
             } else {
                 $this->messageManager->addWarningMessage(__('No files found to import.'));
             }

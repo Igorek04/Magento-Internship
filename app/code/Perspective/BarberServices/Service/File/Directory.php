@@ -13,9 +13,10 @@ class Directory
     /**
      * var/import/barber-services/-/-
      */
-    const PATH_TEMPLATE = 'import/barber-services/%s/%s';
-    const MODES = ['source', 'archive', 'tmp'];
-    const ENTITY_TYPES = ['attribute', 'category', 'product'];
+    const string PATH_TEMPLATE = 'import/barber-services/%s/%s';
+    const array MODES = ['source', 'archive', 'tmp'];
+    const array ENTITY_TYPES = ['attribute', 'category', 'product'];
+    const string FILE_PATH_FORMAT = '%s/%s';
 
 
     /**
@@ -96,7 +97,7 @@ class Directory
             $fileName = basename($relativePath);
 
             $newFileName = sprintf('%s_%s', date('Ymd_His'), $fileName);
-            $targetPath = sprintf('%s/%s', $archiveDir, $newFileName);
+            $targetPath = sprintf(self::FILE_PATH_FORMAT, $archiveDir, $newFileName);
 
             try {
                 if ($this->varDirectory->isExist($relativePath)) {
@@ -123,8 +124,8 @@ class Directory
 
         foreach ($uploadedFiles as $fileInfo) {
             $fileName = $fileInfo['file'];
-            $sourceFile = sprintf('%s/%s', $tmpDir, $fileName);
-            $destFile = sprintf('%s/%s', $sourceDir, $fileName);
+            $sourceFile = sprintf(self::FILE_PATH_FORMAT, $tmpDir, $fileName);
+            $destFile = sprintf(self::FILE_PATH_FORMAT, $sourceDir, $fileName);
 
 
             if ($this->varDirectory->isExist($sourceFile)) {
