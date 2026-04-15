@@ -1,0 +1,53 @@
+{
+    "perspective_qa_question": {
+        "column": {
+            "entity_id": true,
+            "product_id": true,
+            "store_id": true,
+            "author_name": true,
+            "author_email": true,
+            "question_text": true,
+            "status": true,
+            "send_to_mail": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PERSPECTIVE_QA_QUESTION_PRD_ID_CAT_PRD_ENTT_ENTT_ID": true,
+            "PERSPECTIVE_QA_QUESTION_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "perspective_qa_answer": {
+        "column": {
+            "entity_id": true,
+            "question_id": true,
+            "author_name": true,
+            "author_email": true,
+            "answer_text": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FK_FF702941E2FE34B9DEFDE86583676D2C": true
+        }
+    },
+    "perspective_qa_like": {
+        "column": {
+            "like_id": true,
+            "question_id": true,
+            "answer_id": true,
+            "customer_id": true,
+            "cookie_hash": true,
+            "value": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PERSPECTIVE_QA_LIKE_QUESTION_ID_PERSPECTIVE_QA_QUESTION_ENTT_ID": true,
+            "PERSPECTIVE_QA_LIKE_ANSWER_ID_PERSPECTIVE_QA_ANSWER_ENTITY_ID": true
+        }
+    }
+}

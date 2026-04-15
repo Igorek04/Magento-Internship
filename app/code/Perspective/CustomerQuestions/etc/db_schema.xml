@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="perspective_qa_question"
+           resource="default"
+           engine="innodb"
+           comment="Customer Questions Table">
+
+        <!-- Columns -->
+        <column xsi:type="int"
+                name="entity_id"
+                unsigned="true"
+                nullable="false"
+                identity="true"
+                comment="Entity ID"/>
+
+        <column xsi:type="int"
+                name="product_id"
+                unsigned="true"
+                nullable="false"
+                comment="Product ID"/>
+
+        <column xsi:type="smallint"
+                name="store_id"
+                unsigned="true"
+                nullable="false"
+                comment="Store ID"/>
+
+        <column xsi:type="varchar"
+                name="author_name"
+                nullable="true"
+                length="255"
+                comment="Author Name"/>
+
+        <column xsi:type="varchar"
+                name="author_email"
+                nullable="true"
+                length="255"
+                comment="Author Email"/>
+
+        <column xsi:type="text"
+                name="question_text"
+                nullable="false"
+                comment="Question Content"/>
+
+        <!-- Status: 0 = Pending, 1 = Approved, 2 = Rejected -->
+        <column xsi:type="smallint"
+                name="status"
+                unsigned="true"
+                nullable="false"
+                default="0"
+                comment="Question Status"/>
+
+        <column xsi:type="boolean"
+                name="send_to_mail"
+                nullable="false"
+                default="false"
+                comment="Notify via Email"/>
+
+        <column xsi:type="timestamp"
+                name="created_at"
+                on_update="false"
+                nullable="false"
+                default="CURRENT_TIMESTAMP"
+                comment="Creation Time"/>
+
+        <column xsi:type="timestamp"
+                name="updated_at"
+                on_update="true"
+                nullable="false"
+                default="CURRENT_TIMESTAMP"
+                comment="Update Time"/>
+
+        <!-- Constraints -->
+        <constraint xsi:type="primary"
+                    referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+
+        <!-- Product ID link (CASCADE) -->
+        <constraint xsi:type="foreign"
+                    referenceId="PERSPECTIVE_QA_QUESTION_PRODUCT_ID_CATALOG_PRODUCT_ENTITY"
+                    table="perspective_qa_question"
+                    column="product_id"
+                    referenceTable="catalog_product_entity"
+                    referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+
+        <!-- Store ID link (CASCADE) -->
+        <constraint xsi:type="foreign"
+                    referenceId="PERSPECTIVE_QA_QUESTION_STORE_ID_STORE"
+                    table="perspective_qa_question"
+                    column="store_id"
+                    referenceTable="store"
+                    referenceColumn="store_id"
+                    onDelete="CASCADE"/>
+    </table>
+
+    <table name="perspective_qa_answer"
+           resource="default"
+           engine="innodb"
+           comment="Customer Answers Table">
+
+        <column xsi:type="int"
+                name="entity_id"
+                unsigned="true"
+                nullable="false"
+                identity="true"
+                comment="Entity ID"/>
+
+        <column xsi:type="int"
+                name="question_id"
+                unsigned="true"
+                nullable="false"
+                comment="Related Question ID"/>
+
+        <column xsi:type="varchar"
+                name="author_name"
+                nullable="false"
+                length="255"
+                comment="Author Name"/>
+
+        <column xsi:type="varchar"
+                name="author_email"
+                nullable="false"
+                length="255"
+                comment="Author Email"/>
+
+        <column xsi:type="text"
+                name="answer_text"
+                nullable="false"
+                comment="Answer Content"/>
+
+        <column xsi:type="smallint"
+                name="status"
+                unsigned="true"
+                nullable="false"
+                default="0"
+                comment="Answer Status"/>
+
+        <column xsi:type="timestamp"
+                name="created_at"
+                on_update="false"
+                nullable="false"
+                default="CURRENT_TIMESTAMP"
+                comment="Creation Time"/>
+
+        <column xsi:type="timestamp"
+                name="updated_at"
+                on_update="true"
+                nullable="false"
+                default="CURRENT_TIMESTAMP"
+                comment="Update Time"/>
+
+        <!-- Constraints -->
+        <constraint xsi:type="primary"
+                    referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+
+        <!-- Link answer to question -->
+        <constraint xsi:type="foreign"
+                    referenceId="PERSPECTIVE_QA_ANSWER_QUESTION_ID_QUESTION_ENTITY_ID"
+                    table="perspective_qa_answer"
+                    column="question_id"
+                    referenceTable="perspective_qa_question"
+                    referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+    </table>
+
+    <table name="perspective_qa_like"
+           resource="default"
+           engine="innodb"
+           comment="Customer Likes and Dislikes Table">
+
+        <column xsi:type="int"
+                name="like_id"
+                unsigned="true"
+                nullable="false"
+                identity="true"
+                comment="Like ID"/>
+
+        <column xsi:type="int"
+                name="question_id"
+                unsigned="true"
+                nullable="false"
+                comment="Related Question ID"/>
+
+        <column xsi:type="int"
+                name="answer_id"
+                unsigned="true"
+                nullable="true"
+                comment="Related Answer ID (if applicable)"/>
+
+        <column xsi:type="int"
+                name="customer_id"
+                unsigned="true"
+                nullable="true"
+                comment="Customer ID"/>
+
+        <column xsi:type="varchar"
+                name="cookie_hash"
+                nullable="true"
+                length="255"
+                comment="Guest Cookie Hash"/>
+
+        <!-- Value: 1 = Like, -1 = Dislike -->
+        <column xsi:type="smallint"
+                name="value"
+                nullable="false"
+                default="1"
+                comment="Like = 1, Dislike = -1"/>
+
+        <column xsi:type="timestamp"
+                name="created_at"
+                on_update="false"
+                nullable="false"
+                default="CURRENT_TIMESTAMP"
+                comment="Creation Time"/>
+
+        <!-- Constraints -->
+        <constraint xsi:type="primary"
+                    referenceId="PRIMARY">
+            <column name="like_id"/>
+        </constraint>
+
+        <!-- Link like to question (CASCADE) -->
+        <constraint xsi:type="foreign"
+                    referenceId="PERSPECTIVE_QA_LIKE_QUESTION_ID_QUESTION_ENTITY_ID"
+                    table="perspective_qa_like"
+                    column="question_id"
+                    referenceTable="perspective_qa_question"
+                    referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+
+        <!-- Link like to answer (CASCADE) -->
+        <constraint xsi:type="foreign"
+                    referenceId="PERSPECTIVE_QA_LIKE_ANSWER_ID_ANSWER_ENTITY_ID"
+                    table="perspective_qa_like"
+                    column="answer_id"
+                    referenceTable="perspective_qa_answer"
+                    referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+    </table>
+</schema>

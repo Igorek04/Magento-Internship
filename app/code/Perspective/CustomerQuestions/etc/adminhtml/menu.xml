@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- "Customer Q&A" group in tab "Reports" -->
+        <add id="Perspective_CustomerQuestions::qa_group"
+             title="Customer Q&amp;A"
+             module="Perspective_CustomerQuestions"
+             sortOrder="100"
+             resource="Perspective_CustomerQuestions::qa_group"
+             parent="Magento_Reports::report"/>
+
+        <!-- Question Grid -->
+        <add id="Perspective_CustomerQuestions::question_grid"
+             title="Question Grid"
+             module="Perspective_CustomerQuestions"
+             sortOrder="10"
+             resource="Perspective_CustomerQuestions::question_grid"
+             parent="Perspective_CustomerQuestions::qa_group"
+             action="customerquestions/question/index"/>
+
+        <!-- Answers Grid (Moderation) -->
+        <add id="Perspective_CustomerQuestions::answer_grid"
+             title="Answers Moderation"
+             module="Perspective_CustomerQuestions"
+             sortOrder="20"
+             resource="Perspective_CustomerQuestions::answer_grid"
+             parent="Perspective_CustomerQuestions::qa_group"
+             action="customerquestions/answer/index"/>
+
+        <!-- Configuration -->
+        <add id="Perspective_CustomerQuestions::configuration"
+             title="Configuration"
+             module="Perspective_CustomerQuestions"
+             sortOrder="30"
+             resource="Perspective_CustomerQuestions::config"
+             parent="Perspective_CustomerQuestions::qa_group"
+             action="adminhtml/system_config/edit/section/perspective_qa"/>
+    </menu>
+</config>

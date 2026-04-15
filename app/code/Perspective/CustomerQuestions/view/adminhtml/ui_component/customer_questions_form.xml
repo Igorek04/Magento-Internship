@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">customer_questions_form.customer_questions_form_data_source</item>
+            <item name="deps" xsi:type="string">customer_questions_form.customer_questions_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Question Information</item>
+        <item name="config" xsi:type="array">
+            <item name="dataScope" xsi:type="string">data</item>
+            <item name="namespace" xsi:type="string">customer_questions_form</item>
+        </item>
+        <item name="spinner" xsi:type="string">general</item>
+        <item name="buttons" xsi:type="array">
+            <item name="back" xsi:type="string">Perspective\CustomerQuestions\Block\Adminhtml\Question\Edit\Button\Back</item>
+            <item name="delete" xsi:type="string">Perspective\CustomerQuestions\Block\Adminhtml\Question\Edit\Button\Delete</item>
+            <item name="save" xsi:type="string">Perspective\CustomerQuestions\Block\Adminhtml\Question\Edit\Button\Save</item>
+        </item>
+    </argument>
+
+    <settings>
+        <layout>
+            <navContainerName>left</navContainerName>
+            <type>tabs</type>
+        </layout>
+    </settings>
+
+    <dataSource name="customer_questions_form_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">Perspective\CustomerQuestions\Model\Question\DataProvider</argument>
+            <argument name="name" xsi:type="string">customer_questions_form_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+            <argument name="requestFieldName" xsi:type="string">entity_id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="submit_url" xsi:type="url" path="*/*/save" />
+                </item>
+            </argument>
+        </argument>
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General Information</label>
+        </settings>
+
+        <field name="status"
+               formElement="select">
+            <settings>
+                <label translate="true">Status</label>
+                <dataType>int</dataType>
+                <dataScope>status</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Perspective\CustomerQuestions\Model\Source\Status"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="author_name"
+               formElement="input">
+            <settings>
+                <label translate="true">Author Name</label>
+                <dataType>text</dataType>
+                <dataScope>author_name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="author_email"
+               formElement="input">
+            <settings>
+                <label translate="true">Author Email</label>
+                <dataType>text</dataType>
+                <dataScope>author_email</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-email" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="question_text"
+               formElement="textarea">
+            <settings>
+                <label translate="true">Question Content</label>
+                <dataType>text</dataType>
+                <dataScope>question_text</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="store_id"
+               formElement="select">
+            <settings>
+                <label translate="true">Store View</label>
+                <dataType>int</dataType>
+                <dataScope>store_id</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Store\Ui\Component\Listing\Column\Store\Options"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="product_id"
+               formElement="select">
+            <settings>
+                <label translate="true">Target Product</label>
+                <dataType>int</dataType>
+                <dataScope>product_id</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Perspective\CustomerQuestions\Model\Source\ProductList"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <fieldset name="answers_tab">
+        <settings>
+            <label translate="true">Answers</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+
+    </fieldset>
+</form>

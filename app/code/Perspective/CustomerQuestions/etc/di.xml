@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Questions Grid -->
+    <type name="Perspective\CustomerQuestions\Model\ResourceModel\Question\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">perspective_qa_question</argument>
+            <argument name="eventPrefix" xsi:type="string">perspective_qa_question_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">perspective_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Perspective\CustomerQuestions\Model\ResourceModel\Question</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="customer_questions_listing_data_source" xsi:type="string">Perspective\CustomerQuestions\Model\ResourceModel\Question\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Answers Grid -->
+    <type name="Perspective\CustomerQuestions\Model\ResourceModel\Answer\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">perspective_qa_answer</argument>
+            <argument name="eventPrefix" xsi:type="string">perspective_qa_answer_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">perspective_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Perspective\CustomerQuestions\Model\ResourceModel\Answer</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="customer_answers_listing_data_source" xsi:type="string">Perspective\CustomerQuestions\Model\ResourceModel\Answer\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
