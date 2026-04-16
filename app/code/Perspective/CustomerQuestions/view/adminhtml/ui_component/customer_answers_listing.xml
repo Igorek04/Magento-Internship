@@ -34,7 +34,6 @@
                 <item name="stickyTmpl" xsi:type="string">ui/grid/sticky/toolbar</item>
             </item>
         </argument>
-        <bookmark name="bookmarks"/>
         <component name="columns_controls">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -66,6 +65,76 @@
                     <item name="filter" xsi:type="string">textRange</item>
                     <item name="label" xsi:type="string" translate="true">ID</item>
                     <item name="sortOrder" xsi:type="number">10</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="question_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="visible" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Question ID</item>
+                    <item name="sortOrder" xsi:type="number">15</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="question_text" class="Perspective\CustomerQuestions\Ui\Component\Listing\Column\AnswerQuestionContent">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Question</item>
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortOrder" xsi:type="number">15</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="author_name">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Author</item>
+                    <item name="sortOrder" xsi:type="number">20</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="author_email">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Email</item>
+                    <item name="sortOrder" xsi:type="number">30</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="answer_text" class="Perspective\CustomerQuestions\Ui\Component\Listing\Column\TruncatedText">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Answer Content</item>
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortOrder" xsi:type="number">40</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="status" class="Perspective\CustomerQuestions\Ui\Component\Listing\Column\Status">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Status</item>
+                    <item name="bodyTmpl" xsi:type="string">ui/grid/cells/html</item>
+                    <item name="sortOrder" xsi:type="number">50</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="updated_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">dateRange</item>
+                    <item name="label" xsi:type="string" translate="true">Modified</item>
+                    <item name="sortOrder" xsi:type="number">100</item>
                 </item>
             </argument>
         </column>

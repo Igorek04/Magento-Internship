@@ -9,9 +9,10 @@ use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\View\Element\UiComponent\DataProvider\Document as Model;
-use Perspective\MultiTabProductWidget\Model\ResourceModel\Condition\Collection as EntityCollection;
+use Perspective\CustomerQuestions\Model\ResourceModel\Answer\Collection as EntityCollection;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\App\RequestInterface;
 
 class Collection extends EntityCollection implements SearchResultInterface
 {
@@ -19,6 +20,7 @@ class Collection extends EntityCollection implements SearchResultInterface
      * @var AggregationInterface
      */
     protected $aggregations;
+    protected $request;
 
 
     /**
@@ -35,6 +37,7 @@ class Collection extends EntityCollection implements SearchResultInterface
      * @param AbstractDb|null $resource
      */
     public function __construct(
+        RequestInterface $request,
         EntityFactoryInterface $entityFactory,
         LoggerInterface        $logger,
         FetchStrategyInterface $fetchStrategy,
@@ -50,6 +53,7 @@ class Collection extends EntityCollection implements SearchResultInterface
     {
         parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
         $this->_eventPrefix = $eventPrefix;
+        $this->request = $request;
         $this->_eventObject = $eventObject;
         $this->_init($model, $resourceModel);
         $this->setMainTable($mainTable);
@@ -126,5 +130,36 @@ class Collection extends EntityCollection implements SearchResultInterface
     public function setItems(array $items = null): static
     {
         return $this;
+    }
+
+    // send question_id filter
+    protected function _renderFiltersBefore()
+    {
+        $questionId = $this->request->getParam('question_id');
+
+        if (!$questionId) {
+            $filters = $this->request->getParam('filters');
+            if (isset($filters['question_id'])) {
+                $questionId = $filters['question_id'];
+            } else {
+                $questionId = null;
+            }
+        }
+
+
+        if (!$questionId) {
+            $referer = $this->request->getServer('HTTP_REFERER');
+            if ($referer && str_contains($referer, 'customerquestions/question/edit')) {
+                if (preg_match('/entity_id\/(\d+)/', $referer, $matches)) {
+                    $questionId = $matches[1];
+                }
+            }
+        }
+
+        if ($questionId) {
+            $this->addFieldToFilter('main_table.question_id', ['eq' => $questionId]);
+        }
+
+        parent::_renderFiltersBefore();
     }
 }

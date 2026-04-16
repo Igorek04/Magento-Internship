@@ -21,7 +21,7 @@ class Save extends Generic implements ButtonProviderInterface
                     'buttonAdapter' => [
                         'actions' => [
                             [
-                                'targetName' => 'customer_questions_form.customer_questions_form',
+                                'targetName' => 'customer_questions_form.areas',
                                 'actionName' => 'save',
                                 'params' => [false],
                             ],
@@ -29,57 +29,7 @@ class Save extends Generic implements ButtonProviderInterface
                     ],
                 ],
             ],
-            'class_name' => Container::SPLIT_BUTTON,
-            'options' => $this->getOptions(),
+            'sort_order' => 30,
         ];
-    }
-
-    /**
-     * Retrieve options
-     *
-     * @return array
-     */
-    protected function getOptions(): array
-    {
-        $options[] = [
-            'id_hard' => 'save_and_new',
-            'label' => __('Save & New'),
-            'data_attribute' => [
-                'mage-init' => [
-                    'buttonAdapter' => [
-                        'actions' => [
-                            [
-                                'targetName' => 'customer_questions_form.customer_questions_form',
-                                'actionName' => 'save',
-                                'params' => [
-                                    true, [
-                                        'back' => 'add',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
-
-        $options[] = [
-            'id_hard' => 'save_and_close',
-            'label' => __('Save & Close'),
-            'data_attribute' => [
-                'mage-init' => [
-                    'buttonAdapter' => [
-                        'actions' => [
-                            [
-                                'targetName' => 'customer_questions_form.customer_questions_form',
-                                'actionName' => 'save',
-                                'params' => [true],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
-        return $options;
     }
 }

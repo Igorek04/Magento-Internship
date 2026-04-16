@@ -35,7 +35,7 @@
         </argument>
     </dataSource>
 
-    <container name="listing_top">
+    <listingToolbar name="listing_top">
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
                 <item name="template" xsi:type="string">ui/grid/toolbar</item>
@@ -94,7 +94,7 @@
                     </item>
                 </item>
             </argument>
-            <!-- Фильтр по сторам -->
+
             <filterSelect name="store_id" provider="${ $.parentName }">
                 <settings>
                     <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
@@ -104,6 +104,33 @@
                 </settings>
             </filterSelect>
         </filters>
+
+        <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions">
+            <settings>
+                <selectProvider>customer_questions_listing.customer_questions_listing.question_columns.ids</selectProvider>
+                <indexField>entity_id</indexField>
+            </settings>
+
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to delete selected questions?</message>
+                        <title translate="true">Delete Questions</title>
+                    </confirm>
+                    <url path="customerquestions/question/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+
+            <action name="change_status">
+                <settings>
+                    <type>change_status</type>
+                    <label translate="true">Change Status</label>
+                    <actions class="Perspective\CustomerQuestions\Ui\Component\MassAction\StatusOptions"/>
+                </settings>
+            </action>
+        </massaction>
 
         <paging name="listing_paging">
             <argument name="data" xsi:type="array">
@@ -116,7 +143,7 @@
                 </item>
             </argument>
         </paging>
-    </container>
+    </listingToolbar>
 
     <columns name="question_columns">
         <argument name="data" xsi:type="array">
@@ -183,7 +210,7 @@
             </argument>
         </column>
 
-        <column name="question_text" class="Perspective\CustomerQuestions\Ui\Component\Listing\Column\QuestionContent">
+        <column name="question_text" class="Perspective\CustomerQuestions\Ui\Component\Listing\Column\TruncatedText">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="label" xsi:type="string" translate="true">Question (Hover to see full text)</item>

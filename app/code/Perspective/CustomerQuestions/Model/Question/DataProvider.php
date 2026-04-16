@@ -42,8 +42,10 @@ class DataProvider extends AbstractDataProvider
 
         $items = $this->collection->getItems();
         foreach ($items as $question) {
-            $this->loadedData[$question->getId()] = [
-                'data' => $question->getData()
+            $id = $question->getId();
+            $this->loadedData[$id] = [
+                'general' => $question->getData(),
+                'entity_id' => $id
             ];
         }
 

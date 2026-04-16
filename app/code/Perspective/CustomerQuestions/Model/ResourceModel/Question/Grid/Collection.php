@@ -9,7 +9,7 @@ use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\View\Element\UiComponent\DataProvider\Document as Model;
-use Perspective\MultiTabProductWidget\Model\ResourceModel\Condition\Collection as EntityCollection;
+use Perspective\CustomerQuestions\Model\ResourceModel\Question\Collection as EntityCollection;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 

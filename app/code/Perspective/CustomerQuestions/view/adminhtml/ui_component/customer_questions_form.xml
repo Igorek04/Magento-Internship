@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      name="customer_questions_form"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">customer_questions_form.customer_questions_form_data_source</item>
@@ -7,7 +9,6 @@
         </item>
         <item name="label" xsi:type="string" translate="true">Question Information</item>
         <item name="config" xsi:type="array">
-            <item name="dataScope" xsi:type="string">data</item>
             <item name="namespace" xsi:type="string">customer_questions_form</item>
         </item>
         <item name="spinner" xsi:type="string">general</item>
@@ -47,6 +48,8 @@
     <fieldset name="general">
         <settings>
             <label translate="true">General Information</label>
+            <opened>true</opened>
+            <collapsible>false</collapsible>
         </settings>
 
         <field name="status"
@@ -138,9 +141,17 @@
     <fieldset name="answers_tab">
         <settings>
             <label translate="true">Answers</label>
-            <collapsible>true</collapsible>
-            <opened>false</opened>
+            <opened>true</opened>
+            <collapsible>false</collapsible>
         </settings>
+
+        <insertListing name="customer_answers_listing">
+            <settings>
+                <externalProvider>customer_answers_listing.customer_answers_listing_data_source</externalProvider>
+                <ns>customer_answers_listing</ns>
+                <autoRender>true</autoRender>
+            </settings>
+        </insertListing>
 
     </fieldset>
 </form>
