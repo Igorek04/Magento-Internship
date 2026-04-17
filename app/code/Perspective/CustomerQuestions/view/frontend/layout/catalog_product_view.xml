@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
 <page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Perspective_CustomerQuestions::css/qa_styles.css"/>
+    </head>
+
     <body>
         <referenceBlock name="product.info.details">
-            <block name="test.tab"
+            <block class="Perspective\CustomerQuestions\Block\Tab\QuestionTab"
+                   name="test.tab"
                    template="Perspective_CustomerQuestions::test.phtml"
                    group="detailed_info" >
                 <arguments>
-                    <argument translate="true" name="title" xsi:type="string">Questions</argument>
+                    <argument name="title" xsi:type="helper" helper="Perspective\CustomerQuestions\Helper\Data::getTabTitle"/>
+                    <argument name="viewModel" xsi:type="object">Perspective\CustomerQuestions\ViewModel\QuestionList</argument>
                 </arguments>
             </block>
         </referenceBlock>

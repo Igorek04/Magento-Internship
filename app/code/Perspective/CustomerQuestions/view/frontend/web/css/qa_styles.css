@@ -1,0 +1,203 @@
+/* =========================================
+   БАЗОВЫЕ НАСТРОЙКИ И ПЕРЕМЕННЫЕ
+========================================= */
+.product-qa-section {
+    --avatar-size-main: 40px;
+    --avatar-size-nested: 32px;
+    --line-color: #d1d5db; /* Цвет соединительных линий */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 800px;
+    margin: 20px 0;
+}
+
+.qa-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.qa-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+/* =========================================
+   МАКЕТ КОММЕНТАРИЯ
+========================================= */
+.qa-comment {
+    display: flex;
+    gap: 12px;
+    position: relative;
+    z-index: 2; /* Чтобы комментарий был поверх соединительных линий */
+}
+
+.qa-content {
+    flex-grow: 1;
+    min-width: 0; /* Предотвращает выход текста за пределы flex-контейнера */
+}
+
+/* =========================================
+   АВАТАРКИ
+========================================= */
+.qa-avatar {
+    width: var(--avatar-size-main);
+    height: var(--avatar-size-main);
+    flex: 0 0 var(--avatar-size-main);
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+/* Выделение аватарки администратора/поддержки */
+.qa-avatar.qa-admin {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* =========================================
+   ШАПКА КОММЕНТАРИЯ И ТЕКСТ
+========================================= */
+.qa-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.qa-name {
+    font-weight: 600;
+    color: #111827;
+    font-size: 15px;
+}
+
+.qa-date {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.qa-body {
+    background-color: #f9fafb;
+    border: 1px solid #f3f4f6;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* =========================================
+   ПАНЕЛЬ ДЕЙСТВИЙ (ОТВЕТИТЬ | ЛАЙК | ДИЗЛАЙК)
+========================================= */
+.qa-actions {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qa-action-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Расстояние между иконкой и текстом */
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.qa-action-btn:hover {
+    opacity: 0.7;
+}
+
+/* Размеры SVG иконок */
+.qa-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Вертикальный разделитель */
+.qa-separator {
+    color: #d1d5db;
+    font-size: 12px;
+    user-select: none;
+}
+
+/* Индивидуальные цвета при наведении/отображении */
+.qa-reply {
+    color: #4b5563;
+}
+.qa-reply:hover {
+    color: #2563eb; /* Синий цвет при наведении на Ответить */
+}
+
+.qa-like {
+    color: #16a34a; /* Зеленый цвет лайка */
+}
+
+.qa-dislike {
+    color: #dc2626; /* Красный цвет дизлайка */
+}
+
+.qa-count {
+    font-size: 13px;
+}
+
+/* =========================================
+   ЛОГИКА ВЛОЖЕННОСТИ (ОТВЕТЫ И ЛИНИИ)
+========================================= */
+/* Сдвигаем весь блок ответов ровно на центр родительской аватарки */
+.qa-nested {
+    margin-left: calc(var(--avatar-size-main) / 2);
+    padding-top: 16px;
+}
+
+/* Отступ внутри ответа под кривую линию */
+.qa-nested .qa-item {
+    padding-left: 32px;
+    margin-bottom: 16px;
+}
+
+/* Уменьшаем размер аватарки для ответов */
+.qa-nested .qa-avatar {
+    width: var(--avatar-size-nested);
+    height: var(--avatar-size-nested);
+    flex: 0 0 var(--avatar-size-nested);
+    font-size: 14px;
+}
+
+/* Изогнутая линия для каждого ответа */
+.qa-nested .qa-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -16px;
+    width: 20px;
+    height: calc(16px + (var(--avatar-size-nested) / 2));
+    border-left: 2px solid var(--line-color);
+    border-bottom: 2px solid var(--line-color);
+    border-bottom-left-radius: 12px;
+    z-index: 1;
+}
+
+/* Вертикальная линия, соединяющая ответы (добавляется всем, кроме последнего) */
+.qa-nested .qa-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: calc(var(--avatar-size-nested) / 2);
+    bottom: -16px; /* Тянется вниз до следующего ответа */
+    border-left: 2px solid var(--line-color);
+    z-index: 1;
+}

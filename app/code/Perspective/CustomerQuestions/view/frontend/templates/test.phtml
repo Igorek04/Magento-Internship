@@ -1,1 +1,93 @@
-test
+<?php
+use Magento\Framework\View\Element\Template;
+use Perspective\CustomerQuestions\ViewModel\QuestionList;
+
+$iconReply   = '<svg class="qa-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>';
+$iconLike    = '<svg class="qa-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path></svg>';
+$iconDislike = '<svg class="qa-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path></svg>';
+
+/** @var Template $block */
+/** @var QuestionList $viewModel */
+
+$viewModel = $block->getData('viewModel');
+$productId = $viewModel->getProductId();
+$qaData = $viewModel->getQaData();
+$test = 1;
+?>
+
+<div class="product-qa-section">
+    <?php if (empty($qaData)): ?>
+        <p class="qa-empty-message"><?= $block->escapeHtml(__('No questions yet. Be the first to ask!')) ?></p>
+    <?php else: ?>
+        <ul class="qa-list">
+            <?php foreach ($qaData as $question): ?>
+                <?php $hasAnswers = !empty($question['answers']); ?>
+
+
+                <li class="qa-item <?= $hasAnswers ? 'has-answers' : '' ?>">
+                    <div class="qa-comment">
+                        <div class="qa-avatar">
+                            <?= $block->escapeHtml($question['avatar_letter']) ?>
+                        </div>
+                        <div class="qa-content">
+                            <div class="qa-header">
+                                <span class="qa-name"><?= $block->escapeHtml($question['author_name']) ?></span>
+                                <span class="qa-date"><?= $block->escapeHtml($question['date']) ?></span>
+                            </div>
+                            <div class="qa-body">
+                                <?= $block->escapeHtml($question['text']) ?>
+                            </div>
+
+                            <div class="qa-actions">
+                                <button class="qa-action-btn qa-reply" data-question-id="<?= (int)$question['id'] ?>">
+                                    <?= $iconReply ?> <span><?= $block->escapeHtml(__('Reply')) ?></span>
+                                </button>
+                                <span class="qa-separator">|</span>
+                                <button class="qa-action-btn qa-like">
+                                    <?= $iconLike ?> <span class="qa-count">0</span>
+                                </button>
+                                <span class="qa-separator">|</span>
+                                <button class="qa-action-btn qa-dislike">
+                                    <?= $iconDislike ?> <span class="qa-count">0</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <?php if ($hasAnswers): ?>
+                        <ul class="qa-list qa-nested">
+                            <?php foreach ($question['answers'] as $answer): ?>
+                                <li class="qa-item">
+                                    <div class="qa-comment">
+                                        <div class="qa-avatar">
+                                            <?= $block->escapeHtml($answer['avatar_letter']) ?>
+                                        </div>
+                                        <div class="qa-content">
+                                            <div class="qa-header">
+                                                <span class="qa-name"><?= $block->escapeHtml($answer['author_name']) ?></span>
+                                                <span class="qa-date"><?= $block->escapeHtml($answer['date']) ?></span>
+                                            </div>
+                                            <div class="qa-body">
+                                                <?= $block->escapeHtml($answer['text']) ?>
+                                            </div>
+
+                                            <div class="qa-actions">
+                                                <button class="qa-action-btn qa-like">
+                                                    <?= $iconLike ?> <span class="qa-count">0</span>
+                                                </button>
+                                                <span class="qa-separator">|</span>
+                                                <button class="qa-action-btn qa-dislike">
+                                                    <?= $iconDislike ?> <span class="qa-count">0</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</div>
