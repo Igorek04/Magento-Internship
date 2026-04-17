@@ -27,7 +27,7 @@
         </argument>
     </dataSource>
 
-    <container name="listing_top">
+    <listingToolbar name="listing_top">
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
                 <item name="template" xsi:type="string">ui/grid/toolbar</item>
@@ -48,7 +48,7 @@
         <filterSearch name="fulltext"/>
         <filters name="listing_filters"/>
         <paging name="listing_paging"/>
-    </container>
+    </listingToolbar>
 
     <columns name="answer_columns">
         <selectionsColumn name="ids">

@@ -1,0 +1,88 @@
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      name="customer_answers_form"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">customer_answers_form.customer_answers_form_data_source</item>
+        </item>
+        <item name="config" xsi:type="array">
+            <item name="namespace" xsi:type="string">customer_answers_form</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Answer Information</item>
+    </argument>
+
+    <settings>
+        <layout>
+            <type>tabs</type>
+        </layout>
+        <deps>
+            <dep>customer_answers_form.customer_answers_form_data_source</dep>
+        </deps>
+
+    </settings>
+    <dataSource name="customer_answers_form_data_source">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">Perspective\CustomerQuestions\Model\Answer\DataProvider</argument>
+            <argument name="name" xsi:type="string">customer_answers_form_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">entity_id</argument>
+            <argument name="requestFieldName" xsi:type="string">entity_id</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="submit_url" xsi:type="url" path="customerquestions/answer/save"/>
+                </item>
+            </argument>
+        </argument>
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">Answer Details</label>
+        </settings>
+        <field name="question_id" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Question ID</label>
+                <visible>true</visible>
+                <dataScope>question_id</dataScope>
+                <imports>
+                    <link name="value">customer_questions_form.customer_questions_form_data_source:data.entity_id</link>
+                </imports>
+            </settings>
+        </field>
+        <field name="author_name" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Author Name</label>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataScope>author_name</dataScope>
+            </settings>
+        </field>
+        <field name="author_email" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Author Email</label>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataScope>author_email</dataScope>
+            </settings>
+        </field>
+        <field name="answer_text" formElement="textarea">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Answer Content</label>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+</form>

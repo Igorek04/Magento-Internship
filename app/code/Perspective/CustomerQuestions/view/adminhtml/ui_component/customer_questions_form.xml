@@ -145,6 +145,54 @@
             <collapsible>false</collapsible>
         </settings>
 
+        <modal name="answer_modal">
+            <settings>
+                <options>
+                    <option name="title" xsi:type="string" translate="true">Add/Update Answer</option>
+                </options>
+            </settings>
+            <insertForm name="answer_form_loader" component="Perspective_CustomerQuestions/js/form/components/insert-form">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="answerListingProvider" xsi:type="string">ns = customer_answers_listing, index = customer_answers_listing</item>
+                        <item name="answerModalProvider" xsi:type="string">${ $.parentName }.answer_modal</item>
+                    </item>
+                </argument>
+                <settings>
+                    <formSubmitType>ajax</formSubmitType>
+                    <renderUrl path="mui/index/render_handle">
+                        <param name="handle">customerquestions_answer_render</param>
+                    </renderUrl>
+                    <ns>customer_answers_form</ns>
+                    <externalProvider>customer_answers_form.customer_answers_form_data_source</externalProvider>
+                </settings>
+            </insertForm>
+        </modal>
+
+        <button name="modal_button">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="title" xsi:type="string">Add Answer</item>
+                    <item name="formElement" xsi:type="string">container</item>
+                    <item name="buttonClasses" xsi:type="string">primary</item>
+                    <item name="actions" xsi:type="array">
+                        <item name="0" xsi:type="array">
+                            <item name="targetName" xsi:type="string">customer_questions_form.areas.answers_tab.answers_tab.answer_modal.answer_form_loader</item>
+                            <item name="actionName" xsi:type="string">destroyInserted</item>
+                        </item>
+                        <item name="1" xsi:type="array">
+                            <item name="targetName" xsi:type="string">customer_questions_form.areas.answers_tab.answers_tab.answer_modal</item>
+                            <item name="actionName" xsi:type="string">openModal</item>
+                        </item>
+                        <item name="2" xsi:type="array">
+                            <item name="targetName" xsi:type="string">customer_questions_form.areas.answers_tab.answers_tab.answer_modal.answer_form_loader</item>
+                            <item name="actionName" xsi:type="string">render</item>
+                        </item>
+                    </item>
+                </item>
+            </argument>
+        </button>
+
         <insertListing name="customer_answers_listing">
             <settings>
                 <externalProvider>customer_answers_listing.customer_answers_listing_data_source</externalProvider>
@@ -152,6 +200,5 @@
                 <autoRender>true</autoRender>
             </settings>
         </insertListing>
-
     </fieldset>
 </form>
