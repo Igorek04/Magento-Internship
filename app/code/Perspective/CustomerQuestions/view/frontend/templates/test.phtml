@@ -15,7 +15,9 @@ $qaData = $viewModel->getQaData();
 $test = 1;
 ?>
 
-<div class="product-qa-section">
+<div class="product-qa-section"
+     x-data="qaComponent()"
+     id="qa-container">
     <?php if (empty($qaData)): ?>
         <p class="qa-empty-message"><?= $block->escapeHtml(__('No questions yet. Be the first to ask!')) ?></p>
     <?php else: ?>
@@ -59,7 +61,7 @@ $test = 1;
                             <?php foreach ($question['answers'] as $answer): ?>
                                 <li class="qa-item">
                                     <div class="qa-comment">
-                                        <div class="qa-avatar">
+                                        <div class="qa-avatar <?= $answer['is_admin'] ? 'qa-admin' : '' ?>">
                                             <?= $block->escapeHtml($answer['avatar_letter']) ?>
                                         </div>
                                         <div class="qa-content">

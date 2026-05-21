@@ -26,9 +26,11 @@ class Product extends Column
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as &$item) {
                 try {
-                    $product = $this->productRepository->getById($item['product_id']);
+                    $id = (int)$item['product_id'];
+
+                    $product = $this->productRepository->getById($id);
                     $item[$this->getData('name')] = $product->getName();
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $item[$this->getData('name')] = __('N/A (ID: %1)', $item['product_id']);
                 }
             }

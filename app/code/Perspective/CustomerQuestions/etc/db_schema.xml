@@ -138,6 +138,12 @@
                 default="0"
                 comment="Answer Status"/>
 
+        <column xsi:type="boolean"
+                name="is_admin"
+                nullable="false"
+                default="false"
+                comment="Is Admin Answer"/>
+
         <column xsi:type="timestamp"
                 name="created_at"
                 on_update="false"

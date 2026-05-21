@@ -105,7 +105,8 @@ class QuestionList implements ArgumentInterface
                 'author_name'   => $answer->getAuthorName(),
                 'avatar_letter' => $this->getAvatarLetter($answer->getAuthorName()),
                 'text'          => $answer->getAnswerText(),
-                'date'          => $this->formatDate($answer->getCreatedAt())
+                'date'          => $this->formatDate($answer->getCreatedAt()),
+                'is_admin'      => $answer->getIsAdmin()
             ];
         }
 
